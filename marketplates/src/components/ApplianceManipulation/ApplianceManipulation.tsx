@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
 import * as APIService from "../../services/api.js";
 import styles from "./ApplianceManipulation.module.scss";
+import { IAppliance } from "../../common/types/applianceTypes/appliance.js";
+import ApplianceManipulationItem from "../ApplianceManipulationItem/ApplianceManipulationItem.js";
 
 
 function ApplianceManipulation() {
     const [formData, setFormData] = useState({});
     const [error, setError] = useState(null);
     const [responseMessage, setResponseMessage] = useState(null);
+    const [applianceList, setApplianceList] = useState<IAppliance[]>([])
   
     useEffect(() => {
       async function reportResults() {
         try {
           const allAppliances = await APIService.fetchAppliances()
+          setApplianceList(allAppliances);
+
           const oneAppliance = await APIService.fetchAppliancesByIds([allAppliances[0]._id, allAppliances[1]._id]);
 
           console.log('allAppliances', allAppliances);
@@ -77,6 +82,9 @@ function ApplianceManipulation() {
       {responseMessage && (
         <div className={styles.success}>{responseMessage}</div>
       )}
+
+      {applianceList.length > 0 && applianceList.map( appliance => 
+        <ApplianceManipulationItem appliance={appliance}/>)}
     </>
     )
 }

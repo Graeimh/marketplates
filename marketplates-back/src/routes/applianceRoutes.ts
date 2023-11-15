@@ -1,14 +1,14 @@
 import { Router } from "express";
 import { authToken } from "../middlewares/authToken.js";
-import { createAppliance, getAppliances, getAppliancesByIds, updateAppliance, deleteAppliance } from "../controllers/ApplianceController.js";
+import { createAppliance, getAppliances, getAppliancesByIds, updateApplianceById, deleteApplianceById } from "../controllers/ApplianceController.js";
 
 const appliancesRouter = Router();
 
 appliancesRouter.get("/", getAppliances);
 appliancesRouter.get("/:ids", getAppliancesByIds);
 appliancesRouter.post("/create", createAppliance);
-appliancesRouter.post("/update", updateAppliance);
-appliancesRouter.post("/delete", deleteAppliance);
+appliancesRouter.post("/update", updateApplianceById);
+appliancesRouter.post("/delete", deleteApplianceById);
 
 
 

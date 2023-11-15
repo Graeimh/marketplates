@@ -63,13 +63,13 @@ export async function fetchAppliancesByIds(applianceIds: string[]) {
     return response.data;
 }
 
-export async function updateApplianceById(applianceId: string, applianceName: string, imageURL: string, imageCaption: string) {
+export async function updateApplianceById(applianceId: string, applianceName: string, pictureURL: string, pictureCaption: string) {
 
     const response = await apiInstance.post('/appliances/update', {
         applianceId,
         applianceName,
-        imageURL,
-        imageCaption
+        pictureURL,
+        pictureCaption
 
     });
     return response.data;
