@@ -87,4 +87,3 @@ export async function deleteApplianceById(req, res) {
     });
   }
 }
-
