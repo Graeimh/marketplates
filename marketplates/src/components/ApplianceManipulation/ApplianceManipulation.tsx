@@ -8,23 +8,22 @@ import ApplianceManipulationItem from "../ApplianceManipulationItem/ApplianceMan
 function ApplianceManipulation() {
     const [formData, setFormData] = useState({});
     const [error, setError] = useState(null);
-    const [responseMessage, setResponseMessage] = useState(null);
+    const [responseMessage, setResponseMessage] = useState("");
     const [applianceList, setApplianceList] = useState<IAppliance[]>([])
-  
-    useEffect(() => {
-      async function reportResults() {
-        try {
-          const allAppliances = await APIService.fetchAppliances()
-          setApplianceList(allAppliances);
+    const [primedForDeletionList, setPrimedForDeletionList] = useState<string[]>([]);
+    const [isAllSelected, setIsAllSelected] = useState(false);
 
-          const oneAppliance = await APIService.fetchAppliancesByIds([allAppliances[0]._id, allAppliances[1]._id]);
-
-          console.log('allAppliances', allAppliances);
-          console.log('oneAppliance', oneAppliance);
-        } catch (err) {
-          setError(err.message);
-        }
+    async function reportResults() {
+      try {
+        const allAppliances = await APIService.fetchAppliances()
+        setApplianceList(allAppliances);
+        const oneAppliance = await APIService.fetchAppliancesByIds([allAppliances[0]._id, allAppliances[1]._id]);
+      } catch (err) {
+        setError(err.message);
       }
+    }
+
+    useEffect(() => {
       reportResults();
     }, []);
 
@@ -34,7 +33,29 @@ function ApplianceManipulation() {
         [event.target.name]: event.target.value,
       });
     }
+
+    function manageDeletionList(id:string) {
+      const foundIndex = primedForDeletionList.indexOf(id);
+      if (foundIndex === -1) {
+        setPrimedForDeletionList([...primedForDeletionList, id])
+      } else {
+        setPrimedForDeletionList(primedForDeletionList.filter(applianceId => applianceId !== id))
+      }
+    }
+
+    function selectAllAppliances(){
+      if (!isAllSelected && primedForDeletionList.length === 0 || primedForDeletionList.length !== applianceList.length) {
+      setPrimedForDeletionList(applianceList.map(appliance => appliance._id));
+    } else {
+      setPrimedForDeletionList([])
+    }
+      setIsAllSelected(!isAllSelected);
+    }
   
+    function cancelSelection(){
+      setPrimedForDeletionList([]);
+    }
+
     async function sendForm(event) {
       event.preventDefault();
   
@@ -49,6 +70,23 @@ function ApplianceManipulation() {
         setError(err.message);
       }
     }
+
+    async function deletePrimedForDeletion(){
+      try {
+        const responseForDelete =  APIService.deleteAppliancesByIds(primedForDeletionList)
+        const responseforDataRenewal =  APIService.fetchAppliances();
+        
+        const combinedResponse = await Promise.all([responseForDelete, responseforDataRenewal]).then((values) => values.join(" ") )
+        setResponseMessage(combinedResponse)
+
+        console.log(`Successfully deleted ${primedForDeletionList.length} appliances`)
+        setPrimedForDeletionList([])
+      } catch (err) {
+        setError(err.message);
+    }
+  }
+
+
     return(
         <>
         <h1>ApplianceManipulation</h1>
@@ -78,13 +116,18 @@ function ApplianceManipulation() {
                 </form>
             </div>
 
+      <button type="button" onClick={()=>deletePrimedForDeletion() }>Delete {primedForDeletionList.length} appliances </button>
+      {primedForDeletionList.length !== applianceList.length && <button type="button" onClick={()=>selectAllAppliances() }>Select all ({applianceList.length}) appliances </button>}
+      <button type="button" onClick={()=>cancelSelection() }>Cancel selection </button>
+
+
       {error && <div className={styles.error}>{error}</div>}
       {responseMessage && (
         <div className={styles.success}>{responseMessage}</div>
       )}
 
       {applianceList.length > 0 && applianceList.map( appliance => 
-        <ApplianceManipulationItem appliance={appliance}/>)}
+        <ApplianceManipulationItem appliance={appliance} primeForDeletion={manageDeletionList} key={appliance._id} IsSelected={primedForDeletionList.indexOf(appliance._id) !== -1}/>)}
     </>
     )
 }

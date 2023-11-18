@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as APIService from "../../services/api.js";
 import styles from "./ApplianceManipulationItem.module.scss";
 import { IAppliance } from "../../common/types/applianceTypes/appliance.js";
 
-function ApplianceManipulationItem(props: {appliance: IAppliance}) {
+function ApplianceManipulationItem(props: {appliance: IAppliance, primeForDeletion: (applainceId:string) => void, IsSelected: boolean}) {
     const [formData, setFormData] = useState({});
     const [error, setError] = useState(null);
     const [responseMessage, setResponseMessage] = useState(null);
+    const [isPrimed, setIsPrimed] = useState(false);
 
     function updateField(event) {
       setFormData({
@@ -14,7 +15,12 @@ function ApplianceManipulationItem(props: {appliance: IAppliance}) {
         [event.target.name]: event.target.value,
       });
     }
-  
+    
+    function handleDeletePrimer(){
+      props.primeForDeletion(props.appliance._id);
+      setIsPrimed(!isPrimed);
+    }
+    
     async function sendUpdateForm(event) {
       event.preventDefault();
   
@@ -42,7 +48,7 @@ function ApplianceManipulationItem(props: {appliance: IAppliance}) {
     return(
         <>
         <h4>Appliance : {props.appliance.applianceName}</h4>
-            <div className={styles.applianceManipulationItemContainer}>
+            <div className={props.IsSelected ? styles.primedContainer : styles.applianceManipulationItemContainer}>
             <button type="button" onClick={sendDeleteApplianceCall}>Delete Appliance</button>
                 <form onSubmit={sendUpdateForm}>
                 <ul>
@@ -66,8 +72,10 @@ function ApplianceManipulationItem(props: {appliance: IAppliance}) {
                     </li>
                 </ul>
                 <button type="submit">Update Appliance</button>
+                <button type="button" className={props.IsSelected ? styles.primedButton : ""} onClick={()=> handleDeletePrimer()}>{props.IsSelected  ? "●" : "○"}</button>
                 </form>
             </div>
+            
 
       {error && <div className={styles.error}>{error}</div>}
       {responseMessage && (

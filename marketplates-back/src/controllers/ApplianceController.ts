@@ -87,3 +87,18 @@ export async function deleteApplianceById(req, res) {
     });
   }
 }
+
+export async function deleteAppliancesByIds(req, res) {
+  try {
+    const appliancesToDelete = await AppliancesModel.deleteMany({ '_id': { '$in': req.body.applianceIds } });
+    res.json({
+      message: '(204 No Content)-Appliances successfully deleted',
+      success: true
+    });
+  } catch (err) {
+    res.json({
+      message: '(404 Not found)-One or several appliances to be deleted were not found',
+      success: false
+    });
+  }
+}

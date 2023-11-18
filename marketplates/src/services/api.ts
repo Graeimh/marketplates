@@ -83,6 +83,14 @@ export async function deleteApplianceById(applianceId: string) {
     return response.data;
 }
 
+export async function deleteAppliancesByIds(applianceIds: string[]) {
+
+    const response = await apiInstance.post('/appliances/deleteMany', {
+        applianceIds,
+    });
+    return response.data;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////
 export async function generateBasket() {
 
