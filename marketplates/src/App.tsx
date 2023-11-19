@@ -33,7 +33,6 @@ function App() {
     getResponse();
   }, []);
 
-  // console.log(message ? message.message : "Nope");
   return (
     <>
         <BrowserRouter>

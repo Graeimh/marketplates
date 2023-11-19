@@ -54,10 +54,12 @@ export async function getAppliancesByIds(req, res) {
 
 export async function updateApplianceById(req, res) {
   try {
+    const applianceById: IAppliances = await AppliancesModel.findOne({ _id: { $in: req.body.applianceId } });
+
     const applianceToUpdate = await AppliancesModel.updateOne({ _id: { $in: req.body.applianceId } }, {
-      applianceName: req.body.applianceName, picture: {
-        imageURL: req.body.pictureURL,
-        imageCaption: req.body.pictureCaption
+      applianceName: req.body.applianceName ? req.body.applianceName : applianceById._id, picture: {
+        imageURL: req.body.pictureURL ? req.body.pictureURL : applianceById.picture.imageURL,
+        imageCaption: req.body.pictureCaption ? req.body.pictureCaption : applianceById.picture.imageCaption
       }
     });
 

@@ -8,6 +8,7 @@ function ApplianceManipulationItem(props: {appliance: IAppliance, primeForDeleti
     const [error, setError] = useState(null);
     const [responseMessage, setResponseMessage] = useState(null);
     const [isPrimed, setIsPrimed] = useState(false);
+    const [validForUpdating, setValidForUpdating] = useState(false);
 
     function updateField(event) {
       setFormData({
@@ -20,16 +21,17 @@ function ApplianceManipulationItem(props: {appliance: IAppliance, primeForDeleti
       props.primeForDeletion(props.appliance._id);
       setIsPrimed(!isPrimed);
     }
+
     
     async function sendUpdateForm(event) {
       event.preventDefault();
   
       try {
-        const response = await APIService.updateApplianceById(
-          props.appliance._id,
-          formData.applianceName,
-          formData.pictureURL,
-          formData.pictureCaption,
+         const response = await APIService.updateApplianceById(
+           props.appliance._id,
+           formData.applianceName,
+           formData.pictureURL,
+           formData.pictureCaption,
         );
         setResponseMessage(response.message);
       } catch (err) {
@@ -49,30 +51,30 @@ function ApplianceManipulationItem(props: {appliance: IAppliance, primeForDeleti
         <>
         <h4>Appliance : {props.appliance.applianceName}</h4>
             <div className={props.IsSelected ? styles.primedContainer : styles.applianceManipulationItemContainer}>
+            <button type="button" className={props.IsSelected ? styles.primedButton : ""} onClick={()=> handleDeletePrimer()}>{props.IsSelected  ? "●" : "○"}</button>
             <button type="button" onClick={sendDeleteApplianceCall}>Delete Appliance</button>
                 <form onSubmit={sendUpdateForm}>
                 <ul>
                     <li>
                       <p>
                           name :{" "}
-                          <input type="text" name="applianceName" onInput={updateField} placeholder={props.appliance.applianceName}/>
+                          <input type="text" name="applianceName" onInput={()=> {updateField(event); setValidForUpdating(!(event?.target.value === props.appliance.applianceName || event?.target.value.length === 0))}} placeholder={props.appliance.applianceName}/>
                       </p>
                     </li>
                     <li>
                       <p>
                       pictureURL :{" "}
-                          <input type="text" name="pictureURL" onInput={updateField} placeholder={props.appliance.picture.imageURL}/>
+                          <input type="text" name="pictureURL" onInput={()=> {updateField(event); setValidForUpdating(!(event?.target.value === props.appliance.picture.imageURL || event?.target.value.length === 0))}} placeholder={props.appliance.picture.imageURL}/>
                       </p>
                     </li>
                     <li>
                       <p>
                       pictureCaption :{" "}
-                          <input type="text" name="pictureCaption" onInput={updateField} placeholder={props.appliance.picture.imageCaption}/>
+                          <input type="text" name="pictureCaption" onInput={()=> {updateField(event); setValidForUpdating(!(event?.target.value === props.appliance.picture.imageCaption || event?.target.value.length === 0))}} placeholder={props.appliance.picture.imageCaption}/>
                       </p>
                     </li>
                 </ul>
-                <button type="submit">Update Appliance</button>
-                <button type="button" className={props.IsSelected ? styles.primedButton : ""} onClick={()=> handleDeletePrimer()}>{props.IsSelected  ? "●" : "○"}</button>
+                <button type="submit" disabled={!validForUpdating}>Update Appliance</button>
                 </form>
             </div>
             
