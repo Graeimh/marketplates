@@ -1,7 +1,10 @@
 import { Router } from "express";
-import { authToken } from "../middlewares/authToken.js";
+import { checkToken } from "../middlewares/checkToken.js";
 import { createAppliance } from "../controllers/ApplianceController.js";
 import appliances from "./applianceRoutes.js"
+import miscellaneous from "./miscellaneousRoutes.js"
+import users from "./userRoutes.js"
+import authentication from "./authenticationRoutes.js"
 
 const appRouter = Router();
 
@@ -12,28 +15,13 @@ appRouter.get("/", (req, res) => {
 });
 
 appRouter.use("/appliances", appliances);
-
-
-// appRouter.post("/register", registerUser);
-// appRouter.post("/login", loginUser);
-
-// appRouter.get("/pastries", authToken, getPastriesData);
-// appRouter.get("/pastries/remaining", getRemainingPastriesData);
-// appRouter.post("/pastries/prizes", authToken, getPrizes);
-
-// appRouter.post("/user/", authToken, getUserData);
-// appRouter.post("/user/results", authToken, getUserResults);
-// appRouter.post("/user/reroll", authToken, setRerolledUserResults);
-// appRouter.post("/user/trials", authToken, getUserTries);
-
-// appRouter.patch("/user/trials", authToken, setUserTries);
-// appRouter.patch("/user/results", authToken, setUserResults);
-
-// appRouter.post("/dice", authToken, getNewDiceResults);
+appRouter.use("/auth", authentication);
+appRouter.use("/miscellaneous", miscellaneous);
+appRouter.use("/users", users);
 
 /*
-keep AuthToken
-create an Admin AuthToken
+keep checkToken
+create an Admin checkToken
 
 CRUD for all collections
 appliances

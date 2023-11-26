@@ -34,9 +34,24 @@ const Layout = () => {
               <Link to="/">Home</Link>
             </li>
             <li className={styles.navigationOption}>
-              <Link to="/appliances">appliancesManipulation</Link>
+              <Link to="/aboutus">About us</Link>
             </li>
             <li className={styles.navigationOption}>
+              <Link to="/explore">Explore</Link>
+            </li>
+            <li className={styles.navigationOption}>
+              <Link to="/register">Register</Link>
+            </li>
+            <li className={styles.navigationOption}>
+              <Link to="/login">Login</Link>
+            </li>
+            <li className={styles.navigationOption}>
+              <Link to="/profile">Profile</Link>
+            </li>
+            <li className={styles.navigationOption}>
+              <Link to="/appliances">appliancesManipulation</Link>
+            </li>
+            {/* <li className={styles.navigationOption}>
               <Link to="/baskets">basketsManipulation</Link>
             </li>
             <li id={styles.navigationOption}>
@@ -71,7 +86,7 @@ const Layout = () => {
             </li>
             <li id={styles.navigationOption}>
               <Link to="/users">usersManipulation</Link>
-            </li>
+            </li> */}
           </ul>
         </nav>
       </header>

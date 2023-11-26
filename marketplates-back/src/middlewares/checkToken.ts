@@ -3,9 +3,9 @@ import jwt from 'jsonwebtoken'
 
 dotenv.config();
 
-export function authToken(req, res, next) {
+export function checkToken(req, res, next) {
   if (!req.headers.authorization)
-    return res.status(403).send({ error: 1, message: 'Missing token' });
+    return res.status(403).send({ error: true, message: 'Missing token' });
 
   const [, token] = req.headers.authorization.split(' ')
 
@@ -15,6 +15,6 @@ export function authToken(req, res, next) {
     next();
   }
   catch (err) {
-    return res.status(403).send({ error: 1, message: 'Invalid token' });
+    return res.status(403).send({ error: true, message: 'Invalid token' });
   }
 }

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose'
-import { UserType, IUser, IImageData, AddressType } from '../types.js';
+import { UserType, IUser, AddressType } from '../types.js';
 
 const UsersSchema = new mongoose.Schema<IUser>(
   {
@@ -9,16 +9,17 @@ const UsersSchema = new mongoose.Schema<IUser>(
       default: () => new mongoose.Types.ObjectId(),
     },
     activeBasketlistIds: { type: [mongoose.SchemaTypes.ObjectId], required: false, default: [] },
+    displayName: { type: String, required: true },
     email: { type: String, required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    location: { addressType: { type: [String], enum: AddressType, required: true }, denomination: { type: String, required: true }, },
+    location: { addressType: { type: [String], enum: AddressType, default: [] }, denomination: { type: String, default: "" }, },
     password: { type: String, required: true },
-    profilePicture: new Schema<IImageData>({
-      imageURL: { type: String, required: true, default: "" },
-      imageCaption: { type: String, required: true, default: "" },
-    }),
-    recipes: { favoriteRecipes: { type: [mongoose.SchemaTypes.ObjectId], required: false, default: [] }, customRecipes: { type: [mongoose.SchemaTypes.ObjectId], required: false, default: [] } },
+    profilePicture: {
+      imageURL: { type: String, default: "" },
+      imageCaption: { type: String, default: "" },
+    },
+    recipes: { favoriteRecipes: { type: [mongoose.SchemaTypes.ObjectId], default: [] }, customRecipes: { type: [mongoose.SchemaTypes.ObjectId], default: [] } },
     type: { type: [String], enum: UserType, required: true },
   },
   { versionKey: false }

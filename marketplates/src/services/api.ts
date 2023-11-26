@@ -1,10 +1,12 @@
 import axios from 'axios';
+import { ILoginValues, IRegisterValues } from '../common/types/userTypes/userTypes';
 
 const apiInstance = axios.create({
     baseURL: import.meta.env.VITE_SERVER_URL,
     headers: {
         'Content-Type': 'application/json',
     },
+    withCredentials: true,
 });
 
 apiInstance.interceptors.request.use((config) => {
@@ -31,12 +33,31 @@ export async function getApiStatus() {
     return response.data;
 }
 
-// export async function login(email, password) {
-//     const response = await apiInstance.post('/login', {
-//       email,
-//       password,
-//     });
-//    return response.data;
+//////////////////////////////////////////////////////////////////////////////////////
+//     AUTHENTIFICATION   ////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+export async function login(loginData: ILoginValues, token: string) {
+    const response = await apiInstance.post('/auth/login', {
+        loginData,
+        token,
+    });
+    return response.data;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////
+//     USERS   ///////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+export async function generateUser(formData: IRegisterValues, token: string) {
+    const response = await apiInstance.post('/users/create', {
+        formData,
+        token,
+    });
+    return response.data;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////
 //     APPLIANCES   //////////////////////////////////////////////////////////////////
@@ -63,7 +84,7 @@ export async function fetchAppliancesByIds(applianceIds: string[]) {
     return response.data;
 }
 
-export async function updateApplianceById(applianceId: string, applianceName: string, pictureURL: string, pictureCaption: string) {
+export async function updateApplianceById(applianceId: string, applianceName?: string, pictureURL?: string, pictureCaption?: string) {
 
     const response = await apiInstance.post('/appliances/update', {
         applianceId,
@@ -131,95 +152,3 @@ export async function generateProduct() {
 export async function generateTag() {
 
 }
-
-export async function generateUser() {
-
-}
-
-//  export async function login(email, password) {
-//   const response = await apiInstance.post('/login', {
-//     email,
-//     password,
-//   });
-//  return response.data;
-// }
-
-
-// export async function register(firstName, lastName, email, password, passwordConfirm) {
-//   const response = await apiInstance.post('/register', {
-//     firstName,
-//     lastName,
-//     email,
-//     password,
-//     passwordConfirm
-//   });
-//  return response.data;
-// }
-
-// export async function getPastries() {
-//   const response = await apiInstance.get('/pastries');
-//   return response.data;
-// }
-
-// export async function getPastriesInStock() {
-//   const response = await apiInstance.get('/pastries/remaining');
-//   return response.data;
-// }
-
-// export async function getPrizes(userId, diceResults) {
-//   const response = await apiInstance.post('/pastries/prizes', {
-//     userId,
-//     diceResults,
-//   })
-//   return response.data;
-// }
-
-// export async function getUser(userId) {
-//   const response = await apiInstance.post('/user', {
-//     userId,
-//   })
-//   return response.data;
-// }
-
-// export async function patchUserResults(userId, results) {
-//   const response = await apiInstance.patch('/user/results', {
-//     userId,
-//     results,
-//   })
-//   return response.data;
-// }
-
-// export async function patchUserTries(userId, remainingTrials) {
-//   const response = await apiInstance.patch('/user/trials', {
-//     userId,
-//     remainingTrials,
-//   });
-//   return response.data;
-// }
-
-// export async function fetchUserResults(userId) {
-//   const response = await apiInstance.post('/user/results', {
-//     userId,
-//   });
-//   return response.data;
-// }
-
-// export async function fetchUserTries(userId) {
-//   const response = await apiInstance.post('/user/trials', {
-//     userId,
-//   });
-//   return response.data;
-// }
-
-// export async function rerollUserResults(userId, diceResetIndexes) {
-//   const response = await apiInstance.post('/user/reroll', {
-//     userId,
-//     diceResetIndexes,
-//   })
-//   return response.data;
-// }
-
-// export async function getNewDiceResults(amount) {
-//   const response = await apiInstance.post('/dice', {amount});
-//   return response.data
-// }

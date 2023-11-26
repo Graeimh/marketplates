@@ -53,6 +53,14 @@ export interface IIteration {
     tagIds: Types.ObjectId[]
 };
 
+export interface IMaps {
+    _id?: Types.ObjectId;
+    description: string
+    name: string
+    participants: IParticipants;
+    placeIterationIds: Types.ObjectId[];
+};
+
 export interface IMenu {
     _id?: Types.ObjectId;
     description: string
@@ -86,6 +94,11 @@ export interface IOpinion {
     originId: Types.ObjectId;
 };
 
+export interface IParticipants {
+    userId: Types.ObjectId;
+    userPrivileges: UserPrivileges[];
+}
+
 export interface IPlace {
     _id?: Types.ObjectId;
     address: IAddressData;
@@ -94,6 +107,20 @@ export interface IPlace {
     name: string;
     placeOpinionIds: Types.ObjectId[];
 };
+
+export interface IPlaceIteration {
+    _id?: Types.ObjectId;
+    associatedMapIds: Types.ObjectId[];
+    creatorId: Types.ObjectId;
+    customName: string;
+    customDescription: string;
+    customTagIds: Types.ObjectId[];
+    iterationIds: Types.ObjectId[];
+    menuItemId: Types.ObjectId[];
+    placeId: Types.ObjectId;
+};
+
+
 
 export interface IPost {
     _id?: Types.ObjectId;
@@ -161,6 +188,7 @@ export interface ITagAffinity {
 export interface IUser {
     _id?: Types.ObjectId;
     activeBasketlistIds: Types.ObjectId[];
+    displayName: string;
     email: string;
     firstName: string;
     lastName: string;
@@ -184,23 +212,14 @@ export enum ProductVolumes {
     Unit = "Unit",
 };
 
+export enum UserPrivileges {
+    Viewer = "Viewer",
+    Editer = "Editer",
+}
+
 export enum UserType {
-    Restaurant = "Address",
-    Shop = "County",
-    Admin = "City",
+    Restaurant = "Restaurant",
+    Shop = "Shop",
+    Admin = "Admin",
     User = "User",
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-

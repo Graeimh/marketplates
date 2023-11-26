@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import mongoose from "mongoose";
 import routes from "./routes/routes.js";
 import cors from "cors";
-
+import cookieParser from "cookie-parser";
 
 // ==========
 // App initialization
@@ -23,7 +23,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 // CORS authorization, JSON data formatting for API communication
-app.use(cors());
+app.use(cookieParser());
+app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
 app.use(express.json());
 
 // Correctly indents code

@@ -15,9 +15,9 @@ function ApplianceManipulation() {
 
     async function reportResults() {
       try {
-        const allAppliances = await APIService.fetchAppliances()
-        setApplianceList(allAppliances);
-        const oneAppliance = await APIService.fetchAppliancesByIds([allAppliances[0]._id, allAppliances[1]._id]);
+        const allAppliances = await APIService.fetchAppliances();
+        setApplianceList(allAppliances.data);
+        // const oneAppliance = await APIService.fetchAppliancesByIds([allAppliances.data[0]._id, allAppliances.data[1]._id]);
       } catch (err) {
         setError(err.message);
       }

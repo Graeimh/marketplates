@@ -22,7 +22,6 @@ function ApplianceManipulationItem(props: {appliance: IAppliance, primeForDeleti
       setIsPrimed(!isPrimed);
     }
 
-    
     async function sendUpdateForm(event) {
       event.preventDefault();
   

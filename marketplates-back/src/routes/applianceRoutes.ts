@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authToken } from "../middlewares/authToken.js";
+import { checkToken } from "../middlewares/checkToken.js";
 import { createAppliance, getAppliances, getAppliancesByIds, updateApplianceById, deleteApplianceById, deleteAppliancesByIds } from "../controllers/ApplianceController.js";
 
 const appliancesRouter = Router();
@@ -16,23 +16,23 @@ appliancesRouter.post("/deleteMany", deleteAppliancesByIds);
 // appRouter.post("/register", registerUser);
 // appRouter.post("/login", loginUser);
 
-// appRouter.get("/pastries", authToken, getPastriesData);
+// appRouter.get("/pastries", checkToken, getPastriesData);
 // appRouter.get("/pastries/remaining", getRemainingPastriesData);
-// appRouter.post("/pastries/prizes", authToken, getPrizes);
+// appRouter.post("/pastries/prizes", checkToken, getPrizes);
 
-// appRouter.post("/user/", authToken, getUserData);
-// appRouter.post("/user/results", authToken, getUserResults);
-// appRouter.post("/user/reroll", authToken, setRerolledUserResults);
-// appRouter.post("/user/trials", authToken, getUserTries);
+// appRouter.post("/user/", checkToken, getUserData);
+// appRouter.post("/user/results", checkToken, getUserResults);
+// appRouter.post("/user/reroll", checkToken, setRerolledUserResults);
+// appRouter.post("/user/trials", checkToken, getUserTries);
 
-// appRouter.patch("/user/trials", authToken, setUserTries);
-// appRouter.patch("/user/results", authToken, setUserResults);
+// appRouter.patch("/user/trials", checkToken, setUserTries);
+// appRouter.patch("/user/results", checkToken, setUserResults);
 
-// appRouter.post("/dice", authToken, getNewDiceResults);
+// appRouter.post("/dice", checkToken, getNewDiceResults);
 
 /*
-keep AuthToken
-create an Admin AuthToken
+keep checkToken
+create an Admin checkToken
 
 CRUD for all collections
 appliances
