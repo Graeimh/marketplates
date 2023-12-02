@@ -1,42 +1,28 @@
 import mongoose, { Schema, model } from 'mongoose';
-import { IImageData, IAppliances } from '../types.js';
+import { AnomalyType, IAnomalies } from '../types.js';
 
 
-const AppliancesSchema = new Schema<IAppliances>(
+const AnomaliesSchema = new Schema<IAnomalies>(
   {
     _id: {
       type: mongoose.SchemaTypes.ObjectId,
       required: true,
       default: () => new mongoose.Types.ObjectId(),
     },
-    applianceName: { type: String, required: true },
-    picture: new Schema<IImageData>({
-      imageURL: { type: String, required: true, default: "" },
-      imageCaption: { type: String, required: true, default: "" },
-    }),
+    anomalyType: { type: String, enum: AnomalyType, required: true },
+    culpritUserId: { type: mongoose.SchemaTypes.ObjectId, required: true },
+    joinedPictures: [{
+      imageURL: { type: String, default: "" },
+      imageCaption: { type: String, default: "" },
+    },],
+    originUserId: { type: mongoose.SchemaTypes.ObjectId, required: true },
+    textContent: { type: String },
+    title: { type: String, required: true },
   },
   { versionKey: false }
 );
 
-/*
-creationDate: { type: Date, default: Date.now },
-description: { type: String, required: true, default: "" }
-picture: new Schema<IImageData>({
-      imageURL: { type: String, required: true, default: "" },
-      imageCaption: { type: String, required: true, default: "" },
-    }),
-title: { type: String, required: true, default: "" }
-type:
-whistleblower: {
-  isFromSystem:
-  user: {
-    isFromUser:
-    userId:    
-  }
-}
-*/
+const collectionName = 'Anomalies'
+const AnomaliesModel = model<IAnomalies>('Anomalies', AnomaliesSchema, collectionName)
 
-const collectionName = 'Appliances'
-const AppliancesModel = model<IAppliances>('Appliances', AppliancesSchema, collectionName)
-
-export default AppliancesModel
+export default AnomaliesModel

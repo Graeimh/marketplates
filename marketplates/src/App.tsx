@@ -22,14 +22,20 @@ import Explore from "./components/Explore";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
+import * as jose from "jose";
+import UserContext from "./components/UserContext";
 
 function App() {
   const [message, setMessage] = useState(null);
+  const [sessionData, setSessionData] = useState(null);
 
   useEffect(() => {
     async function getResponse() {
       try {
         const status = await APIService.getApiStatus();
+        const loadedSessionData = await APIService.getSessionData();
+
+        setSessionData(jose.decodeJwt(loadedSessionData.cookie));
         setMessage(status);
       } catch (err) {
         setMessage(err.message);
@@ -40,21 +46,22 @@ function App() {
 
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="aboutus" element={<AboutUs />} />
-            <Route path="explore" element={<Explore />} />
-            <Route path="register" element={<Register />} />
-            <Route path="login" element={<Login />} />
-            <Route path="profile" element={<Profile />} />
-            {/* <Route index element={<MyNotifications />} />
+      <UserContext.Provider value={sessionData}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="aboutus" element={<AboutUs />} />
+              <Route path="explore" element={<Explore />} />
+              <Route path="register" element={<Register />} />
+              <Route path="login" element={<Login />} />
+              <Route path="profile" element={<Profile />} />
+              {/* <Route index element={<MyNotifications />} />
               <Route index element={<MyMaps />} />       
               <Route index element={<MyPlaces />} />  
               <Route index element={<Dashboard />} />         */}
-            <Route path="appliances" element={<ApplianceManipulation />} />
-            {/* <Route path="baskets" element={<BasketManipulation />} />
+              <Route path="appliances" element={<ApplianceManipulation />} />
+              {/* <Route path="baskets" element={<BasketManipulation />} />
               <Route path="iterations" element={<IterationManipulation />} />
               <Route path="menuitems" element={<MenuItemManipulation />} />
               <Route path="menus" element={<MenuManipulation />} />
@@ -66,9 +73,10 @@ function App() {
               <Route path="recipes" element={<RecipeManipulation />} />
               <Route path="tags" element={<TagManipulation />} />
               <Route path="users" element={<UserManipulation />} /> */}
-          </Route>
-        </Routes>
-      </BrowserRouter>
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </UserContext.Provider>
     </>
   );
 }

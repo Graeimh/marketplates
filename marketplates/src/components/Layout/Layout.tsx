@@ -1,16 +1,21 @@
 import { Outlet, Link } from "react-router-dom";
 import styles from "./Layout.module.scss";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as APIService from "../../services/api";
+import UserContext from "../UserContext";
 
-const Layout = () => {  
-  const [message, setMessage] = useState(null)
+const Layout = () => {
+  const [message, setMessage] = useState(null);
+  const value = useContext(UserContext);
 
   useEffect(() => {
     async function getResponse() {
       try {
-        const status = await APIService.getApiStatus();
-          setMessage(status);
+        // const status = await APIService.getApiStatus();
+        const status = await APIService.checkIfActive(
+          sessionStorage.getItem("token")
+        );
+        setMessage(status);
       } catch (err) {
         setMessage(err.message);
       }
@@ -25,9 +30,7 @@ const Layout = () => {
           <h1 id={styles.mainTitle}>Marketplates</h1>
         </div>
         <h1>API STATUS</h1>
-      {message && (
-        <h2>{message ? message.message : "Nope"}</h2>
-      )}
+        {message && <h2>{message ? message.message : "Nope"}</h2>}
         <nav>
           <ul>
             <li className={styles.navigationOption}>

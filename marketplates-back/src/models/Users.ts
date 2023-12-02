@@ -9,6 +9,13 @@ const UsersSchema = new mongoose.Schema<IUser>(
       default: () => new mongoose.Types.ObjectId(),
     },
     activeBasketlistIds: { type: [mongoose.SchemaTypes.ObjectId], required: false, default: [] },
+    csrfSecret: {
+      type: mongoose.SchemaTypes.ObjectId,
+      required: true,
+      default: () => new mongoose.Types.ObjectId(),
+    },
+    csrfToken: { type: String, default: "" },
+    csrfTokenKey: { type: String, default: "" },
     displayName: { type: String, required: true },
     email: { type: String, required: true },
     firstName: { type: String, required: true },

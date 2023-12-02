@@ -10,8 +10,8 @@ export function checkToken(req, res, next) {
   const [, token] = req.headers.authorization.split(' ')
 
   try {
-    const { TOKEN_KEY } = process.env;
-    jwt.verify(token, TOKEN_KEY)
+    const { LOG_TOKEN_KEY } = process.env;
+    jwt.verify(token, LOG_TOKEN_KEY)
     next();
   }
   catch (err) {

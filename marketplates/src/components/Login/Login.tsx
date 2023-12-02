@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { ILoginValues } from "../../common/types/userTypes/userTypes";
 import * as APIService from "../../services/api.js";
 import styles from "./Login.module.scss";
@@ -19,10 +19,12 @@ function Login() {
   }
 
   async function sendLoginForm(event) {
+    console.log("Sent!");
     event.preventDefault();
-    const token = "";
     try {
-      const response = await APIService.login(loginData, token);
+      const response = await APIService.login(loginData);
+      const secondresponse = await APIService.getCSRFTokenValue();
+      sessionStorage.setItem("token", secondresponse.token);
       setResponseMessage(response.message);
     } catch (err) {
       console.log("Poop!");

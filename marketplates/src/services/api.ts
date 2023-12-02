@@ -34,13 +34,32 @@ export async function getApiStatus() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
+//     SECURITY   ////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+export async function getCSRFTokenValue() {
+    console.log("Heya!");
+    const response = await apiInstance.get('/security/csrfGeneration');
+    return response.data;
+}
+//////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////
 //     AUTHENTIFICATION   ////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-export async function login(loginData: ILoginValues, token: string) {
+export async function login(loginData: ILoginValues) {
     const response = await apiInstance.post('/auth/login', {
         loginData,
-        token,
     });
+    return response.data;
+}
+
+export async function getSessionData() {
+    const response = await apiInstance.get('/auth/checkSession');
+    return response.data;
+}
+
+export async function checkIfActive(CSRFValue: string | null) {
+    const response = await apiInstance.post('/auth/tester', { CSRFValue });
     return response.data;
 }
 

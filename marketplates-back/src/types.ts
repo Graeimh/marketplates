@@ -7,6 +7,12 @@ export enum AddressType {
     Country = "Country"
 };
 
+export enum AnomalyType {
+    Breach = "Breach",
+    Report = "Report",
+    Request = "Request",
+};
+
 export enum ContentType {
     ProductUpdate = "Product update",
     MenuUpdate = "Menu update",
@@ -18,9 +24,38 @@ export enum CurrencyType {
     Pound = "Pounds (£)",
 };
 
+export enum ProductVolumes {
+    Kg = "Kg",
+    Lbs = "Lbs",
+    L = "L",
+    Unit = "Unit",
+};
+
+export enum UserPrivileges {
+    Viewer = "Viewer",
+    Editer = "Editer",
+}
+
+export enum UserType {
+    Restaurant = "Restaurant",
+    Shop = "Shop",
+    Admin = "Admin",
+    User = "User",
+};
+
 export interface IAddressData {
     addressType: AddressType[],
     denomination: string,
+};
+
+export interface IAnomalies {
+    _id: Types.ObjectId,
+    anomalyType: AnomalyType,
+    culpritUserId: Types.ObjectId,
+    joinedPictures: IImageData,
+    originUserId: Types.ObjectId,
+    textContent: string,
+    title: string,
 };
 
 export interface IAppliances {
@@ -188,6 +223,9 @@ export interface ITagAffinity {
 export interface IUser {
     _id?: Types.ObjectId;
     activeBasketlistIds: Types.ObjectId[];
+    csrfSecret?: Types.ObjectId;
+    csrfToken?: string;
+    csrfTokenKey?: string;
     displayName: string;
     email: string;
     firstName: string;
@@ -197,7 +235,6 @@ export interface IUser {
     profilePicture: IImageData
     recipes: IUserRecipes;
     type: UserType[];
-
 };
 
 export interface IUserRecipes {
@@ -205,21 +242,3 @@ export interface IUserRecipes {
     customRecipes: Types.ObjectId[];
 };
 
-export enum ProductVolumes {
-    Kg = "Kg",
-    Lbs = "Lbs",
-    L = "L",
-    Unit = "Unit",
-};
-
-export enum UserPrivileges {
-    Viewer = "Viewer",
-    Editer = "Editer",
-}
-
-export enum UserType {
-    Restaurant = "Restaurant",
-    Shop = "Shop",
-    Admin = "Admin",
-    User = "User",
-};

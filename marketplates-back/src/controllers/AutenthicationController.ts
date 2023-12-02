@@ -1,11 +1,11 @@
 import UserModel from "../models/Users.js"
 import argon2 from 'argon2';
 import jwt from "jsonwebtoken"
+import { IUser } from "../types.js";
 
 
 export async function login(req, res) {
-    const matchingUser = await UserModel.findOne({ email: req.body.loginData.email })
-    console.log(req.cookie);
+    const matchingUser: IUser = await UserModel.findOne({ email: req.body.loginData.email })
     if (!matchingUser) {
         res.status(404).json({
             message: '(404 Not Found)-The user was not found',
@@ -18,12 +18,13 @@ export async function login(req, res) {
         });
     } else {
         try {
-            const { TOKEN_KEY } = process.env;
+            const { LOG_TOKEN_KEY } = process.env;
             const token = jwt.sign({
-                email: req.body.email,
+                email: matchingUser.email,
+                displayName: matchingUser.displayName,
                 userId: matchingUser._id.toString(),
                 status: matchingUser.type.join(', ')
-            }, TOKEN_KEY, { expiresIn: "1h" });
+            }, LOG_TOKEN_KEY, { expiresIn: "1h" });
 
             res.cookie(
                 "token", token, {
@@ -42,4 +43,31 @@ export async function login(req, res) {
             });
         }
     }
+}
+
+
+export async function checkSessionStatus(req, res) {
+    try {
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
+
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
+        res.json({
+            cookie: req.cookies.token
+        })
+
+    }
+    catch (err) {
+        res.json({
+            message: '(500 Internal Server Error)-A server side error has occured.',
+            success: false,
+        });
+    }
+};
+
+export function checkIfActive(req, res) {
+    res.json({
+        message: "GOT ME!"
+    })
 }
