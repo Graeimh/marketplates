@@ -46,9 +46,10 @@ export async function getCSRFTokenValue() {
 //////////////////////////////////////////////////////////////////////////////////////
 //     AUTHENTIFICATION   ////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-export async function login(loginData: ILoginValues) {
+export async function login(loginData: ILoginValues, captchaToken: string) {
     const response = await apiInstance.post('/auth/login', {
         loginData,
+        captchaToken,
     });
     return response.data;
 }

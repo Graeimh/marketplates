@@ -1,8 +1,19 @@
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { ILoginValues } from "../../common/types/userTypes/userTypes";
 import * as APIService from "../../services/api.js";
 import styles from "./Login.module.scss";
+import ReCAPTCHA from "react-google-recaptcha";
 
+function createTemporaryMessage(
+  message: string,
+  time: number,
+  setResponseMessage: React.Dispatch<React.SetStateAction<string>>
+) {
+  setResponseMessage(message);
+  setTimeout(() => {
+    setResponseMessage("");
+  }, time);
+}
 function Login() {
   const [loginData, setLoginData] = useState<ILoginValues>({
     email: "",
@@ -10,6 +21,14 @@ function Login() {
   });
   const [responseMessage, setResponseMessage] = useState("");
   const [error, setError] = useState(null);
+  const [canRetry, setCanRetry] = useState(true);
+  const captcha = useRef(null);
+
+  function putLoginToSleep(time: number) {
+    setTimeout(() => {
+      setCanRetry(true);
+    }, time);
+  }
 
   function updateField(event) {
     setLoginData({
@@ -19,16 +38,26 @@ function Login() {
   }
 
   async function sendLoginForm(event) {
-    console.log("Sent!");
     event.preventDefault();
-    try {
-      const response = await APIService.login(loginData);
-      const secondresponse = await APIService.getCSRFTokenValue();
-      sessionStorage.setItem("token", secondresponse.token);
-      setResponseMessage(response.message);
-    } catch (err) {
-      console.log("Poop!");
-      setError(err.message);
+    if (canRetry && captcha.current !== null) {
+      try {
+        const captchaToken: string = captcha.current.getValue().toString();
+        const response = await APIService.login(loginData, captchaToken);
+        const secondresponse = await APIService.getCSRFTokenValue();
+        sessionStorage.setItem("token", secondresponse.token);
+        createTemporaryMessage(response.message, 1500, setResponseMessage);
+      } catch (err) {
+        setError(err.message);
+        setCanRetry(false);
+        putLoginToSleep(1500);
+      }
+      captcha.current = null;
+    } else {
+      createTemporaryMessage(
+        "Please wait for a moment before trying again.",
+        1500,
+        setResponseMessage
+      );
     }
   }
 
@@ -61,6 +90,10 @@ function Login() {
               </p>
             </li>
           </ul>
+          <ReCAPTCHA
+            sitekey={import.meta.env.VITE_REACT_APP_GOOGLE_SITE_KEY}
+            ref={captcha}
+          />
           <button type="submit">Log in</button>
         </form>
       </div>

@@ -28,12 +28,10 @@ export async function generateCSRFToken(req, res) {
         //Fabricating the user-based token message
         const CSRFToken = (`${additionalRandom}&-&${currentTimestamp}&-&${userTokenBase}}`)
 
-        console.log("Hey", CSRF_TOKEN_KEY, iv)
         //Fabricating the encrypted token message through createCipheriv
         const cipher = createCipheriv("aes-256-cbc", CSRF_TOKEN_KEY, iv);
         const encryptedToken = Buffer.concat([cipher.update(CSRFToken), cipher.final()]).toString('base64');
 
-        console.log("encryptedToken", encryptedToken)
         //Saving the new CSRF Token value in the user's data
         matchingUser.csrfToken = CSRFToken;
         matchingUser.csrfTokenKey = iv;
