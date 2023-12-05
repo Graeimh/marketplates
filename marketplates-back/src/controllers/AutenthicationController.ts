@@ -5,7 +5,7 @@ import { IUser } from "../types.js";
 
 
 export async function login(req, res) {
-    const matchingUser: IUser = await UserModel.findOne({ email: req.body.loginData.email })
+    const matchingUser = await UserModel.findOne({ email: req.body.loginData.email })
     if (!matchingUser) {
         res.status(404).json({
             message: '(404 Not Found)-The user was not found',
@@ -18,21 +18,24 @@ export async function login(req, res) {
         });
     } else {
         try {
-            const { LOG_TOKEN_KEY } = process.env;
-            const token = jwt.sign({
-                email: matchingUser.email,
-                displayName: matchingUser.displayName,
-                userId: matchingUser._id.toString(),
-                status: matchingUser.type.join(', ')
-            }, LOG_TOKEN_KEY, { expiresIn: "1h" });
+            const { LOG_TOKEN_KEY, REFRESH_TOKEN_KEY } = process.env;
+
+            const accessToken = createToken(matchingUser, LOG_TOKEN_KEY);
+            const refreshToken = createToken(matchingUser, REFRESH_TOKEN_KEY, "1y");
 
             res.cookie(
-                "token", token, {
+                "token", accessToken, {
                 httpOnly: true,
+                maxAge: 10 * 60 * 1000,
             }
-            );
+            )
+
+            matchingUser.refreshToken = [...matchingUser.refreshToken, refreshToken];
+            await matchingUser.save()
+
             return res.status(200).json({
                 message: '(200 OK)-Login successful.',
+                refreshToken,
                 success: true,
             });
         }
@@ -45,6 +48,93 @@ export async function login(req, res) {
     }
 }
 
+function createToken(user: IUser, token: string, expirationDate?: string): string {
+    return expirationDate ? jwt.sign({
+        email: user.email,
+        displayName: user.displayName,
+        userId: user._id.toString(),
+        status: user.type.join(', ')
+    }, token, { expiresIn: expirationDate })
+        : jwt.sign({
+            email: user.email,
+            displayName: user.displayName,
+            userId: user._id.toString(),
+            status: user.type.join(', ')
+        }, token)
+}
+
+export async function refreshTokenChecker(req, res, next) {
+
+    //Fetch user-based refresh token as well as secrets
+    const fetchedRefreshToken = req.body.refreshToken;
+    const { LOG_TOKEN_KEY, REFRESH_TOKEN_KEY } = process.env;
+
+    //Check if the refresh token exists
+    if (!fetchedRefreshToken) {
+        //     //LOG OUT
+        return res.status(401).json({
+            message: '(401 Unauthorized)-The token was not found.',
+            success: false,
+        });
+    }
+
+    //Verify and unpack user-based data from within the refresh token
+    const decryptedRefreshToken = jwt.verify(fetchedRefreshToken, REFRESH_TOKEN_KEY);
+
+    //Access the user using the data stored within the Refresh Token
+    const matchingUser = await UserModel.findOne({ email: decryptedRefreshToken.email })
+
+    //Filtering out all the expired tokens from the user refresh token list
+
+    //Check if the user's database entry does contain the refresh token, if it does not, the user most likely attempted to attack the website
+    if (!matchingUser.refreshToken.includes(fetchedRefreshToken)) {
+        //LOG OUT
+        return res.status(403).json({
+            message: '(403 Forbidden)-The token does not match the existing tokens or is expired.',
+            success: false,
+        });
+    }
+
+    //Create a new access token for the user
+    const newAccessToken = createToken(matchingUser, LOG_TOKEN_KEY);
+
+    //Provide the browser cookies with the new user-nased access token 
+    res.status(200).cookie(
+        "token", newAccessToken, {
+        httpOnly: true,
+        maxAge: 10 * 60 * 1000,
+    })
+
+    next();
+}
+
+export async function logout(req, res) {
+    try {
+        //Fetch user-based refresh token as well as secrets
+        const fetchedRefreshToken = req.body.refreshToken;
+        const { REFRESH_TOKEN_KEY } = process.env;
+
+        //Verify and unpack user-based data from within the refresh token
+        const decryptedRefreshToken = jwt.verify(fetchedRefreshToken, REFRESH_TOKEN_KEY);
+
+        const matchingUser = await UserModel.findOne({ email: decryptedRefreshToken.email })
+
+        //Take away the refresh token from the list of valid refresh tokens
+        matchingUser.refreshToken.filter(token => fetchedRefreshToken);
+        matchingUser.save();
+
+        res.clearCookie("token").status(204).json({
+            message: '(204 No Content)-Successfully logged out.',
+            success: true,
+        }).end();
+    }
+    catch (err) {
+        res.clearCookie("token").status(204).json({
+            message: '(204 No Content)-Successfully logged out.',
+            success: true,
+        }).end();
+    }
+}
 
 export async function checkSessionStatus(req, res) {
     try {

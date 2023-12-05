@@ -44,8 +44,10 @@ function Login() {
         const captchaToken: string = captcha.current.getValue().toString();
         const response = await APIService.login(loginData, captchaToken);
         const secondresponse = await APIService.getCSRFTokenValue();
-        sessionStorage.setItem("token", secondresponse.token);
+        sessionStorage.setItem("csrfToken", secondresponse.csrfToken);
+        sessionStorage.setItem("refreshToken", response.refreshToken);
         createTemporaryMessage(response.message, 1500, setResponseMessage);
+        //REDIRECT NEEDED
       } catch (err) {
         setError(err.message);
         setCanRetry(false);

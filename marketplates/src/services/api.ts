@@ -54,13 +54,23 @@ export async function login(loginData: ILoginValues, captchaToken: string) {
     return response.data;
 }
 
+export async function logout(refreshToken: string | null) {
+    sessionStorage.clear();
+    const response = await apiInstance.post('/auth/logout', {
+        refreshToken,
+    });
+    return response.data;
+}
+
 export async function getSessionData() {
     const response = await apiInstance.get('/auth/checkSession');
     return response.data;
 }
 
-export async function checkIfActive(CSRFValue: string | null) {
-    const response = await apiInstance.post('/auth/tester', { CSRFValue });
+export async function checkIfActive(CSRFValue: string | null, refreshToken: string | null) {
+    console.log("CSRFValue", CSRFValue);
+    console.log("refreshToken", refreshToken);
+    const response = await apiInstance.post('/auth/tester', { CSRFValue, refreshToken });
     return response.data;
 }
 

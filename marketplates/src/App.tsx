@@ -49,7 +49,7 @@ function App() {
       <UserContext.Provider value={sessionData}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Layout />}>
+            <Route path="/" element={<Layout contextSetter={setSessionData} />}>
               <Route index element={<Home />} />
               <Route path="aboutus" element={<AboutUs />} />
               <Route path="explore" element={<Explore />} />

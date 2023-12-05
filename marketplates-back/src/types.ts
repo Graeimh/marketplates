@@ -234,6 +234,7 @@ export interface IUser {
     password: string;
     profilePicture: IImageData
     recipes: IUserRecipes;
+    refreshToken?: string[];
     type: UserType[];
 };
 

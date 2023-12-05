@@ -7,6 +7,7 @@ export async function generateCSRFToken(req, res) {
     try {
         //Fetching the user's session token as well as the server based secrets
         const cookieValue = req.cookies.token;
+
         const { LOG_TOKEN_KEY, CSRF_TOKEN_KEY } = process.env;
 
         //Obtaining the session's data to find the correct user
@@ -40,7 +41,7 @@ export async function generateCSRFToken(req, res) {
         //Giving back the token's encrypted value to be set in the session on the frontend
         return res.status(200).json({
             message: '(200 OK)-CSRF Token successfully created.',
-            token: encryptedToken,
+            csrfToken: encryptedToken,
             success: true,
         });
     }

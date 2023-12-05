@@ -1,19 +1,28 @@
 import { Outlet, Link } from "react-router-dom";
 import styles from "./Layout.module.scss";
-import { useContext, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import * as APIService from "../../services/api";
 import UserContext from "../UserContext";
 
-const Layout = () => {
+const Layout = (contextSetter: Dispatch<SetStateAction<null>>) => {
   const [message, setMessage] = useState(null);
+  //TYPE OF CONTEXT NEEDS FIXING
   const value = useContext(UserContext);
+  console.log("value: ", value);
 
   useEffect(() => {
     async function getResponse() {
       try {
         // const status = await APIService.getApiStatus();
         const status = await APIService.checkIfActive(
-          sessionStorage.getItem("token")
+          sessionStorage.getItem("csrfToken"),
+          sessionStorage.getItem("refreshToken")
         );
         setMessage(status);
       } catch (err) {
@@ -23,6 +32,19 @@ const Layout = () => {
     getResponse();
   }, []);
 
+  async function logoutUser() {
+    try {
+      const status = await APIService.logout(
+        sessionStorage.getItem("refreshToken")
+      );
+      contextSetter(null);
+      setMessage(status);
+      //REDIRECT NEEDED
+    } catch (err) {
+      setMessage(err.message);
+    }
+  }
+
   return (
     <>
       <header id={styles.header}>
@@ -30,6 +52,11 @@ const Layout = () => {
           <h1 id={styles.mainTitle}>Marketplates</h1>
         </div>
         <h1>API STATUS</h1>
+        {sessionStorage.getItem("refreshToken") && (
+          <button type="button" onClick={logoutUser}>
+            Log out
+          </button>
+        )}
         {message && <h2>{message ? message.message : "Nope"}</h2>}
         <nav>
           <ul>

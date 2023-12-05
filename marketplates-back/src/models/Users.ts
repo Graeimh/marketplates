@@ -27,6 +27,7 @@ const UsersSchema = new mongoose.Schema<IUser>(
       imageCaption: { type: String, default: "" },
     },
     recipes: { favoriteRecipes: { type: [mongoose.SchemaTypes.ObjectId], default: [] }, customRecipes: { type: [mongoose.SchemaTypes.ObjectId], default: [] } },
+    refreshToken: { type: [String], default: [] },
     type: { type: [String], enum: UserType, required: true },
   },
   { versionKey: false }
