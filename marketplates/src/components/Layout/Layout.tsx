@@ -79,8 +79,12 @@ const Layout = (contextSetter: Dispatch<SetStateAction<null>>) => {
               <Link to="/profile">Profile</Link>
             </li>
             <li className={styles.navigationOption}>
-              <Link to="/appliances">appliancesManipulation</Link>
+              <Link to="/dashboard">Dashboard</Link>
             </li>
+            <li className={styles.navigationOption}>
+              <Link to="/placeprofile">My places</Link>
+            </li>
+
             {/* <li className={styles.navigationOption}>
               <Link to="/baskets">basketsManipulation</Link>
             </li>

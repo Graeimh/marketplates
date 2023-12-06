@@ -53,13 +53,13 @@ function createToken(user: IUser, token: string, expirationDate?: string): strin
         email: user.email,
         displayName: user.displayName,
         userId: user._id.toString(),
-        status: user.type.join(', ')
+        status: user.type.join('&')
     }, token, { expiresIn: expirationDate })
         : jwt.sign({
             email: user.email,
             displayName: user.displayName,
             userId: user._id.toString(),
-            status: user.type.join(', ')
+            status: user.type.join('&')
         }, token)
 }
 

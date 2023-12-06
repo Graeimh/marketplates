@@ -19,3 +19,10 @@ export interface IPasswordFitnessCriteria {
     containsNumbers: boolean;
     containsSpecialCharacter: boolean;
 }
+
+export enum UserType {
+    Restaurant = "Restaurant",
+    Shop = "Shop",
+    Admin = "Admin",
+    User = "User",
+}

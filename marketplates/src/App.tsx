@@ -24,10 +24,31 @@ import Login from "./components/Login";
 import Profile from "./components/Profile";
 import * as jose from "jose";
 import UserContext from "./components/UserContext";
+import UserPathResolver from "./components/UserPathResolver";
+import AdminPathResolver from "./components/AdminPathResolver";
+import PlacePathResolver from "./components/PlacePathResolver";
+import Dashboard from "./components/Dashboard";
+import MyPlaces from "./components/MyPlaces";
+
+interface IUserContext {
+  email: string;
+  displayName: string;
+  userId: string;
+  status: string;
+  iat: number;
+}
 
 function App() {
   const [message, setMessage] = useState(null);
-  const [sessionData, setSessionData] = useState(null);
+  const [sessionData, setSessionData] = useState<IUserContext>({
+    email: "",
+    displayName: "",
+    userId: "",
+    status: "",
+    iat: 0,
+  });
+
+  console.log("sessionData", sessionData);
 
   useEffect(() => {
     async function getResponse() {
@@ -44,6 +65,8 @@ function App() {
     getResponse();
   }, []);
 
+  // sessionData !== null ? sessionData.status : ""
+
   return (
     <>
       <UserContext.Provider value={sessionData}>
@@ -55,7 +78,31 @@ function App() {
               <Route path="explore" element={<Explore />} />
               <Route path="register" element={<Register />} />
               <Route path="login" element={<Login />} />
-              <Route path="profile" element={<Profile />} />
+              <Route
+                path="profile"
+                element={
+                  <UserPathResolver userTypes={sessionData.status}>
+                    <Profile />
+                  </UserPathResolver>
+                }
+              />
+              <Route
+                path="dashboard"
+                element={
+                  <AdminPathResolver userTypes={sessionData.status}>
+                    <Dashboard />
+                  </AdminPathResolver>
+                }
+              />
+              <Route
+                path="placeprofile"
+                element={
+                  <PlacePathResolver userTypes={sessionData.status}>
+                    <MyPlaces />
+                  </PlacePathResolver>
+                }
+              />
+
               {/* <Route index element={<MyNotifications />} />
               <Route index element={<MyMaps />} />       
               <Route index element={<MyPlaces />} />  

@@ -5,8 +5,10 @@ import {
   IPasswordFitnessCriteria,
   IRegisterValues,
 } from "../../common/types/userTypes/userTypes.js";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<IRegisterValues>({
     email: "",
     firstName: "",
@@ -72,6 +74,7 @@ function Register() {
       try {
         const response = await APIService.generateUser(formData, token);
         setResponseMessage(response.message);
+        navigate("/explore");
       } catch (err) {
         setError(err.message);
       }

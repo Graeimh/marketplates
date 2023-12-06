@@ -1,4 +1,5 @@
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ILoginValues } from "../../common/types/userTypes/userTypes";
 import * as APIService from "../../services/api.js";
 import styles from "./Login.module.scss";
@@ -15,6 +16,7 @@ function createTemporaryMessage(
   }, time);
 }
 function Login() {
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState<ILoginValues>({
     email: "",
     password: "",
@@ -47,7 +49,7 @@ function Login() {
         sessionStorage.setItem("csrfToken", secondresponse.csrfToken);
         sessionStorage.setItem("refreshToken", response.refreshToken);
         createTemporaryMessage(response.message, 1500, setResponseMessage);
-        //REDIRECT NEEDED
+        navigate("/explore");
       } catch (err) {
         setError(err.message);
         setCanRetry(false);
