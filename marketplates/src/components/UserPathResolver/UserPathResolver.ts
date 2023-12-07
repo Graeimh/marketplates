@@ -5,6 +5,7 @@ import { useEffect } from "react";
 const UserPathResolver = (props: { userTypes: string, children: React.ReactNode }) => {
     const navigate = useNavigate();
     const userTypesArray = props.userTypes.split("&");
+    console.log(userTypesArray)
 
     useEffect(() => {
         if (!userTypesArray.includes(UserType.User)) {

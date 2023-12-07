@@ -1,0 +1,41 @@
+#header{
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+}
+
+nav {
+    padding: 1rem 0;
+}
+ul li {
+
+}
+
+ul li a {
+    color: #ffffff;
+    font-weight:bold;
+    text-decoration: none;
+    padding: 1rem 3rem;
+    margin: 0 1rem;
+    border-radius: 30px;
+}
+
+#mainTitle {
+    padding: 1rem 1rem 0 1rem;
+}
+
+.banner{
+
+}
+
+.navigationOption a{
+    // background: url(../../assets/ardoise.png) center center fixed;
+}
+
+#registerButton a{
+    background-color: rebeccapurple;
+}
+
+#loginButton a{
+    background-color: firebrick;
+}

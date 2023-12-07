@@ -208,8 +208,10 @@ export interface IShoppingListItem {
 
 export interface ITag {
     _id?: Types.ObjectId;
-    color: string;
-    icon: IImageData;
+    backgroundColor: string;
+    creatorId: Types.ObjectId;
+    isOfficial: boolean;
+    nameColor: string;
     name: string;
     tagAffinities: ITagAffinity[];
 };

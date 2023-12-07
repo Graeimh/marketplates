@@ -29,6 +29,8 @@ import AdminPathResolver from "./components/AdminPathResolver";
 import PlacePathResolver from "./components/PlacePathResolver";
 import Dashboard from "./components/Dashboard";
 import MyPlaces from "./components/MyPlaces";
+import LayoutForms from "./components/LayoutForms";
+import LayoutLogged from "./components/LayoutLogged";
 
 interface IUserContext {
   email: string;
@@ -48,14 +50,11 @@ function App() {
     iat: 0,
   });
 
-  console.log("sessionData", sessionData);
-
   useEffect(() => {
     async function getResponse() {
       try {
         const status = await APIService.getApiStatus();
         const loadedSessionData = await APIService.getSessionData();
-
         setSessionData(jose.decodeJwt(loadedSessionData.cookie));
         setMessage(status);
       } catch (err) {
@@ -64,8 +63,6 @@ function App() {
     }
     getResponse();
   }, []);
-
-  // sessionData !== null ? sessionData.status : ""
 
   return (
     <>
@@ -76,8 +73,8 @@ function App() {
               <Route index element={<Home />} />
               <Route path="aboutus" element={<AboutUs />} />
               <Route path="explore" element={<Explore />} />
-              <Route path="register" element={<Register />} />
-              <Route path="login" element={<Login />} />
+            </Route>
+            <Route path="/" element={<LayoutLogged />}>
               <Route
                 path="profile"
                 element={
@@ -102,13 +99,18 @@ function App() {
                   </PlacePathResolver>
                 }
               />
+            </Route>
+            <Route path="/" element={<LayoutForms />}>
+              <Route path="register" element={<Register />} />
+              <Route path="login" element={<Login />} />
+            </Route>
 
-              {/* <Route index element={<MyNotifications />} />
+            {/* <Route index element={<MyNotifications />} />
               <Route index element={<MyMaps />} />       
               <Route index element={<MyPlaces />} />  
               <Route index element={<Dashboard />} />         */}
-              <Route path="appliances" element={<ApplianceManipulation />} />
-              {/* <Route path="baskets" element={<BasketManipulation />} />
+            <Route path="appliances" element={<ApplianceManipulation />} />
+            {/* <Route path="baskets" element={<BasketManipulation />} />
               <Route path="iterations" element={<IterationManipulation />} />
               <Route path="menuitems" element={<MenuItemManipulation />} />
               <Route path="menus" element={<MenuManipulation />} />
@@ -120,7 +122,6 @@ function App() {
               <Route path="recipes" element={<RecipeManipulation />} />
               <Route path="tags" element={<TagManipulation />} />
               <Route path="users" element={<UserManipulation />} /> */}
-            </Route>
           </Routes>
         </BrowserRouter>
       </UserContext.Provider>

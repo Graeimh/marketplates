@@ -8,13 +8,11 @@ const TagsSchema = new mongoose.Schema<ITag>(
       required: true,
       default: () => new mongoose.Types.ObjectId(),
     },
-    color: { type: String, required: true },
-    icon: new Schema<IImageData>({
-
-      imageURL: { type: String, required: true, default: "" },
-      imageCaption: { type: String, required: true, default: "" },
-    }),
+    backgroundColor: { type: String, required: true },
+    creatorId: { type: mongoose.SchemaTypes.ObjectId, required: true },
+    isOfficial: { type: Boolean, required: true },
     name: { type: String, required: true },
+    nameColor: { type: String, required: true },
     tagAffinities: [new Schema<ITagAffinity>({
       affinity: { type: Number, required: true },
       tagId: {
