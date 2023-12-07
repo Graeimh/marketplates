@@ -14,6 +14,4 @@ tagRouter.post("/update", updateTagById);
 tagRouter.post("/delete", deleteTagById);
 tagRouter.post("/deleteMany", deleteTagsByIds);
 
-
-
 export default tagRouter;
