@@ -10,6 +10,7 @@ const AppliancesSchema = new Schema<IAppliances>(
       default: () => new mongoose.Types.ObjectId(),
     },
     applianceName: { type: String, required: true },
+    creationDate: { type: Date, default: Date.now() },
     picture: new Schema<IImageData>({
       imageURL: { type: String, required: true, default: "" },
       imageCaption: { type: String, required: true, default: "" },

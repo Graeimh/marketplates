@@ -9,6 +9,7 @@ const RecipesSchema = new mongoose.Schema<IRecipe>(
       default: () => new mongoose.Types.ObjectId(),
     },
     applianceIds: { type: [mongoose.SchemaTypes.ObjectId], required: true },
+    creationDate: { type: Date, default: Date.now() },
     description: { type: String, required: true },
     name: { type: String, required: true },
     pictures: [new Schema<IImageData>({

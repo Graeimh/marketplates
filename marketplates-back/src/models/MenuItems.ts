@@ -8,6 +8,7 @@ const MenuItemsSchema = new mongoose.Schema<IMenuItem>(
       required: true,
       default: () => new mongoose.Types.ObjectId(),
     },
+    creationDate: { type: Date, default: Date.now() },
     description: { type: String, required: true },
     name: { type: String, required: true },
     owner_id: {

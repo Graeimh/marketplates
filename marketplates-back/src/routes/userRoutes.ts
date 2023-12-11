@@ -1,14 +1,14 @@
 import { Router } from "express";
 import { checkToken } from "../middlewares/checkToken.js";
-import { createUser } from "../controllers/UserController.js"
+import { createUser, deleteUserById, deleteUsersByIds, getAllUsers, getUsersById, updateUserById } from "../controllers/UserController.js"
 
 const usersRouter = Router();
 
-// usersRouter.get("/", getAppliances);
-// usersRouter.get("/:ids", getAppliancesByIds);
+usersRouter.get("/", getAllUsers);
 usersRouter.post("/create", createUser);
-// usersRouter.post("/update", updateApplianceById);
-// usersRouter.post("/delete", deleteApplianceById);
-// usersRouter.post("/deleteMany", deleteAppliancesByIds);
+usersRouter.get("/:ids", getUsersById);
+usersRouter.post("/update", updateUserById);
+usersRouter.post("/delete", deleteUserById);
+usersRouter.post("/deleteMany", deleteUsersByIds);
 
 export default usersRouter;

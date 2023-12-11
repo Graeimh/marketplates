@@ -1,4 +1,4 @@
-import AppliancesModel from "../models/Appliances.js"
+import sanitizeHtml from "sanitize-html";
 import TagsModel from "../models/Tags.js";
 import { ITag } from "../types.js";
 
@@ -6,12 +6,11 @@ import { ITag } from "../types.js";
 export async function createTag(req, res) {
     try {
         const tag: ITag = {
-            backgroundColor: req.body.backgroundColor,
+            backgroundColor: sanitizeHtml(req.body.formData.backgroundColor, { allowedTags: [] }),
             creatorId: req.body.creatorId,
-            name: req.body.tagName,
-            nameColor: req.body.nameColor,
+            name: sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }),
+            nameColor: sanitizeHtml(req.body.formData.nameColor, { allowedTags: [] }),
             isOfficial: req.body.isOfficial,
-            tagAffinities: [],
         };
 
         await TagsModel.create(tag);
@@ -77,6 +76,7 @@ export async function getUserSingleTags(req, res) {
 }
 
 export async function getCommonMapperTags(req, res) {
+    //GET TAGS FROM THE USERS IN THE MAP
     try {
         const allParticipantTags = await TagsModel.find({ $or: [{ creatorId: req.body.userIdGroup }, { isOfficial: true }] });
         res.status(200).json({
@@ -112,10 +112,10 @@ export async function updateTagById(req, res) {
     try {
         const tagById: ITag = await TagsModel.findOne({ _id: { $in: req.body.tagId } });
 
-        const tagToUpdate = await AppliancesModel.updateOne({ _id: { $in: req.body.tagId } }, {
-            backgroundColor: req.body.backgroundColor ? req.body.backgroundColor : tagById.backgroundColor,
-            name: req.body.tagName ? req.body.tagName : tagById.name,
-            nameColor: req.body.nameColor ? req.body.nameColor : tagById.nameColor,
+        const tagToUpdate = await TagsModel.updateOne({ _id: { $in: req.body.tagId } }, {
+            backgroundColor: sanitizeHtml(req.body.backgroundColor, { allowedTags: [] }) ? sanitizeHtml(req.body.backgroundColor, { allowedTags: [] }) : tagById.backgroundColor,
+            name: sanitizeHtml(req.body.tagName, { allowedTags: [] }) ? sanitizeHtml(req.body.tagName, { allowedTags: [] }) : tagById.name,
+            nameColor: sanitizeHtml(req.body.nameColor, { allowedTags: [] }) ? sanitizeHtml(req.body.nameColor, { allowedTags: [] }) : tagById.nameColor,
         }
         );
 
@@ -151,7 +151,7 @@ export async function deleteTagById(req, res) {
 
 export async function deleteTagsByIds(req, res) {
     try {
-        const tagsToDelete = await AppliancesModel.deleteMany({ '_id': { '$in': req.body.tagIds } });
+        const tagsToDelete = await TagsModel.deleteMany({ _id: { $in: req.body.tagIds } });
 
         res.status(204).json({
             message: '(204 No Content)-Tags successfully deleted',

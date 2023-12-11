@@ -157,6 +157,29 @@ pentest-tools
             </li>
             <li>
               <p>
+                Street address :{" "}
+                <input type="text" name="streetAddress" onInput={updateField} />
+              </p>
+            </li>
+            <li>
+              <p>
+                County :{" "}
+                <input type="text" name="county" onInput={updateField} />
+              </p>
+            </li>
+            <li>
+              <p>
+                City : <input type="text" name="city" onInput={updateField} />
+              </p>
+            </li>
+            <li>
+              <p>
+                Country :{" "}
+                <input type="text" name="country" onInput={updateField} />
+              </p>
+            </li>
+            <li>
+              <p>
                 Password :{" "}
                 <input
                   type="password"

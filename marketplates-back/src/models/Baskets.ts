@@ -12,6 +12,7 @@ const BasketsSchema = new mongoose.Schema<IBasket>(
       iterationId: { type: mongoose.SchemaTypes.ObjectId, required: true },
       quantity: { type: Number, required: true },
     })],
+    creationDate: { type: Date, default: Date.now() },
     name: { type: String, required: true },
     orginalOwnerId: { type: String, required: true },
   },

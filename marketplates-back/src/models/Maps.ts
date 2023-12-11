@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IMaps, UserPrivileges } from '../types.js';
+import { IMaps, PrivacyStatus, UserPrivileges } from '../types.js';
 
 const mapsSchema = new mongoose.Schema<IMaps>(
   {
@@ -8,6 +8,7 @@ const mapsSchema = new mongoose.Schema<IMaps>(
       required: true,
       default: () => new mongoose.Types.ObjectId(),
     },
+    creationDate: { type: Date, default: Date.now() },
     description: { type: String, required: true },
     name: { type: String, required: true },
     participants: [{
@@ -15,6 +16,7 @@ const mapsSchema = new mongoose.Schema<IMaps>(
       userPrivileges: { type: [String], enum: UserPrivileges, required: true }
     }],
     placeIterationIds: { type: [mongoose.SchemaTypes.ObjectId], required: true },
+    privacyStatus: { type: String, enum: PrivacyStatus, default: PrivacyStatus.Private }
   },
   { versionKey: false }
 )

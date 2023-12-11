@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { AddressType, IAddressData, IPlace } from '../types.js';
+import { IPlace } from '../types.js';
 
 const PlacesSchema = new mongoose.Schema<IPlace>(
   {
@@ -8,16 +8,17 @@ const PlacesSchema = new mongoose.Schema<IPlace>(
       required: true,
       default: () => new mongoose.Types.ObjectId(),
     },
-    address: {
-      type: new Schema<IAddressData>({
-        addressType: { type: [String], enum: AddressType, required: true },
-        denomination: { type: String, required: true },
-      }), required: true
-    },
+    creationDate: { type: Date, default: Date.now() },
     description: { type: String, required: true },
-    iterationIds: { type: [mongoose.SchemaTypes.ObjectId], required: true },
+    gpsCoordinates: { type: String, required: true, default: "" },
+    location: {
+      streetAddress: { type: String, default: '' },
+      county: { type: String, default: '' },
+      city: { type: String, default: '' },
+      country: { type: String, default: '' },
+    },
     name: { type: String, required: true },
-    placeOpinionIds: { type: [mongoose.SchemaTypes.ObjectId], required: true },
+    tagsList: { type: [mongoose.SchemaTypes.ObjectId], required: false, default: [] },
   },
   { versionKey: false }
 )

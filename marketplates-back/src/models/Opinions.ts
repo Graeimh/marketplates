@@ -13,10 +13,11 @@ const OpinionsSchema = new mongoose.Schema<IOpinion>(
       imageURL: { type: String, required: true, default: "" },
       imageCaption: { type: String, required: true, default: "" },
     }),
+    creationDate: { type: Date, default: Date.now() },
     emittingUserId: { type: mongoose.SchemaTypes.ObjectId, required: true },
     grade: { type: Number, required: true },
     opinion: { type: String, required: true },
-    originId: { type: mongoose.SchemaTypes.ObjectId, required: true },
+    targetId: { type: mongoose.SchemaTypes.ObjectId, required: true },
   },
   { versionKey: false }
 );

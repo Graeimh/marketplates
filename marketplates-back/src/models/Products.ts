@@ -9,6 +9,7 @@ const ProductSchema = new mongoose.Schema<IProduct>(
       default: () => new mongoose.Types.ObjectId(),
     },
     associatedRecipeIds: { type: [mongoose.SchemaTypes.ObjectId], required: true },
+    creationDate: { type: Date, default: Date.now() },
     description: { type: String, required: true },
     iterationIds: { type: [mongoose.SchemaTypes.ObjectId], required: true },
     name: { type: String, required: true },

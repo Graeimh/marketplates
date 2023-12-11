@@ -9,6 +9,7 @@ const UsersSchema = new mongoose.Schema<IUser>(
       default: () => new mongoose.Types.ObjectId(),
     },
     activeBasketlistIds: { type: [mongoose.SchemaTypes.ObjectId], required: false, default: [] },
+    creationDate: { type: Date, default: Date.now() },
     csrfSecret: {
       type: mongoose.SchemaTypes.ObjectId,
       required: true,
@@ -20,7 +21,12 @@ const UsersSchema = new mongoose.Schema<IUser>(
     email: { type: String, required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    location: { addressType: { type: [String], enum: AddressType, default: [] }, denomination: { type: String, default: "" }, },
+    location: {
+      streetAddress: { type: String, default: '' },
+      county: { type: String, default: '' },
+      city: { type: String, default: '' },
+      country: { type: String, default: '' },
+    },
     password: { type: String, required: true },
     profilePicture: {
       imageURL: { type: String, default: "" },

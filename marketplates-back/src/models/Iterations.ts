@@ -8,6 +8,7 @@ const IterationsSchema = new mongoose.Schema<IIteration>(
       required: true,
       default: () => new mongoose.Types.ObjectId(),
     },
+    creationDate: { type: Date, default: Date.now() },
     images: [new Schema<IImageData>({
 
       imageURL: { type: String, required: true, default: "" },

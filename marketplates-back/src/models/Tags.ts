@@ -9,6 +9,7 @@ const TagsSchema = new mongoose.Schema<ITag>(
       default: () => new mongoose.Types.ObjectId(),
     },
     backgroundColor: { type: String, required: true },
+    creationDate: { type: Date, default: Date.now() },
     creatorId: { type: mongoose.SchemaTypes.ObjectId, required: true },
     isOfficial: { type: Boolean, required: true },
     name: { type: String, required: true },

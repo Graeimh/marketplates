@@ -10,6 +10,7 @@ const AnomaliesSchema = new Schema<IAnomalies>(
       default: () => new mongoose.Types.ObjectId(),
     },
     anomalyType: { type: String, enum: AnomalyType, required: true },
+    creationDate: { type: Date, default: Date.now() },
     culpritUserId: { type: mongoose.SchemaTypes.ObjectId, required: true },
     joinedPictures: [{
       imageURL: { type: String, default: "" },

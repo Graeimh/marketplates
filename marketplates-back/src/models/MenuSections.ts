@@ -8,6 +8,7 @@ const MenuSectionsSchema = new mongoose.Schema<IMenuSections>(
       required: true,
       default: () => new mongoose.Types.ObjectId(),
     },
+    creationDate: { type: Date, default: Date.now() },
     name: { type: String, required: true },
     menuItemIds: { type: [mongoose.SchemaTypes.ObjectId], required: true },
   },

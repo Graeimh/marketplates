@@ -24,6 +24,12 @@ export enum CurrencyType {
     Pound = "Pounds (£)",
 };
 
+export enum PrivacyStatus {
+    Private = "Private",
+    Protected = "Protected",
+    Public = "Public",
+};
+
 export enum ProductVolumes {
     Kg = "Kg",
     Lbs = "Lbs",
@@ -32,8 +38,9 @@ export enum ProductVolumes {
 };
 
 export enum UserPrivileges {
-    Viewer = "Viewer",
     Editer = "Editer",
+    Viewer = "Viewer",
+    Owner = "Owner",
 }
 
 export enum UserType {
@@ -44,13 +51,16 @@ export enum UserType {
 };
 
 export interface IAddressData {
-    addressType: AddressType[],
-    denomination: string,
+    streetAddress?: string,
+    county?: string,
+    city?: string,
+    country?: string,
 };
 
 export interface IAnomalies {
     _id: Types.ObjectId,
     anomalyType: AnomalyType,
+    creationDate?: Date;
     culpritUserId: Types.ObjectId,
     joinedPictures: IImageData,
     originUserId: Types.ObjectId,
@@ -61,11 +71,13 @@ export interface IAnomalies {
 export interface IAppliances {
     _id?: Types.ObjectId;
     applianceName: string;
+    creationDate?: Date;
     picture: IImageData;
 };
 
 export interface IBasket {
     _id?: Types.ObjectId;
+    creationDate?: Date;
     content: IShoppingListItem[];
     name: string;
     orginalOwnerId: string;
@@ -78,6 +90,7 @@ export interface IImageData {
 
 export interface IIteration {
     _id?: Types.ObjectId;
+    creationDate?: Date;
     images: IImageData[];
     name: string;
     placeIds: Types.ObjectId[];
@@ -90,14 +103,17 @@ export interface IIteration {
 
 export interface IMaps {
     _id?: Types.ObjectId;
+    creationDate?: Date;
     description: string
     name: string
-    participants: IParticipants;
+    participants: IParticipants[];
     placeIterationIds: Types.ObjectId[];
+    privacyStatus: PrivacyStatus;
 };
 
 export interface IMenu {
     _id?: Types.ObjectId;
+    creationDate?: Date;
     description: string
     name: string
     owner_id?: Types.ObjectId;
@@ -107,6 +123,7 @@ export interface IMenu {
 
 export interface IMenuItem {
     _id?: Types.ObjectId;
+    creationDate?: Date;
     description: string;
     name: string;
     owner_id?: Types.ObjectId;
@@ -116,6 +133,7 @@ export interface IMenuItem {
 
 export interface IMenuSections {
     _id?: Types.ObjectId;
+    creationDate?: Date;
     name: string,
     menuItemIds: Types.ObjectId[]
 };
@@ -123,10 +141,11 @@ export interface IMenuSections {
 export interface IOpinion {
     _id?: Types.ObjectId;
     attachementPicture: IImageData;
+    creationDate?: Date;
     emittingUserId: Types.ObjectId;
     grade: number;
     opinion: string;
-    originId: Types.ObjectId;
+    targetId: Types.ObjectId;
 };
 
 export interface IParticipants {
@@ -136,22 +155,22 @@ export interface IParticipants {
 
 export interface IPlace {
     _id?: Types.ObjectId;
-    address: IAddressData;
+    creationDate?: Date;
     description: string;
-    iterationIds: Types.ObjectId[];
+    location: IAddressData;
+    gpsCoordinates: string;
     name: string;
-    placeOpinionIds: Types.ObjectId[];
+    tagsList: Types.ObjectId[];
 };
 
 export interface IPlaceIteration {
     _id?: Types.ObjectId;
     associatedMapIds: Types.ObjectId[];
+    creationDate?: Date;
     creatorId: Types.ObjectId;
     customName: string;
     customDescription: string;
     customTagIds: Types.ObjectId[];
-    iterationIds: Types.ObjectId[];
-    menuItemId: Types.ObjectId[];
     placeId: Types.ObjectId;
 };
 
@@ -160,7 +179,7 @@ export interface IPlaceIteration {
 export interface IPost {
     _id?: Types.ObjectId;
     attachementPictures: IImageData[];
-    creationDate: Date;
+    creationDate?: Date;
     emittingUserId: Types.ObjectId;
     contentType: ContentType[];
     textContent: string;
@@ -175,6 +194,7 @@ export interface IPriceData {
 export interface IProduct {
     _id?: Types.ObjectId;
     associatedRecipeIds: Types.ObjectId[];
+    creationDate?: Date;
     description: string;
     iterationIds: Types.ObjectId[];
     name: string;
@@ -187,6 +207,7 @@ export interface IProduct {
 export interface IRecipe {
     _id?: Types.ObjectId;
     applianceIds: Types.ObjectId[];
+    creationDate?: Date;
     description: string;
     name: string;
     pictures: IImageData[];
@@ -209,11 +230,12 @@ export interface IShoppingListItem {
 export interface ITag {
     _id?: Types.ObjectId;
     backgroundColor: string;
+    creationDate?: Date;
     creatorId: Types.ObjectId;
     isOfficial: boolean;
     nameColor: string;
     name: string;
-    tagAffinities: ITagAffinity[];
+    tagAffinities?: ITagAffinity[];
 };
 
 export interface ITagAffinity {
@@ -225,6 +247,7 @@ export interface ITagAffinity {
 export interface IUser {
     _id?: Types.ObjectId;
     activeBasketlistIds: Types.ObjectId[];
+    creationDate?: Date;
     csrfSecret?: Types.ObjectId;
     csrfToken?: string;
     csrfTokenKey?: string;

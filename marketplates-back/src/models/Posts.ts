@@ -13,7 +13,7 @@ const PostsSchema = new mongoose.Schema<IPost>(
       imageURL: { type: String, required: true, default: "" },
       imageCaption: { type: String, required: true, default: "" },
     })],
-    creationDate: { type: Date, default: Date.now },
+    creationDate: { type: Date, default: Date.now() },
     emittingUserId: { type: mongoose.SchemaTypes.ObjectId, required: true },
     contentType: { type: [String], enum: ContentType, required: true },
     textContent: { type: String, required: true },
