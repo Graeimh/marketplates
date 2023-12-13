@@ -8,7 +8,7 @@ export async function createPlaceIterationById(req, res) {
     try {
         const placeToIterateUpon = await PlacesModel.findOne({ _id: req.body.originalPlaceId });
 
-        if (placeToIterateUpon) {
+        if (!placeToIterateUpon) {
             res.status(400).json({
                 message: '(404 Not Found)-The place to iterate upon was not found',
                 success: false
@@ -20,7 +20,7 @@ export async function createPlaceIterationById(req, res) {
             creatorId: req.body.formData.userId,
             customName: req.body.formData.customName ? sanitizeHtml(req.body.formData.customName, { allowedTags: [] }) : placeToIterateUpon.name,
             customDescription: req.body.formData.customDescription ? sanitizeHtml(req.body.formData.customDescription, { allowedTags: [] }) : placeToIterateUpon.description,
-            customTagIds: [],
+            customTagIds: placeToIterateUpon.tagsList,
             placeId: placeToIterateUpon._id,
         }
 
@@ -81,10 +81,49 @@ export async function getAllPlaceIterationsFromPlace(req, res) {
         });
     }
 }
-//UPDATE IS MISSING TOO
+
+export async function updatePlaceIterationById(req, res) {
+    try {
+        const placeIterationById: IPlaceIteration = await PlaceIterationsModel.findOne({ _id: { $in: req.body.placeIterationId } });
+
+        if (!placeIterationById) {
+            res.status(400).json({
+                message: '(404 Not Found)-The placeIteration to update was not found',
+                success: false
+            });
+        }
+
+        const placeIterationToUpdate = await PlaceIterationsModel.updateOne({ _id: { $in: req.body.placeIterationId } }, {
+            customName: req.body.customName ? sanitizeHtml(req.body.customName, { allowedTags: [] }) : placeIterationById.customName,
+            customDescription: req.body.customDescription ? sanitizeHtml(req.body.customDescription, { allowedTags: [] }) : placeIterationById.customDescription,
+            customTagIds: req.body.customTagIds ? req.body.customTagIds : placeIterationById.customTagIds,
+
+        })
+    }
+
+    catch (err) {
+        res.status(500).json({
+            message: '(500 Internal Server Error)-A server side error has occured.',
+            success: false
+        });
+    }
+}
+
 
 export async function getPlaceIterationByIds(req, res) {
-
+    try {
+        const allPlacesIterationsByIds = await PlaceIterationsModel.find({ $in: req.params.ids.split("&") });
+        res.status(200).json({
+            data: allPlacesIterationsByIds,
+            message: '(200 OK)-Successfully fetched all place iterations by id',
+            success: true
+        });
+    } catch (err) {
+        res.status(404).json({
+            message: '(404 Not found)-No place iteration was found',
+            success: false
+        });
+    }
 }
 
 export async function getPlaceIterationForUser(req, res) {
@@ -103,13 +142,9 @@ export async function getPlaceIterationForUser(req, res) {
     }
 }
 
-export async function updateIterationById(req, res) {
-
-}
-
 export async function deleteIterationById(req, res) {
     try {
-        const iterationToDelete = await IterationsModel.deleteMany({ _id: { $in: req.body.iterationIds } });
+        const iterationToDelete = await IterationsModel.deleteMany({ _id: { $in: req.body.iterationId } });
 
         res.status(204).json({
             message: '(204 No Content)-Iteration successfully deleted',

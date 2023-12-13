@@ -1,24 +1,32 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as APIService from "../../services/api.js";
 import styles from "./TagManipulation.module.scss";
-import { IAppliance } from "../../common/types/applianceTypes/appliance.js";
-import ApplianceManipulationItem from "../ApplianceManipulationItem/ApplianceManipulationItem.js";
+import TagManipulationItem from "../TagManipulationItem/TagManipulationItem.js";
+import { ITag } from "../../common/types/tagTypes/tagTypes.js";
+import UserContext from "../UserContext/UserContext.js";
+import { HexColorPicker } from "react-colorful";
+import { hexifyColors } from "../../common/functions/hexifyColors.js";
+import Tag from "../Tag/Tag.js";
 
 function TagManipulation() {
-  const [formData, setFormData] = useState({});
   const [error, setError] = useState(null);
   const [responseMessage, setResponseMessage] = useState("");
-  const [applianceList, setApplianceList] = useState<IAppliance[]>([]);
+  const [tagList, setTagList] = useState<ITag[]>([]);
   const [primedForDeletionList, setPrimedForDeletionList] = useState<string[]>(
     []
   );
+  const [tagNameColor, setTagNameColor] = useState("#000000");
+  const [tagBackgroundColor, setTagBackgroundColor] = useState("#FFFFFF");
+  const [tagName, setTagName] = useState("");
+  const [validForUpdating, setValidForUpdating] = useState(false);
+
+  const sessionValue = useContext(UserContext);
   const [isAllSelected, setIsAllSelected] = useState(false);
 
   async function reportResults() {
     try {
-      const allAppliances = await APIService.fetchAppliances();
-      setApplianceList(allAppliances.data);
-      // const oneAppliance = await APIService.fetchAppliancesByIds([allAppliances.data[0]._id, allAppliances.data[1]._id]);
+      const allTags = await APIService.fetchAllTags();
+      setTagList(allTags.data);
     } catch (err) {
       setError(err.message);
     }
@@ -28,12 +36,16 @@ function TagManipulation() {
     reportResults();
   }, []);
 
-  function updateField(event) {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
-    });
+  function decideUpdatability() {
+    setValidForUpdating(
+      tagName.length > 3 &&
+        tagNameColor.length === 7 &&
+        tagBackgroundColor.length === 7
+    );
   }
+  useEffect(() => {
+    decideUpdatability();
+  }, [tagName, tagNameColor, tagBackgroundColor]);
 
   function manageDeletionList(id: string) {
     const foundIndex = primedForDeletionList.indexOf(id);
@@ -46,12 +58,12 @@ function TagManipulation() {
     }
   }
 
-  function selectAllAppliances() {
+  function selectAllTags() {
     if (
       (!isAllSelected && primedForDeletionList.length === 0) ||
-      primedForDeletionList.length !== applianceList.length
+      primedForDeletionList.length !== tagList.length
     ) {
-      setPrimedForDeletionList(applianceList.map((appliance) => appliance._id));
+      setPrimedForDeletionList(tagList.map((tag) => tag._id));
     } else {
       setPrimedForDeletionList([]);
     }
@@ -64,25 +76,32 @@ function TagManipulation() {
 
   async function sendForm(event) {
     event.preventDefault();
-
-    try {
-      const response = await APIService.generateAppliance(
-        formData.applianceName,
-        formData.pictureURL,
-        formData.pictureCaption
-      );
-      setResponseMessage(response.message);
-    } catch (err) {
-      setError(err.message);
+    if (tagName.length > 2) {
+      try {
+        const response = await APIService.generateTag(
+          tagName,
+          tagNameColor,
+          tagBackgroundColor,
+          sessionValue.userId,
+          "token"
+        );
+        setResponseMessage(response.message);
+        reportResults();
+      } catch (err) {
+        setError(err.message);
+      }
+    } else {
+      setResponseMessage("The tag's name cannot be under 3 characters!");
     }
   }
 
   async function deletePrimedForDeletion() {
     try {
-      const responseForDelete = APIService.deleteAppliancesByIds(
-        primedForDeletionList
+      const responseForDelete = APIService.deleteTagsByIds(
+        primedForDeletionList,
+        "token"
       );
-      const responseforDataRenewal = APIService.fetchAppliances();
+      const responseforDataRenewal = APIService.fetchAllTags();
 
       const combinedResponse = await Promise.all([
         responseForDelete,
@@ -99,63 +118,104 @@ function TagManipulation() {
     }
   }
 
+  async function sendDeleteTagCall(id: string) {
+    try {
+      const response = await APIService.deleteTagById(id, "token");
+      reportResults();
+      setResponseMessage(response.message);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
   return (
     <>
-      <h1>ApplianceManipulation</h1>
+      <h1>Tag manipulation</h1>
       <div className={styles.registerContainer}>
         <form onSubmit={sendForm}>
           <ul>
             <li>
               <p>
-                name :{" "}
-                <input type="text" name="applianceName" onInput={updateField} />
-              </p>
-            </li>
-            <li>
-              <p>
-                pictureURL :{" "}
-                <input type="text" name="pictureURL" onInput={updateField} />
-              </p>
-            </li>
-            <li>
-              <p>
-                pictureCaption :{" "}
+                <label>Name : </label>
                 <input
                   type="text"
-                  name="pictureCaption"
-                  onInput={updateField}
+                  name="name"
+                  onInput={() => setTagName(event.target.value)}
                 />
               </p>
             </li>
+            <li>
+              <HexColorPicker
+                color={tagBackgroundColor}
+                onChange={setTagBackgroundColor}
+              />
+              <p>
+                <label>Background color : </label>
+
+                <input
+                  type="text"
+                  name="backgroundColor"
+                  onInput={() => setTagBackgroundColor(event.target.value)}
+                  value={hexifyColors(tagBackgroundColor)}
+                />
+              </p>
+            </li>
+            <li>
+              <HexColorPicker color={tagNameColor} onChange={setTagNameColor} />
+              <p>
+                <label>Name color : </label>
+
+                <input
+                  type="text"
+                  name="nameColor"
+                  onInput={() => setTagNameColor(event.target.value)}
+                  value={hexifyColors(tagNameColor)}
+                />
+              </p>
+            </li>
+            {tagName && (
+              <li>
+                Display
+                <p>
+                  <Tag
+                    customStyle={{
+                      color: tagNameColor,
+                      backgroundColor: tagBackgroundColor,
+                    }}
+                    tagName={tagName}
+                  />
+                </p>
+              </li>
+            )}
           </ul>
-          <button type="submit">Create Appliance</button>
+          <button type="submit" disabled={!validForUpdating}>
+            Create Tag
+          </button>
         </form>
       </div>
-
       <button type="button" onClick={() => deletePrimedForDeletion()}>
-        Delete {primedForDeletionList.length} appliances{" "}
+        Delete {primedForDeletionList.length} tags
       </button>
-      {primedForDeletionList.length !== applianceList.length && (
-        <button type="button" onClick={() => selectAllAppliances()}>
-          Select all ({applianceList.length}) appliances{" "}
+      {primedForDeletionList.length !== tagList.length && (
+        <button type="button" onClick={() => selectAllTags()}>
+          Select all ({tagList.length}) tags
         </button>
       )}
       <button type="button" onClick={() => cancelSelection()}>
         Cancel selection{" "}
       </button>
-
       {error && <div className={styles.error}>{error}</div>}
       {responseMessage && (
         <div className={styles.success}>{responseMessage}</div>
       )}
-
-      {applianceList.length > 0 &&
-        applianceList.map((appliance) => (
+      {tagList.length > 0 &&
+        tagList.map((tag) => (
           <TagManipulationItem
-            appliance={appliance}
+            tag={tag}
             primeForDeletion={manageDeletionList}
-            key={appliance._id}
-            IsSelected={primedForDeletionList.indexOf(appliance._id) !== -1}
+            uponDeletion={sendDeleteTagCall}
+            key={tag._id}
+            IsSelected={primedForDeletionList.indexOf(tag._id) !== -1}
           />
         ))}
     </>

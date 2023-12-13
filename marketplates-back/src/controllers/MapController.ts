@@ -98,7 +98,7 @@ export async function updateMapById(req, res) {
     try {
         const mapById: IMaps = await MapsModel.findOne({ _id: { $in: req.body.mapId } });
 
-        if (mapById) {
+        if (!mapById) {
             res.status(400).json({
                 message: '(404 Not Found)-The map to update was not found',
                 success: false

@@ -19,9 +19,9 @@ const IterationsSchema = new mongoose.Schema<IIteration>(
     placeIds: { type: [mongoose.SchemaTypes.ObjectId], required: true },
     productId: { type: mongoose.SchemaTypes.ObjectId, required: true },
     price: [{
-      currency: { type: CurrencyType, required: true, default: CurrencyType.Euro },
+      currency: { type: String, enum: CurrencyType, required: true, default: CurrencyType.Euro },
       monetaryCost: { type: Number, required: true },
-      volumeObtained: [{ type: ProductVolumes, required: true }]
+      volumeObtained: [{ type: String, enum: ProductVolumes, required: true, default: ProductVolumes.Kg },]
     }],
     specificDescription: { type: String, required: true },
     tagIds: { type: [mongoose.SchemaTypes.ObjectId], required: true },

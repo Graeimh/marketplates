@@ -37,7 +37,6 @@ export async function getApiStatus() {
 //     SECURITY   ////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 export async function getCSRFTokenValue() {
-    console.log("Heya!");
     const response = await apiInstance.get('/security/csrfGeneration');
     return response.data;
 }
@@ -68,8 +67,6 @@ export async function getSessionData() {
 }
 
 export async function checkIfActive(CSRFValue: string | null, refreshToken: string | null) {
-    console.log("CSRFValue", CSRFValue);
-    console.log("refreshToken", refreshToken);
     const response = await apiInstance.post('/auth/tester', { CSRFValue, refreshToken });
     return response.data;
 }
@@ -87,19 +84,18 @@ export async function generateUser(formData: IRegisterValues, token: string) {
     return response.data;
 }
 
-export async function getAllUsers() {
+export async function fetchAllUsers() {
     const response = await apiInstance.get('/users/');
     return response.data;
 }
 
-export async function getUsersByIds(userIds: string[]) {
+export async function fetchUsersByIds(userIds: string[]) {
     const userIdsParameter = userIds.join('&');
     const response = await apiInstance.get(`/users/${userIdsParameter}`);
     return response.data;
 }
 
-export async function updateUserById(userId: string, displayName?: string, email?: string, firstName?: string, lastName?: string, streetAddress?: string, county?: string, city?: string, country?: string) {
-
+export async function updateUserById(userId: string, token: string, displayName?: string, email?: string, firstName?: string, lastName?: string, streetAddress?: string, county?: string, city?: string, country?: string) {
     const response = await apiInstance.post('/users/update', {
         userId,
         displayName,
@@ -109,23 +105,26 @@ export async function updateUserById(userId: string, displayName?: string, email
         streetAddress,
         county,
         city,
-        country
+        country,
+        token
     });
     return response.data;
 }
 
-export async function deleteUserById(userId: string) {
+export async function deleteUserById(userId: string, token: string) {
 
     const response = await apiInstance.post('/users/delete', {
         userId,
+        token,
     });
     return response.data;
 }
 
-export async function deleteUsersByIds(tagIds: string[]) {
+export async function deleteUsersByIds(tagIds: string[], token: string) {
 
     const response = await apiInstance.post('/users/deleteMany', {
         tagIds,
+        token
     });
     return response.data;
 }
@@ -135,12 +134,13 @@ export async function deleteUsersByIds(tagIds: string[]) {
 //////////////////////////////////////////////////////////////////////////////////////
 //     APPLIANCES   //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-export async function generateAppliance(applianceName: string, imageURL: string, imageCaption: string) {
+export async function generateAppliance(applianceName: string, imageURL: string, imageCaption: string, token: string) {
 
     const response = await apiInstance.post('/appliances/create', {
         applianceName,
         imageURL,
-        imageCaption
+        imageCaption,
+        token
 
     });
     return response.data;
@@ -157,30 +157,32 @@ export async function fetchAppliancesByIds(applianceIds: string[]) {
     return response.data;
 }
 
-export async function updateApplianceById(applianceId: string, applianceName?: string, pictureURL?: string, pictureCaption?: string) {
+export async function updateApplianceById(token: string, applianceId: string, applianceName?: string, pictureURL?: string, pictureCaption?: string) {
 
     const response = await apiInstance.post('/appliances/update', {
         applianceId,
         applianceName,
         pictureURL,
-        pictureCaption
-
+        pictureCaption,
+        token
     });
     return response.data;
 }
 
-export async function deleteApplianceById(applianceId: string) {
+export async function deleteApplianceById(applianceId: string, token: string) {
 
     const response = await apiInstance.post('/appliances/delete', {
         applianceId,
+        token
     });
     return response.data;
 }
 
-export async function deleteAppliancesByIds(applianceIds: string[]) {
+export async function deleteAppliancesByIds(applianceIds: string[], token: string) {
 
     const response = await apiInstance.post('/appliances/deleteMany', {
         applianceIds,
+        token
     });
     return response.data;
 }
@@ -195,12 +197,13 @@ export async function generateMap(formData: IMapValues, token: string) {
     return response.data;
 }
 
-export async function updateMapById(description: string, name: string, userId: string, privacyStatus: PrivacyStatus) {
+export async function updateMapById(userId: string, token: string, description?: string, name?: string, privacyStatus?: PrivacyStatus) {
     const response = await apiInstance.post('/maps/update', {
         description,
         name,
         userId,
         privacyStatus,
+        token
     });
     return response.data;
 }
@@ -227,18 +230,20 @@ export async function fetchMapsByIds(mapIds: string[]) {
     return response.data;
 }
 
-export async function deleteMapById(mapId: string) {
+export async function deleteMapById(mapId: string, token: string) {
 
     const response = await apiInstance.post('/maps/delete', {
         mapId,
+        token
     });
     return response.data;
 }
 
-export async function deleteMapsByIds(mapIds: string[]) {
+export async function deleteMapsByIds(mapIds: string[], token: string) {
 
     const response = await apiInstance.post('/maps/deleteMany', {
         mapIds,
+        token
     });
     return response.data;
 }
@@ -265,7 +270,7 @@ export async function fetchPlacesByIds(placeIds: string[]) {
     return response.data;
 }
 
-export async function updatePlaceById(placeId?: string, streetAddress?: string, county?: string, city?: string, country?: string, name?: string, tagsList?: string[]) {
+export async function updatePlaceById(token: string, placeId: string, streetAddress?: string, county?: string, city?: string, country?: string, name?: string, tagsList?: string[]) {
 
     const response = await apiInstance.post('/appliances/update', {
         placeId,
@@ -275,23 +280,25 @@ export async function updatePlaceById(placeId?: string, streetAddress?: string, 
         country,
         name,
         tagsList,
-
+        token
     });
     return response.data;
 }
 
-export async function deletePlaceById(placeId: string) {
+export async function deletePlaceById(placeId: string, token: string) {
 
     const response = await apiInstance.post('/places/delete', {
         placeId,
+        token
     });
     return response.data;
 }
 
-export async function deletePlacesByIds(placeIds: string[]) {
+export async function deletePlacesByIds(placeIds: string[], token: string) {
 
     const response = await apiInstance.post('/places/deleteMany', {
         placeIds,
+        token
     });
     return response.data;
 }
@@ -309,19 +316,72 @@ export async function createPlaceIterationById(formData: IPlaceIterationValues, 
     return response.data;
 }
 
+export async function updatePlaceIterationById(token: string, customName?: string, customDescription?: string, customTagIds?: string[],) {
+    const response = await apiInstance.post('/placeIterations/update', {
+        customName,
+        customDescription,
+        customTagIds,
+        token
+    });
+    return response.data;
+}
+
+
+export async function fetchAllPlaceIterations() {
+    const response = await apiInstance.get(`/placeIterations/`);
+    return response.data;
+}
+
+export async function fetchAllPlaceIterationsFromPlace(placeId: string[]) {
+    const response = await apiInstance.get(`/places/${placeId}`);
+    return response.data;
+}
+
+export async function fetchPlaceIterationsByIds(placeIterationIds: string[]) {
+    const applianceIdsParameter = placeIterationIds.join('&');
+    const response = await apiInstance.get(`/placeIterations/${applianceIdsParameter}`);
+    return response.data;
+}
+
+
+export async function fetchPlaceIterationForUser(userId: string) {
+    const response = await apiInstance.get(`/placeIterations/userIterations/${userId}`);
+    return response.data;
+}
+
+export async function deletePlaceIterationById(iterationId: string, token: string) {
+
+    const response = await apiInstance.post('/placeIterations/delete', {
+        iterationId,
+        token
+    });
+    return response.data;
+}
+
+export async function deletePlaceIterationsByIds(iterationIds: string[], token: string) {
+
+    const response = await apiInstance.post('/placeIterations/deleteMany', {
+        iterationIds,
+        token
+    });
+    return response.data;
+}
 //////////////////////////////////////////////////////////////////////////////////////
 //     TAGS   ////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-export async function generateTag(formData: ITagValues, token: string) {
-    const response = await apiInstance.post('/users/create', {
-        formData,
+export async function generateTag(tagName: string, tagNameColor: string, tagBackgroundColor: string, userId: string, token: string) {
+    const response = await apiInstance.post('/tags/create', {
+        tagName,
+        tagNameColor,
+        tagBackgroundColor,
+        userId,
         token,
     });
     return response.data;
 }
 
-export async function getAllTags() {
-    const response = await apiInstance.get(`/tags/}`);
+export async function fetchAllTags() {
+    const response = await apiInstance.get(`/tags/`);
     return response.data;
 }
 
@@ -341,37 +401,39 @@ export async function fetchTagsForUser(userId: string) {
     return response.data;
 }
 
-//GET TAGS FROM THE USERS IN THE MAP
 export async function fetchMapperTagsByIds(userIds: string[]) {
     const tagIdsParameter = userIds.join('&');
     const response = await apiInstance.get(`/tags/mapperTags/${tagIdsParameter}`);
     return response.data;
 }
 
-export async function updateTagById(tagId: string, backgroundColor?: string, name?: string, nameColor?: string) {
+export async function updateTagById(tagId: string, token: string, backgroundColor?: string, name?: string, nameColor?: string) {
 
     const response = await apiInstance.post('/tags/update', {
         tagId,
         backgroundColor,
         name,
-        nameColor
+        nameColor,
+        token
 
     });
     return response.data;
 }
 
-export async function deleteTagById(tagId: string) {
+export async function deleteTagById(tagId: string, token: string) {
 
     const response = await apiInstance.post('/tags/delete', {
         tagId,
+        token
     });
     return response.data;
 }
 
-export async function deleteTagsByIds(tagIds: string[]) {
+export async function deleteTagsByIds(tagIds: string[], token: string) {
 
     const response = await apiInstance.post('/tags/deleteMany', {
         tagIds,
+        token
     });
     return response.data;
 }

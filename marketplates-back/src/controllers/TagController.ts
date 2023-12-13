@@ -1,18 +1,21 @@
 import sanitizeHtml from "sanitize-html";
 import TagsModel from "../models/Tags.js";
 import { ITag } from "../types.js";
+import jwt from "jsonwebtoken"
 
 
 export async function createTag(req, res) {
+
     try {
         const tag: ITag = {
-            backgroundColor: sanitizeHtml(req.body.formData.backgroundColor, { allowedTags: [] }),
-            creatorId: req.body.creatorId,
-            name: sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }),
-            nameColor: sanitizeHtml(req.body.formData.nameColor, { allowedTags: [] }),
-            isOfficial: req.body.isOfficial,
+            backgroundColor: sanitizeHtml(req.body.tagBackgroundColor, { allowedTags: [] }),
+            creatorId: req.body.userId,
+            name: sanitizeHtml(req.body.tagName, { allowedTags: [] }),
+            nameColor: sanitizeHtml(req.body.tagNameColor, { allowedTags: [] }),
+            isOfficial: false,
         };
-
+        console.log(tag);
+        console.log(req.body)
         await TagsModel.create(tag);
 
         res.status(201).json({
@@ -76,9 +79,8 @@ export async function getUserSingleTags(req, res) {
 }
 
 export async function getCommonMapperTags(req, res) {
-    //GET TAGS FROM THE USERS IN THE MAP
     try {
-        const allParticipantTags = await TagsModel.find({ $or: [{ creatorId: req.body.userIdGroup }, { isOfficial: true }] });
+        const allParticipantTags = await TagsModel.find({ $or: [{ creatorId: { $in: req.body.creatorIds.split("&") } }, { isOfficial: true }] });
         res.status(200).json({
             data: allParticipantTags,
             message: '(200 OK)-Successfully fetched all the tags for these users',
@@ -114,7 +116,7 @@ export async function updateTagById(req, res) {
 
         const tagToUpdate = await TagsModel.updateOne({ _id: { $in: req.body.tagId } }, {
             backgroundColor: sanitizeHtml(req.body.backgroundColor, { allowedTags: [] }) ? sanitizeHtml(req.body.backgroundColor, { allowedTags: [] }) : tagById.backgroundColor,
-            name: sanitizeHtml(req.body.tagName, { allowedTags: [] }) ? sanitizeHtml(req.body.tagName, { allowedTags: [] }) : tagById.name,
+            name: sanitizeHtml(req.body.name, { allowedTags: [] }) ? sanitizeHtml(req.body.name, { allowedTags: [] }) : tagById.name,
             nameColor: sanitizeHtml(req.body.nameColor, { allowedTags: [] }) ? sanitizeHtml(req.body.nameColor, { allowedTags: [] }) : tagById.nameColor,
         }
         );

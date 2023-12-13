@@ -1,65 +1,88 @@
 import { useEffect, useState } from "react";
 import * as APIService from "../../services/api.js";
 import styles from "./TagManipulationItem.module.scss";
-import { IAppliance } from "../../common/types/applianceTypes/appliance.js";
+import { ITag } from "../../common/types/tagTypes/tagTypes.js";
+import { HexColorPicker } from "react-colorful";
+import { hexifyColors } from "../../common/functions/hexifyColors.js";
+import Tag from "../Tag/index.js";
 
 function TagManipulationItem(props: {
-  appliance: IAppliance;
-  primeForDeletion: (applainceId: string) => void;
+  tag: ITag;
+  uponDeletion: (userId: string) => void;
+  primeForDeletion: (userId: string) => void;
   IsSelected: boolean;
 }) {
-  const [formData, setFormData] = useState({});
   const [error, setError] = useState(null);
-  const [responseMessage, setResponseMessage] = useState(null);
+  const [responseMessage, setResponseMessage] = useState("");
   const [isPrimed, setIsPrimed] = useState(false);
   const [validForUpdating, setValidForUpdating] = useState(false);
-
-  function updateField(event) {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
-    });
-  }
+  const [tagNameColor, setTagNameColor] = useState(props.tag.nameColor);
+  const [tagBackgroundColor, setTagBackgroundColor] = useState(
+    props.tag.backgroundColor
+  );
+  const [tagName, setTagName] = useState(props.tag.name);
 
   function handleDeletePrimer() {
-    props.primeForDeletion(props.appliance._id);
+    props.primeForDeletion(props.tag._id);
     setIsPrimed(!isPrimed);
   }
 
+  function handleDelete() {
+    props.uponDeletion(props.tag._id);
+  }
+
+  function decideUpdatability() {
+    setValidForUpdating(
+      tagName.length > 3 &&
+        tagNameColor.length === 7 &&
+        tagBackgroundColor.length === 7 &&
+        (tagName !== props.tag.name ||
+          tagNameColor !== props.tag.nameColor ||
+          tagBackgroundColor !== props.tag.backgroundColor)
+    );
+  }
+  useEffect(() => {
+    decideUpdatability();
+  }, [tagName, tagNameColor, tagBackgroundColor]);
+
   async function sendUpdateForm(event) {
     event.preventDefault();
-
-    try {
-      const response = await APIService.updateApplianceById(
-        props.appliance._id,
-        formData.applianceName,
-        formData.pictureURL,
-        formData.pictureCaption
-      );
-      setResponseMessage(response.message);
-    } catch (err) {
-      setError(err.message);
+    if (tagName.length > 2) {
+      try {
+        const response = await APIService.updateTagById(
+          props.tag._id,
+          "token",
+          tagBackgroundColor,
+          tagName,
+          tagNameColor
+        );
+        setResponseMessage(response.message);
+      } catch (err) {
+        setError(err.message);
+      }
+    } else {
+      setResponseMessage("The tag's name cannot be under 3 characters!");
     }
   }
 
-  async function sendDeleteApplianceCall() {
-    try {
-      const response = await APIService.deleteApplianceById(
-        props.appliance._id
-      );
-      setResponseMessage(response.message);
-    } catch (err) {
-      setError(err.message);
-    }
-  }
+  const style = {
+    color: props.tag.nameColor,
+    backgroundColor: props.tag.backgroundColor,
+  };
+
+  const updatedStyle = {
+    color: tagNameColor,
+    backgroundColor: tagBackgroundColor,
+  };
+
   return (
     <>
-      <h4>Appliance : {props.appliance.applianceName}</h4>
+      <h4>Tag name : {props.tag.name}</h4>
       <div
         className={
           props.IsSelected
             ? styles.primedContainer
-            : styles.applianceManipulationItemContainer
+            : styles.tagManipulationItemContainer
         }
       >
         <button
@@ -69,73 +92,71 @@ function TagManipulationItem(props: {
         >
           {props.IsSelected ? "●" : "○"}
         </button>
-        <button type="button" onClick={sendDeleteApplianceCall}>
-          Delete Appliance
+        <button type="button" onClick={handleDelete}>
+          Delete tag
         </button>
         <form onSubmit={sendUpdateForm}>
           <ul>
             <li>
               <p>
-                name :{" "}
+                <label>Tag name : </label>
                 <input
                   type="text"
-                  name="applianceName"
+                  name="name"
                   onInput={() => {
-                    updateField(event);
-                    setValidForUpdating(
-                      !(
-                        event?.target.value === props.appliance.applianceName ||
-                        event?.target.value.length === 0
-                      )
-                    );
+                    setTagName(event?.target.value);
                   }}
-                  placeholder={props.appliance.applianceName}
+                  value={tagName}
                 />
               </p>
             </li>
             <li>
+              <HexColorPicker
+                color={tagBackgroundColor}
+                onChange={setTagBackgroundColor}
+              />
               <p>
-                pictureURL :{" "}
+                <label>Background Color : </label>
                 <input
                   type="text"
-                  name="pictureURL"
+                  name="backgroundColor"
                   onInput={() => {
-                    updateField(event);
-                    setValidForUpdating(
-                      !(
-                        event?.target.value ===
-                          props.appliance.picture.imageURL ||
-                        event?.target.value.length === 0
-                      )
-                    );
+                    setTagBackgroundColor(event?.target.value);
                   }}
-                  placeholder={props.appliance.picture.imageURL}
+                  value={hexifyColors(tagBackgroundColor)}
                 />
               </p>
             </li>
             <li>
+              <HexColorPicker color={tagNameColor} onChange={setTagNameColor} />
               <p>
-                pictureCaption :{" "}
+                <label>Name Color : </label>
                 <input
                   type="text"
-                  name="pictureCaption"
+                  name="nameColor"
                   onInput={() => {
-                    updateField(event);
-                    setValidForUpdating(
-                      !(
-                        event?.target.value ===
-                          props.appliance.picture.imageCaption ||
-                        event?.target.value.length === 0
-                      )
-                    );
+                    setTagNameColor(event?.target.value);
                   }}
-                  placeholder={props.appliance.picture.imageCaption}
+                  value={hexifyColors(tagNameColor)}
                 />
               </p>
             </li>
+            <li>Before changes :</li>
+            <li>
+              {" "}
+              <Tag customStyle={style} tagName={props.tag.name} />
+            </li>
+            {tagName !== props.tag.name && (
+              <>
+                <li>After changes :</li>
+                <li>
+                  <Tag customStyle={updatedStyle} tagName={tagName} />
+                </li>
+              </>
+            )}
           </ul>
           <button type="submit" disabled={!validForUpdating}>
-            Update Appliance
+            Update tag
           </button>
         </form>
       </div>

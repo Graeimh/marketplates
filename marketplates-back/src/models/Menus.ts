@@ -17,7 +17,7 @@ const MenusSchema = new mongoose.Schema<IMenu>(
     },
     sectionIds: { type: [mongoose.SchemaTypes.ObjectId], required: true },
     price: {
-      currency: { type: CurrencyType, required: true, default: CurrencyType.Euro },
+      currency: { type: String, enum: CurrencyType, required: true, default: CurrencyType.Euro },
       monetaryCost: { type: Number, required: true },
     },
   },

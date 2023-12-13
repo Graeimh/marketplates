@@ -3,14 +3,18 @@ export interface IRegisterValues {
     firstName: string;
     lastName: string;
     nickName: string;
+    country: string;
+    city: string;
+    county: string;
+    streetAddress: string;
     password: string;
     passwordMatch: string;
 }
 
 export interface ITagValues {
     backgroundColor: string;
-    creatorId: string;
-    isOfficial: boolean;
+    creatorId?: string;
+    isOfficial?: boolean;
     nameColor: string;
     tagName: string;
 }
@@ -56,6 +60,24 @@ export interface IPasswordFitnessCriteria {
     containsNumbers: boolean;
     containsSpecialCharacter: boolean;
 }
+
+
+export interface IUser {
+    _id: string;
+    displayName: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    location: ILocation;
+}
+
+export interface ILocation {
+    city: string
+    country: string
+    county: string
+    streetAddress: string
+}
+
 
 export enum UserType {
     Restaurant = "Restaurant",

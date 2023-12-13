@@ -80,7 +80,7 @@ export async function updatePlaceById(req, res) {
     try {
         const placeById: IPlace = await PlacesModel.findOne({ _id: { $in: req.body.placeId } });
 
-        if (placeById) {
+        if (!placeById) {
             res.status(400).json({
                 message: '(404 Not Found)-The place to update was not found',
                 success: false
@@ -88,16 +88,16 @@ export async function updatePlaceById(req, res) {
         }
 
         const placeToUpdate = await PlacesModel.updateOne({ _id: { $in: req.body.placeId } }, {
-            description: req.body.formData.description ? sanitizeHtml(req.body.formData.description, { allowedTags: [] }) : placeById.description,
+            description: req.body.description ? sanitizeHtml(req.body.description, { allowedTags: [] }) : placeById.description,
             location: {
-                streetAddress: req.body.streetAddress ? sanitizeHtml(req.body.formData.streetAddress, { allowedTags: [] }) : placeById.location.streetAddress,
-                county: req.body.county ? sanitizeHtml(req.body.formData.county, { allowedTags: [] }) : placeById.location.county,
-                city: req.body.city ? sanitizeHtml(req.body.formData.city, { allowedTags: [] }) : placeById.location.city,
-                country: req.body.country ? sanitizeHtml(req.body.formData.country, { allowedTags: [] }) : placeById.location.country,
+                streetAddress: req.body.streetAddress ? sanitizeHtml(req.body.streetAddress, { allowedTags: [] }) : placeById.location.streetAddress,
+                county: req.body.county ? sanitizeHtml(req.body.county, { allowedTags: [] }) : placeById.location.county,
+                city: req.body.city ? sanitizeHtml(req.body.city, { allowedTags: [] }) : placeById.location.city,
+                country: req.body.country ? sanitizeHtml(req.body.country, { allowedTags: [] }) : placeById.location.country,
             },
             gpsCoordinates: "New calculated GPS coordinates",
-            name: req.body.name ? sanitizeHtml(req.body.formData.name, { allowedTags: [] }) : placeById.name,
-            tagsList: req.body.tagsList ? req.body.formData.tagsList : placeById.tagsList,
+            name: req.body.name ? sanitizeHtml(req.body.name, { allowedTags: [] }) : placeById.name,
+            tagsList: req.body.tagsList ? req.body.tagsList : placeById.tagsList,
         })
 
 

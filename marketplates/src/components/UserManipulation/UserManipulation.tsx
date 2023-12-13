@@ -1,86 +1,109 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as APIService from "../../services/api.js";
 import styles from "./UserManipulation.module.scss";
-
+import UserManipulationItem from "../UserManipulationItem/UserManipulationItem.js";
+import { IUser } from "../../common/types/userTypes/userTypes.js";
 
 function UserManipulation() {
-    const [formData, setFormData] = useState({});
-    const [error, setError] = useState(null);
-    const [responseMessage, setResponseMessage] = useState(null);
-  
-    function updateField(event) {
-      setFormData({
-        ...formData,
-        [event.target.name]: event.target.value,
-      });
+  const [error, setError] = useState(null);
+  const [responseMessage, setResponseMessage] = useState("");
+  const [userList, setUserList] = useState<IUser[]>([]);
+  const [primedForDeletionList, setPrimedForDeletionList] = useState<string[]>(
+    []
+  );
+  const [isAllSelected, setIsAllSelected] = useState(false);
+
+  async function getResults() {
+    try {
+      const allUsers = await APIService.fetchAllUsers();
+      setUserList(allUsers.data);
+    } catch (err) {
+      setError(err.message);
     }
-  
-    async function sendForm(event) {
-      event.preventDefault();
-  
-      try {
-        const response = await APIService.register(
-          formData.firstName,
-          formData.lastName,
-          formData.email,
-          formData.password,
-          formData.passwordConfirm
-        );
-        setResponseMessage(response.message);
-      } catch (err) {
-        setError(err.message);
-      }
+  }
+
+  useEffect(() => {
+    getResults();
+  }, []);
+
+  function manageDeletionList(id: string) {
+    const foundIndex = primedForDeletionList.indexOf(id);
+    if (foundIndex === -1) {
+      setPrimedForDeletionList([...primedForDeletionList, id]);
+    } else {
+      setPrimedForDeletionList(
+        primedForDeletionList.filter((user) => user !== id)
+      );
     }
-    return(
-        <>
-        <h1>UserManipulation</h1>
-            <div className={styles.registerContainer}>
-                <form onSubmit={sendForm}>
-                <ul>
-                    <li>
-                    <p>
-                        First name :{" "}
-                        <input type="text" name="firstName" onInput={updateField} />
-                    </p>
-                    </li>
-                    <li>
-                    <p>
-                        Last name :{" "}
-                        <input type="text" name="lastName" onInput={updateField} />
-                    </p>
-                    </li>
-                    <li>
-                    <p>
-                        Email : <input type="text" name="email" onInput={updateField} />
-                    </p>
-                    </li>
-                    <li>
-                    <p>
-                        Password :{" "}
-                        <input type="password" name="password" onInput={updateField} />
-                    </p>
-                    </li>
-                    <li>
-                    <p>
-                        Password confirmation :{" "}
-                        <input
-                        type="password"
-                        name="passwordConfirm"
-                        onInput={updateField}
-                        />
-                    </p>
-                    </li>
-                </ul>
-                <button type="submit">Register</button>
-                </form>
-            </div>
+  }
+
+  function selectAllUsers() {
+    if (
+      (!isAllSelected && primedForDeletionList.length === 0) ||
+      primedForDeletionList.length !== userList.length
+    ) {
+      setPrimedForDeletionList(userList.map((user) => user._id));
+    } else {
+      setPrimedForDeletionList([]);
+    }
+    setIsAllSelected(!isAllSelected);
+  }
+
+  function cancelSelection() {
+    setPrimedForDeletionList([]);
+  }
+
+  async function deletePrimedForDeletion() {
+    try {
+      const responseForDelete = APIService.deleteUsersByIds(
+        primedForDeletionList,
+        "token"
+      );
+      const responseforDataRenewal = APIService.fetchAllUsers();
+
+      const combinedResponse = await Promise.all([
+        responseForDelete,
+        responseforDataRenewal,
+      ]).then((values) => values.join(" "));
+      setResponseMessage(combinedResponse);
+      setPrimedForDeletionList([]);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  return (
+    <>
+      <h1>UsersManipulation</h1>
+
+      <button type="button" onClick={() => deletePrimedForDeletion()}>
+        Delete {primedForDeletionList.length} users{" "}
+      </button>
+      {primedForDeletionList.length !== userList.length && (
+        <button type="button" onClick={() => selectAllUsers()}>
+          Select all ({userList.length}) users{" "}
+        </button>
+      )}
+      <button type="button" onClick={() => cancelSelection()}>
+        Cancel selection{" "}
+      </button>
 
       {error && <div className={styles.error}>{error}</div>}
       {responseMessage && (
         <div className={styles.success}>{responseMessage}</div>
       )}
+
+      {userList.length > 0 &&
+        userList.map((user) => (
+          <UserManipulationItem
+            user={user}
+            primeForDeletion={manageDeletionList}
+            key={user._id}
+            IsSelected={primedForDeletionList.indexOf(user._id) !== -1}
+          />
+        ))}
     </>
-    )
+  );
 }
 
 export default UserManipulation;

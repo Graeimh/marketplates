@@ -79,23 +79,21 @@ export async function getUsersById(req, res) {
 }
 
 export async function updateUserById(req, res) {
+
   try {
     const userById: IUser = await UserModel.findOne({ _id: { $in: req.body.userId } });
 
-    const isPasswordSentValid = sanitizeHtml(req.body.password, { allowedTags: [] });
-
-    const userToUpdate = await UserModel.updateOne({ _id: { $in: req.body.tagId } }, {
+    const userToUpdate = await UserModel.updateOne({ _id: { $in: req.body.userId } }, {
       displayName: req.body.displayName ? sanitizeHtml(req.body.displayName, { allowedTags: [] }) : userById.displayName,
       email: req.body.email ? sanitizeHtml(req.body.email, { allowedTags: [] }) : userById.email,
-      firstName: req.body.firstName ? sanitizeHtml(req.body.email, { allowedTags: [] }) : userById.firstName,
-      lastName: req.body.lastName ? sanitizeHtml(req.body.email, { allowedTags: [] }) : userById.lastName,
+      firstName: req.body.firstName ? sanitizeHtml(req.body.firstName, { allowedTags: [] }) : userById.firstName,
+      lastName: req.body.lastName ? sanitizeHtml(req.body.lastName, { allowedTags: [] }) : userById.lastName,
       location: {
         streetAddress: req.body.streetAddress ? sanitizeHtml(req.body.streetAddress, { allowedTags: [] }) : userById.location.streetAddress,
         county: req.body.county ? sanitizeHtml(req.body.county, { allowedTags: [] }) : userById.location.county,
         city: req.body.city ? sanitizeHtml(req.body.city, { allowedTags: [] }) : userById.location.city,
         country: req.body.country ? sanitizeHtml(req.body.country, { allowedTags: [] }) : userById.location.country,
       },
-      password: isPasswordSentValid ? argon2.hash(isPasswordSentValid) : userById.password,
     }
     );
 

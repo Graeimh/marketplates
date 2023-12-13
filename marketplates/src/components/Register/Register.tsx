@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./Register.module.scss";
 import * as APIService from "../../services/api.js";
 import {
@@ -14,6 +14,10 @@ function Register() {
     firstName: "",
     lastName: "",
     nickName: "",
+    country: "",
+    city: "",
+    county: "",
+    streetAddress: "",
     password: "",
     passwordMatch: "",
   });
@@ -28,8 +32,33 @@ function Register() {
       containsSpecialCharacter: false,
     });
 
+  const [validForSending, setValidForSending] = useState(false);
   const [responseMessage, setResponseMessage] = useState("");
   const [error, setError] = useState(null);
+
+  function decideRegistration() {
+    setValidForSending(
+      formData.firstName.length > 1 &&
+        formData.lastName.length > 1 &&
+        formData.nickName.length > 1 &&
+        formData.email.length > 3 &&
+        formData.password.length >= 12 &&
+        formData.passwordMatch.length >= 12 &&
+        formData.country.length > 1
+    );
+  }
+
+  useEffect(() => {
+    decideRegistration();
+  }, [
+    formData.firstName,
+    formData.lastName,
+    formData.nickName,
+    formData.email,
+    formData.password,
+    formData.passwordMatch,
+    formData.country,
+  ]);
 
   function passwordChecker(passwordValue: string): void {
     setPasswordFitnessCriteria({
@@ -85,25 +114,15 @@ function Register() {
   }
 
   /*
-  NPM CSRF
-+	créer un Middleware qui check la présence d'un token CSRF
-+	envoyer un field caché avec le token dans chaque form
-
-Faille CSRF fix
-https://dearsikandarkhan.medium.com/csrf-tokens-in-expressjs-node-js-web-framework-cc331069de2d
 
 Pour limiter un message en caractères: faire à la fois côté server ET front
-Pour éviter Command Injection, ne jamais faire d'appel qui pourront toucher à l'appel de commandes
 
 skipfish
 pentest-tools
 
-<div>
-<label> </label>
-<input/>
-</div>
 ==> eye button in the input field to turn password to text in the input type
 */
+  console.log("passwordFitnessCriteria", passwordFitnessCriteria);
 
   return (
     <>
@@ -113,7 +132,7 @@ pentest-tools
           <ul>
             <li>
               <p>
-                First name :{" "}
+                <label>First name : </label>
                 <input
                   type="text"
                   name="firstName"
@@ -124,7 +143,7 @@ pentest-tools
             </li>
             <li>
               <p>
-                Last name :{" "}
+                <label>Last name : </label>
                 <input
                   type="text"
                   name="lastName"
@@ -135,7 +154,7 @@ pentest-tools
             </li>
             <li>
               <p>
-                Nickname :{" "}
+                <label>Nickname : </label>
                 <input
                   type="text"
                   name="nickName"
@@ -146,7 +165,7 @@ pentest-tools
             </li>
             <li>
               <p>
-                Email :{" "}
+                <label>Email : </label>
                 <input
                   type="email"
                   name="email"
@@ -157,30 +176,36 @@ pentest-tools
             </li>
             <li>
               <p>
-                Street address :{" "}
+                <label>Street address : </label>
                 <input type="text" name="streetAddress" onInput={updateField} />
               </p>
             </li>
             <li>
               <p>
-                County :{" "}
+                <label>County : </label>
                 <input type="text" name="county" onInput={updateField} />
               </p>
             </li>
             <li>
               <p>
-                City : <input type="text" name="city" onInput={updateField} />
+                <label>City : </label>
+                <input type="text" name="city" onInput={updateField} />
               </p>
             </li>
             <li>
               <p>
-                Country :{" "}
-                <input type="text" name="country" onInput={updateField} />
+                <label>Country : </label>
+                <input
+                  type="text"
+                  name="country"
+                  required
+                  onInput={updateField}
+                />
               </p>
             </li>
             <li>
               <p>
-                Password :{" "}
+                <label>Password : </label>
                 <input
                   type="password"
                   name="password"
@@ -191,7 +216,7 @@ pentest-tools
             </li>
             <li>
               <p>
-                Confirm password :{" "}
+                <label>Confirm password : </label>
                 <input
                   type="password"
                   name="passwordMatch"
@@ -201,7 +226,18 @@ pentest-tools
               </p>
             </li>
           </ul>
-          <button type="submit">Register</button>
+          <button
+            type="submit"
+            disabled={
+              Object.values(passwordFitnessCriteria).some(
+                (field) => field === false
+              ) ||
+              !arePasswordsMatching ||
+              !validForSending
+            }
+          >
+            Register
+          </button>
         </form>
       </div>
 

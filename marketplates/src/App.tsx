@@ -31,6 +31,8 @@ import Dashboard from "./components/Dashboard";
 import MyPlaces from "./components/MyPlaces";
 import LayoutForms from "./components/LayoutForms";
 import LayoutLogged from "./components/LayoutLogged";
+import UserManipulation from "./components/UserManipulation";
+import TagManipulation from "./components/TagManipulation";
 
 interface IUserContext {
   email: string;
@@ -109,7 +111,8 @@ function App() {
               <Route index element={<MyMaps />} />       
               <Route index element={<MyPlaces />} />  
               <Route index element={<Dashboard />} />         */}
-            <Route path="appliances" element={<ApplianceManipulation />} />
+            <Route path="users" element={<UserManipulation />} />
+            <Route path="tags" element={<TagManipulation />} />
             {/* <Route path="baskets" element={<BasketManipulation />} />
               <Route path="iterations" element={<IterationManipulation />} />
               <Route path="menuitems" element={<MenuItemManipulation />} />
