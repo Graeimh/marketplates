@@ -5,11 +5,14 @@ import { useMap } from "react-leaflet";
 function MapValuesManager(props: {
   latitude: number | null;
   longitude: number | null;
+  doubleClickEvent: (lon: number, lat: number) => void;
 }) {
   const map = useMap();
 
-  console.log(props.longitude, props.latitude);
   useEffect(() => {
+    map.addEventListener("dblclick", (e) => {
+      props.doubleClickEvent(e.latlng.lng, e.latlng.lat);
+    });
     setTimeout(() => {
       map.invalidateSize();
     }, 250);

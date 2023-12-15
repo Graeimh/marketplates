@@ -1,7 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import styles from "./RegisterPlace.module.scss";
 import * as APIService from "../../services/api.js";
-import { IPlaceRegisterValues } from "../../common/types/userTypes/userTypes.js";
+import {
+  IGPSCoordinates,
+  IPlaceRegisterValues,
+} from "../../common/types/userTypes/userTypes.js";
 import { useNavigate } from "react-router-dom";
 import { ITag } from "../../common/types/tagTypes/tagTypes.js";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
@@ -29,11 +32,12 @@ function RegisterPlace() {
   const [responseMessage, setResponseMessage] = useState("");
   const [tagList, setTagList] = useState<ITag[]>([]);
   const [newResults, setNewResults] = useState<SearchResult<RawResult>[]>([]);
-
+  const [temporaryCoordinates, setTemporaryCoordinates] =
+    useState<IGPSCoordinates>({
+      longitude: null,
+      latitude: null,
+    });
   const [error, setError] = useState(null);
-
-  console.log(newResults);
-
   const provider = new OpenStreetMapProvider();
 
   async function handleAdressButton(): void {
@@ -75,6 +79,17 @@ function RegisterPlace() {
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
+    });
+  }
+
+  function doubleClickMaphandler(lon: number, lat: number) {
+    setFormData({
+      ...formData,
+      address: "",
+      gpsCoordinates: {
+        longitude: lon,
+        latitude: lat,
+      },
     });
   }
 
@@ -133,6 +148,7 @@ function RegisterPlace() {
                         onClick={() => {
                           setFormData({
                             ...formData,
+                            address: result.label,
                             gpsCoordinates: {
                               longitude: result.x,
                               latitude: result.y,
@@ -148,6 +164,40 @@ function RegisterPlace() {
                 )}
               </p>
             </li>
+            <li>
+              <p>
+                Off the grid? Write the coordinates here!
+                <label>Latitude : </label>
+                <input
+                  type="number"
+                  name="latitude"
+                  min="-90"
+                  max="90"
+                  onInput={(event) =>
+                    setTemporaryCoordinates({
+                      ...temporaryCoordinates,
+                      latitude: event.target.valueAsNumber,
+                    })
+                  }
+                />
+                <label>Longitude : </label>
+                <input
+                  type="number"
+                  name="longitude"
+                  min="-180"
+                  max="180"
+                  onInput={(e) =>
+                    setTemporaryCoordinates({
+                      ...temporaryCoordinates,
+                      longitude: e.target.value,
+                    })
+                  }
+                />
+                <button type="button" onClick={handleManualCoordinates}>
+                  Use coordinates instead!
+                </button>
+              </p>
+            </li>
           </ul>
 
           <MapContainer
@@ -159,6 +209,7 @@ function RegisterPlace() {
             <MapValuesManager
               latitude={formData.gpsCoordinates.latitude}
               longitude={formData.gpsCoordinates.longitude}
+              doubleClickEvent={doubleClickMaphandler}
             />
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
