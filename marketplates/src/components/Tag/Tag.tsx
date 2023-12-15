@@ -5,12 +5,22 @@ function Tag(props: {
   customStyle: ITagStyle;
   tagName: string;
   onClose?: () => void;
+  onClick?: () => void;
+  isIn?: boolean;
 }) {
   return (
     <>
       <div style={props.customStyle} className={styles.tagContainer}>
         {props.tagName}
-        {props.onClose && <button onClick={props.onClose}>X</button>}
+        {props.isIn ? (
+          <button id={styles.tagCloseButton} onClick={props.onClose}>
+            X
+          </button>
+        ) : (
+          <button id={styles.tagCloseButton} onClick={props.onClick}>
+            O
+          </button>
+        )}
       </div>
     </>
   );

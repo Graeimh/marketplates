@@ -12,7 +12,7 @@ export async function createTag(req, res) {
             creatorId: req.body.userId,
             name: sanitizeHtml(req.body.tagName, { allowedTags: [] }),
             nameColor: sanitizeHtml(req.body.tagNameColor, { allowedTags: [] }),
-            isOfficial: false,
+            isOfficial: true,
         };
         console.log(tag);
         console.log(req.body)
@@ -64,7 +64,10 @@ export async function getAllOfficialTags(req, res) {
 
 export async function getUserSingleTags(req, res) {
     try {
-        const allUserTags = await TagsModel.find({ $or: [{ creatorId: req.body.userId }, { isOfficial: true }] });
+        const { LOG_TOKEN_KEY } = process.env;
+        const decryptedCookieValue = jwt.verify(req.cookies.token, LOG_TOKEN_KEY);
+
+        const allUserTags = await TagsModel.find({ $or: [{ creatorId: decryptedCookieValue.userId }, { isOfficial: true }] });
         res.status(200).json({
             data: allUserTags,
             message: '(200 OK)-Successfully fetched all the tags for this user',

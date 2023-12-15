@@ -23,7 +23,7 @@ function TagManipulation() {
   const sessionValue = useContext(UserContext);
   const [isAllSelected, setIsAllSelected] = useState(false);
 
-  async function reportResults() {
+  async function getAllTags() {
     try {
       const allTags = await APIService.fetchAllTags();
       setTagList(allTags.data);
@@ -33,7 +33,7 @@ function TagManipulation() {
   }
 
   useEffect(() => {
-    reportResults();
+    getAllTags();
   }, []);
 
   function decideUpdatability() {
@@ -86,7 +86,7 @@ function TagManipulation() {
           "token"
         );
         setResponseMessage(response.message);
-        reportResults();
+        getAllTags();
       } catch (err) {
         setError(err.message);
       }
@@ -121,7 +121,7 @@ function TagManipulation() {
   async function sendDeleteTagCall(id: string) {
     try {
       const response = await APIService.deleteTagById(id, "token");
-      reportResults();
+      getAllTags();
       setResponseMessage(response.message);
     } catch (err) {
       setError(err.message);

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ILoginValues } from "../../common/types/userTypes/userTypes";
 import * as APIService from "../../services/api.js";
@@ -45,8 +45,6 @@ function Login() {
       try {
         const captchaToken: string = captcha.current.getValue().toString();
         const response = await APIService.login(loginData, captchaToken);
-        const secondresponse = await APIService.getCSRFTokenValue();
-        sessionStorage.setItem("csrfToken", secondresponse.csrfToken);
         sessionStorage.setItem("refreshToken", response.refreshToken);
         createTemporaryMessage(response.message, 1500, setResponseMessage);
         navigate("/explore");

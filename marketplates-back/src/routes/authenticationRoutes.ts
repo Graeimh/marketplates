@@ -1,15 +1,15 @@
 import { Router } from "express";
-import { checkToken } from "../middlewares/checkToken.js";
-import { login, checkSessionStatus, checkIfActive, logout, refreshTokenChecker } from "../controllers/AutenthicationController.js"
-import { csrfTokenChecker } from "../middlewares/csrfTokenChecker.js";
+import { login, checkSessionStatus, checkIfActive, logout, produceNewAccessToken } from "../controllers/AutenthicationController.js"
 import { checkCaptcha } from "../middlewares/checkCaptcha.js";
+import { checkAccessToken } from "../middlewares/checkAccessToken.js";
 
 const authenticationRouter = Router();
 
 authenticationRouter.post("/login", checkCaptcha, login);
 authenticationRouter.post('/logout', logout);
 authenticationRouter.get('/checkSession', checkSessionStatus);
-authenticationRouter.post('/tester', refreshTokenChecker, csrfTokenChecker, checkIfActive);
+authenticationRouter.post('/tester', checkAccessToken, checkIfActive);
+authenticationRouter.post('/accessToken', produceNewAccessToken)
 
 
 export default authenticationRouter;

@@ -1,3 +1,5 @@
+import { ITag } from "../tagTypes/tagTypes";
+
 export interface IRegisterValues {
     email: string;
     firstName: string;
@@ -10,6 +12,20 @@ export interface IRegisterValues {
     password: string;
     passwordMatch: string;
 }
+
+export interface IPlaceRegisterValues {
+    name: string;
+    description: string;
+    address: string;
+    gpsCoordinates: IGPSCoordinates
+    tagList: ITag[];
+}
+
+export interface IGPSCoordinates {
+    longitude: number | null;
+    latitude: number | null;
+}
+
 
 export interface ITagValues {
     backgroundColor: string;

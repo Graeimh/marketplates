@@ -122,8 +122,6 @@ pentest-tools
 
 ==> eye button in the input field to turn password to text in the input type
 */
-  console.log("passwordFitnessCriteria", passwordFitnessCriteria);
-
   return (
     <>
       <h1>Register</h1>

@@ -7,7 +7,7 @@ import PlaceIterationsModel from "../models/PlaceIterations.js";
 
 export async function createPlace(req, res) {
     try {
-        const preExistingPlace = await PlacesModel.find({ name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }) });
+        const preExistingPlace = await PlacesModel.find({ name: sanitizeHtml(req.body.name, { allowedTags: [] }) });
 
         if (preExistingPlace.length > 0) {
             res.status(400).json({
@@ -17,15 +17,15 @@ export async function createPlace(req, res) {
         }
 
         const place: IPlace = {
-            name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }),
-            description: sanitizeHtml(req.body.formData.description, { allowedTags: [] }),
+            name: sanitizeHtml(req.body.name, { allowedTags: [] }),
+            description: sanitizeHtml(req.body.description, { allowedTags: [] }),
             location: {
-                streetAddress: sanitizeHtml(req.body.formData.streetAddress, { allowedTags: [] }),
-                county: sanitizeHtml(req.body.formData.county, { allowedTags: [] }),
-                city: sanitizeHtml(req.body.formData.city, { allowedTags: [] }),
-                country: sanitizeHtml(req.body.formData.country, { allowedTags: [] }),
+                streetAddress: sanitizeHtml(req.body.streetAddress, { allowedTags: [] }),
+                county: sanitizeHtml(req.body.county, { allowedTags: [] }),
+                city: sanitizeHtml(req.body.city, { allowedTags: [] }),
+                country: sanitizeHtml(req.body.country, { allowedTags: [] }),
             },
-            gpsCoordinates: sanitizeHtml(req.body.formData.gpsCoordinates, { allowedTags: [] }),
+            gpsCoordinates: sanitizeHtml(req.body.gpsCoordinates, { allowedTags: [] }),
             tagsList: [],
         };
 

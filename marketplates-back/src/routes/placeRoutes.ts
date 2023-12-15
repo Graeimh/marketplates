@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { checkToken } from "../middlewares/checkToken.js";
 import { createPlace, deletePlaceById, deletePlacesByIds, getAllPlaces, getPlacesByIds, updatePlaceById } from "../controllers/PlaceController.js"
 
 const placesRouter = Router();

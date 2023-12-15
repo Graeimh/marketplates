@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { checkToken } from "../middlewares/checkToken.js";
 import { createUser, deleteUserById, deleteUsersByIds, getAllUsers, getUsersById, updateUserById } from "../controllers/UserController.js"
 
 const usersRouter = Router();

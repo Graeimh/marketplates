@@ -14,14 +14,12 @@ const Layout = (contextSetter: Dispatch<SetStateAction<null>>) => {
   const [message, setMessage] = useState(null);
   //TYPE OF CONTEXT NEEDS FIXING
   const value = useContext(UserContext);
-  console.log("value: ", value);
 
   useEffect(() => {
     async function getResponse() {
       try {
         // const status = await APIService.getApiStatus();
         const status = await APIService.checkIfActive(
-          sessionStorage.getItem("csrfToken"),
           sessionStorage.getItem("refreshToken")
         );
         setMessage(status);
@@ -89,6 +87,9 @@ const Layout = (contextSetter: Dispatch<SetStateAction<null>>) => {
             </li>
             <li className={styles.navigationOption}>
               <Link to="/tags">Manipulate tags</Link>
+            </li>
+            <li className={styles.navigationOption}>
+              <Link to="/createplace">Create a place</Link>
             </li>
 
             {/* <li className={styles.navigationOption}>

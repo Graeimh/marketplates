@@ -33,6 +33,7 @@ import LayoutForms from "./components/LayoutForms";
 import LayoutLogged from "./components/LayoutLogged";
 import UserManipulation from "./components/UserManipulation";
 import TagManipulation from "./components/TagManipulation";
+import RegisterPlace from "./components/RegisterPlace";
 
 interface IUserContext {
   email: string;
@@ -113,6 +114,7 @@ function App() {
               <Route index element={<Dashboard />} />         */}
             <Route path="users" element={<UserManipulation />} />
             <Route path="tags" element={<TagManipulation />} />
+            <Route path="createplace" element={<RegisterPlace />} />
             {/* <Route path="baskets" element={<BasketManipulation />} />
               <Route path="iterations" element={<IterationManipulation />} />
               <Route path="menuitems" element={<MenuItemManipulation />} />

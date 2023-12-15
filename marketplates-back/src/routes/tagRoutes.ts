@@ -5,9 +5,9 @@ import { getAllTags, getTagsByIds, getAllOfficialTags, getUserSingleTags, getCom
 const tagRouter = Router();
 
 tagRouter.get("/", getAllTags);
-tagRouter.get("/:ids", getTagsByIds);
+tagRouter.get("/byId/:ids", getTagsByIds);
 tagRouter.get("/officialIds", getAllOfficialTags);
-tagRouter.get("/userTags/:userId", getUserSingleTags);
+tagRouter.get("/userTags", getUserSingleTags);
 tagRouter.get("/mapperTags/:userIds", getCommonMapperTags);
 tagRouter.post("/create", createTag);
 tagRouter.post("/update", updateTagById);

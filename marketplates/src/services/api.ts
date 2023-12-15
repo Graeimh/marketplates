@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { ILoginValues, IMapValues, IPlaceIterationValues, IPlaceValues, IRegisterValues, ITagValues, PrivacyStatus } from '../common/types/userTypes/userTypes';
 
 const apiInstance = axios.create({
@@ -9,20 +9,18 @@ const apiInstance = axios.create({
     withCredentials: true,
 });
 
-apiInstance.interceptors.request.use((config) => {
-    const clientToken = window.localStorage.getItem('TOKEN');
-
-    if (clientToken) {
-        config.headers.Authorization = `Bearer ${clientToken}`;
-    }
-
-    return config;
-});
-
 apiInstance.interceptors.response.use(
     (config) => config,
-    (error) => {
-        if (error.response.data) return Promise.reject(error.response.data);
+    async (error: AxiosError) => {
+        if (error.response?.status === 401 && sessionStorage.getItem("refreshToken")) {
+            const response = await apiInstance.post("/auth/accessToken/", { refreshToken: sessionStorage.getItem("refreshToken") });
+
+            const newRequest = new Request(error.request)
+            newRequest.headers.append('Cookie', `token=${response.newAccessToken}`);
+            return newRequest;
+        }
+
+        if (error.response?.data) return Promise.reject(error.response.data);
 
         return Promise.reject(error);
     }
@@ -33,13 +31,12 @@ export async function getApiStatus() {
     return response.data;
 }
 
+
+
 //////////////////////////////////////////////////////////////////////////////////////
 //     SECURITY   ////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-export async function getCSRFTokenValue() {
-    const response = await apiInstance.get('/security/csrfGeneration');
-    return response.data;
-}
+
 //////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -66,10 +63,13 @@ export async function getSessionData() {
     return response.data;
 }
 
-export async function checkIfActive(CSRFValue: string | null, refreshToken: string | null) {
-    const response = await apiInstance.post('/auth/tester', { CSRFValue, refreshToken });
+export async function checkIfActive(refreshToken: string | null) {
+    const response = await apiInstance.post('/auth/tester', { refreshToken });
     return response.data;
 }
+
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -251,10 +251,11 @@ export async function deleteMapsByIds(mapIds: string[], token: string) {
 //////////////////////////////////////////////////////////////////////////////////////
 //     PLACES   //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-export async function generatePlace(formData: IPlaceValues, token: string) {
+export async function generatePlace(formData: IPlaceValues, token: string, userId: string) {
     const response = await apiInstance.post('/places/create', {
         formData,
         token,
+        userId,
     });
     return response.data;
 }
@@ -392,12 +393,12 @@ export async function fetchTagsByIds(tagIds: string[]) {
 }
 
 export async function fetchOfficialTags() {
-    const response = await apiInstance.get(`/tags/officialIds}`);
+    const response = await apiInstance.get(`/tags/officialIds`);
     return response.data;
 }
 
-export async function fetchTagsForUser(userId: string) {
-    const response = await apiInstance.get(`/tags/userTags/${userId}`);
+export async function fetchTagsForUser() {
+    const response = await apiInstance.get('/tags/userTags');
     return response.data;
 }
 
