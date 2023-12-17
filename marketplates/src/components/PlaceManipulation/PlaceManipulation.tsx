@@ -1,86 +1,116 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as APIService from "../../services/api.js";
 import styles from "./PlaceManipulation.module.scss";
-
+import { IPlace } from "../../common/types/placeTypes/placeTypes.js";
+import PlaceManipulationItem from "../PlaceManipulationItem/PlaceManipulationItem.js";
 
 function PlaceManipulation() {
-    const [formData, setFormData] = useState({});
-    const [error, setError] = useState(null);
-    const [responseMessage, setResponseMessage] = useState(null);
-  
-    function updateField(event) {
-      setFormData({
-        ...formData,
-        [event.target.name]: event.target.value,
-      });
-    }
-  
-    async function sendForm(event) {
-      event.preventDefault();
-  
-      try {
-        const response = await APIService.register(
-          formData.firstName,
-          formData.lastName,
-          formData.email,
-          formData.password,
-          formData.passwordConfirm
-        );
-        setResponseMessage(response.message);
-      } catch (err) {
-        setError(err.message);
-      }
-    }
-    return(
-        <>
-        <h1>RecipeManipulation</h1>
-            <div className={styles.registerContainer}>
-                <form onSubmit={sendForm}>
-                <ul>
-                    <li>
-                    <p>
-                        First name :{" "}
-                        <input type="text" name="firstName" onInput={updateField} />
-                    </p>
-                    </li>
-                    <li>
-                    <p>
-                        Last name :{" "}
-                        <input type="text" name="lastName" onInput={updateField} />
-                    </p>
-                    </li>
-                    <li>
-                    <p>
-                        Email : <input type="text" name="email" onInput={updateField} />
-                    </p>
-                    </li>
-                    <li>
-                    <p>
-                        Password :{" "}
-                        <input type="password" name="password" onInput={updateField} />
-                    </p>
-                    </li>
-                    <li>
-                    <p>
-                        Password confirmation :{" "}
-                        <input
-                        type="password"
-                        name="passwordConfirm"
-                        onInput={updateField}
-                        />
-                    </p>
-                    </li>
-                </ul>
-                <button type="submit">Register</button>
-                </form>
-            </div>
+  const [error, setError] = useState(null);
+  const [responseMessage, setResponseMessage] = useState("");
+  const [placeList, setPlaceList] = useState<IPlace[]>([]);
+  const [primedForDeletionList, setPrimedForDeletionList] = useState<string[]>(
+    []
+  );
+  const [isAllSelected, setIsAllSelected] = useState(false);
 
+  async function getAllPlaces() {
+    try {
+      const allPlaces = await APIService.fetchAllPlaces();
+      setPlaceList(allPlaces.data);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  useEffect(() => {
+    getAllPlaces();
+  }, []);
+
+  function manageDeletionList(id: string) {
+    const foundIndex = primedForDeletionList.indexOf(id);
+    if (foundIndex === -1) {
+      setPrimedForDeletionList([...primedForDeletionList, id]);
+    } else {
+      setPrimedForDeletionList(
+        primedForDeletionList.filter((applianceId) => applianceId !== id)
+      );
+    }
+  }
+
+  function selectAllTags() {
+    if (
+      (!isAllSelected && primedForDeletionList.length === 0) ||
+      primedForDeletionList.length !== placeList.length
+    ) {
+      setPrimedForDeletionList(placeList.map((place) => place._id));
+    } else {
+      setPrimedForDeletionList([]);
+    }
+    setIsAllSelected(!isAllSelected);
+  }
+
+  function cancelSelection() {
+    setPrimedForDeletionList([]);
+  }
+
+  async function deletePrimedForDeletion() {
+    try {
+      const responseForDelete = APIService.deletePlacesByIds(
+        primedForDeletionList
+      );
+      setResponseMessage(responseForDelete.message);
+
+      console.log(
+        `Successfully deleted ${primedForDeletionList.length} appliances`
+      );
+      setPrimedForDeletionList([]);
+      getAllPlaces();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function sendDeleteTagCall(id: string) {
+    try {
+      const response = await APIService.deletePlaceById(id);
+      getAllPlaces();
+      setResponseMessage(response.message);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  return (
+    <>
+      <h1>Place manipulation</h1>
+      <div className={styles.registerContainer}></div>
+      <button type="button" onClick={() => deletePrimedForDeletion()}>
+        Delete {primedForDeletionList.length} places
+      </button>
+      {primedForDeletionList.length !== placeList.length && (
+        <button type="button" onClick={() => selectAllTags()}>
+          Select all ({placeList.length}) places
+        </button>
+      )}
+      <button type="button" onClick={() => cancelSelection()}>
+        Cancel selection{" "}
+      </button>
       {error && <div className={styles.error}>{error}</div>}
       {responseMessage && (
         <div className={styles.success}>{responseMessage}</div>
       )}
+      {placeList.length > 0 &&
+        placeList.map((place) => (
+          <PlaceManipulationItem
+            place={place}
+            primeForDeletion={manageDeletionList}
+            uponDeletion={sendDeleteTagCall}
+            key={place._id}
+            IsSelected={primedForDeletionList.indexOf(place._id) !== -1}
+          />
+        ))}
     </>
-    )
+  );
 }
 
 export default PlaceManipulation;

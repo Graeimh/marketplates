@@ -155,13 +155,19 @@ export interface IParticipants {
 
 export interface IPlace {
     _id?: Types.ObjectId;
+    address: string;
     creationDate?: Date;
     description: string;
-    location: IAddressData;
-    gpsCoordinates: string;
+    gpsCoordinates: IGPSCoordinates;
+    owner_id: Types.ObjectId;
     name: string;
     tagsList: Types.ObjectId[];
 };
+
+export interface IGPSCoordinates {
+    longitude: number | null;
+    latitude: number | null;
+}
 
 export interface IPlaceIteration {
     _id?: Types.ObjectId;
@@ -248,9 +254,6 @@ export interface IUser {
     _id?: Types.ObjectId;
     activeBasketlistIds: Types.ObjectId[];
     creationDate?: Date;
-    csrfSecret?: Types.ObjectId;
-    csrfToken?: string;
-    csrfTokenKey?: string;
     displayName: string;
     email: string;
     firstName: string;

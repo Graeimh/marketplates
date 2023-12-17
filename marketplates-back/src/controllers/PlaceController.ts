@@ -3,10 +3,16 @@ import TagsModel from "../models/Tags.js";
 import { IPlace, IPlaceIteration } from "../types.js";
 import PlacesModel from "../models/Places.js";
 import PlaceIterationsModel from "../models/PlaceIterations.js";
+import jwt from "jsonwebtoken"
 
 
 export async function createPlace(req, res) {
     try {
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
+
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
         const preExistingPlace = await PlacesModel.find({ name: sanitizeHtml(req.body.name, { allowedTags: [] }) });
 
         if (preExistingPlace.length > 0) {
@@ -17,16 +23,15 @@ export async function createPlace(req, res) {
         }
 
         const place: IPlace = {
-            name: sanitizeHtml(req.body.name, { allowedTags: [] }),
-            description: sanitizeHtml(req.body.description, { allowedTags: [] }),
-            location: {
-                streetAddress: sanitizeHtml(req.body.streetAddress, { allowedTags: [] }),
-                county: sanitizeHtml(req.body.county, { allowedTags: [] }),
-                city: sanitizeHtml(req.body.city, { allowedTags: [] }),
-                country: sanitizeHtml(req.body.country, { allowedTags: [] }),
+            address: sanitizeHtml(req.body.formData.address, { allowedTags: [] }),
+            description: sanitizeHtml(req.body.formData.description, { allowedTags: [] }),
+            gpsCoordinates: {
+                longitude: req.body.formData.gpsCoordinates.longitude,
+                latitude: req.body.formData.gpsCoordinates.latitude,
             },
-            gpsCoordinates: sanitizeHtml(req.body.gpsCoordinates, { allowedTags: [] }),
-            tagsList: [],
+            name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }),
+            owner_id: decryptedCookie.userId,
+            tagsList: req.body.formData.tagList.map(tag => tag._id),
         };
 
         await PlacesModel.create(place);
@@ -37,7 +42,7 @@ export async function createPlace(req, res) {
         });
     } catch (err) {
         res.status(403).json({
-            message: '(403 Forbidden)-The data sent created a tag-type conflict',
+            message: '(403 Forbidden)-The data sent created a place-type conflict',
             success: false
         });
     };
@@ -76,6 +81,30 @@ export async function getPlacesByIds(req, res) {
     }
 }
 
+
+export async function getPlacesForUser(req, res) {
+    try {
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
+
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
+        const somePlaces = await PlacesModel.find({ owner_id: { $in: decryptedCookie.userId } });
+        res.json({
+            data: somePlaces,
+            message: '(200 OK)-Successfully fetched all places for user',
+            success: true
+        });
+    } catch (err) {
+        res.json({
+            message: '(404 Not found)-No places were found belonging to this user',
+            success: false
+        });
+    }
+}
+
+
+
 export async function updatePlaceById(req, res) {
     try {
         const placeById: IPlace = await PlacesModel.findOne({ _id: { $in: req.body.placeId } });
@@ -88,18 +117,15 @@ export async function updatePlaceById(req, res) {
         }
 
         const placeToUpdate = await PlacesModel.updateOne({ _id: { $in: req.body.placeId } }, {
-            description: req.body.description ? sanitizeHtml(req.body.description, { allowedTags: [] }) : placeById.description,
-            location: {
-                streetAddress: req.body.streetAddress ? sanitizeHtml(req.body.streetAddress, { allowedTags: [] }) : placeById.location.streetAddress,
-                county: req.body.county ? sanitizeHtml(req.body.county, { allowedTags: [] }) : placeById.location.county,
-                city: req.body.city ? sanitizeHtml(req.body.city, { allowedTags: [] }) : placeById.location.city,
-                country: req.body.country ? sanitizeHtml(req.body.country, { allowedTags: [] }) : placeById.location.country,
+            address: sanitizeHtml(req.body.formData.address, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.address, { allowedTags: [] }) : placeById.address,
+            description: sanitizeHtml(req.body.formData.description, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.description, { allowedTags: [] }) : placeById.description,
+            gpsCoordinates: {
+                longitude: req.body.formData.gpsCoordinates.longitude ? req.body.formData.gpsCoordinates.longitude : placeById.gpsCoordinates.longitude,
+                latitude: req.body.formData.gpsCoordinates.latitude ? req.body.formData.gpsCoordinates.latitude : placeById.gpsCoordinates.latitude,
             },
-            gpsCoordinates: "New calculated GPS coordinates",
-            name: req.body.name ? sanitizeHtml(req.body.name, { allowedTags: [] }) : placeById.name,
-            tagsList: req.body.tagsList ? req.body.tagsList : placeById.tagsList,
-        })
-
+            name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.name, { allowedTags: [] }) : placeById.name,
+            tagsList: req.body.formData.tagList.map(tag => tag._id),
+        });
 
         res.status(204).json({
             message: '(204 No Content)-Place successfully updated',

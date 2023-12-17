@@ -98,8 +98,7 @@ function TagManipulation() {
   async function deletePrimedForDeletion() {
     try {
       const responseForDelete = APIService.deleteTagsByIds(
-        primedForDeletionList,
-        "token"
+        primedForDeletionList
       );
       const responseforDataRenewal = APIService.fetchAllTags();
 
@@ -120,7 +119,7 @@ function TagManipulation() {
 
   async function sendDeleteTagCall(id: string) {
     try {
-      const response = await APIService.deleteTagById(id, "token");
+      const response = await APIService.deleteTagById(id);
       getAllTags();
       setResponseMessage(response.message);
     } catch (err) {

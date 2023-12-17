@@ -1,3 +1,4 @@
+import { IGPSCoordinates } from "../placeTypes/placeTypes";
 import { ITag } from "../tagTypes/tagTypes";
 
 export interface IRegisterValues {
@@ -20,12 +21,6 @@ export interface IPlaceRegisterValues {
     gpsCoordinates: IGPSCoordinates
     tagList: ITag[];
 }
-
-export interface IGPSCoordinates {
-    longitude: number | null;
-    latitude: number | null;
-}
-
 
 export interface ITagValues {
     backgroundColor: string;

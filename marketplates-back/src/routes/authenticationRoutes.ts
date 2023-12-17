@@ -7,7 +7,7 @@ const authenticationRouter = Router();
 
 authenticationRouter.post("/login", checkCaptcha, login);
 authenticationRouter.post('/logout', logout);
-authenticationRouter.get('/checkSession', checkSessionStatus);
+authenticationRouter.get('/checkSession', checkAccessToken, checkSessionStatus);
 authenticationRouter.post('/tester', checkAccessToken, checkIfActive);
 authenticationRouter.post('/accessToken', produceNewAccessToken)
 

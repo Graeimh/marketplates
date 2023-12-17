@@ -12,14 +12,26 @@ function Tag(props: {
     <>
       <div style={props.customStyle} className={styles.tagContainer}>
         {props.tagName}
-        {props.isIn ? (
-          <button id={styles.tagCloseButton} onClick={props.onClose}>
-            X
-          </button>
+        {props.isIn !== undefined ? (
+          props.isIn ? (
+            <button
+              type="button"
+              id={styles.tagCloseButton}
+              onClick={props.onClose}
+            >
+              X
+            </button>
+          ) : (
+            <button
+              type="button"
+              id={styles.tagCloseButton}
+              onClick={props.onClick}
+            >
+              O
+            </button>
+          )
         ) : (
-          <button id={styles.tagCloseButton} onClick={props.onClick}>
-            O
-          </button>
+          ""
         )}
       </div>
     </>

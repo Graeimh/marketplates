@@ -34,6 +34,8 @@ import LayoutLogged from "./components/LayoutLogged";
 import UserManipulation from "./components/UserManipulation";
 import TagManipulation from "./components/TagManipulation";
 import RegisterPlace from "./components/RegisterPlace";
+import EditPlaceWrapper from "./components/EditPlaceWrapper";
+import PlaceManipulation from "./components/PlaceManipulation";
 
 interface IUserContext {
   email: string;
@@ -87,6 +89,11 @@ function App() {
                 }
               />
               <Route
+                path="createplace"
+                element={<RegisterPlace editPlaceId={undefined} />}
+              />
+              <Route path="editplace/:id" element={<EditPlaceWrapper />} />
+              <Route
                 path="dashboard"
                 element={
                   <AdminPathResolver userTypes={sessionData.status}>
@@ -95,11 +102,12 @@ function App() {
                 }
               />
               <Route
-                path="placeprofile"
+                path="myplaces"
                 element={
-                  <PlacePathResolver userTypes={sessionData.status}>
-                    <MyPlaces />
-                  </PlacePathResolver>
+                  <MyPlaces />
+                  // <PlacePathResolver userTypes={sessionData.status}>
+
+                  // </PlacePathResolver>
                 }
               />
             </Route>
@@ -114,7 +122,11 @@ function App() {
               <Route index element={<Dashboard />} />         */}
             <Route path="users" element={<UserManipulation />} />
             <Route path="tags" element={<TagManipulation />} />
-            <Route path="createplace" element={<RegisterPlace />} />
+            <Route path="places" element={<PlaceManipulation />} />
+            <Route
+              path="createplace"
+              element={<RegisterPlace editPlaceId={undefined} />}
+            />
             {/* <Route path="baskets" element={<BasketManipulation />} />
               <Route path="iterations" element={<IterationManipulation />} />
               <Route path="menuitems" element={<MenuItemManipulation />} />

@@ -1,22 +1,22 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./RegisterPlace.module.scss";
 import * as APIService from "../../services/api.js";
-import {
-  IGPSCoordinates,
-  IPlaceRegisterValues,
-} from "../../common/types/userTypes/userTypes.js";
+import { IPlaceRegisterValues } from "../../common/types/userTypes/userTypes.js";
 import { useNavigate } from "react-router-dom";
 import { ITag } from "../../common/types/tagTypes/tagTypes.js";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import UserContext from "../UserContext/UserContext.js";
 import Tag from "../Tag/Tag.js";
 import MapValuesManager from "../MapValuesManager/MapValuesManager.js";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
 import { SearchResult } from "leaflet-geosearch/dist/providers/provider.js";
 import { RawResult } from "leaflet-geosearch/dist/providers/openStreetMapProvider.js";
+import {
+  IGPSCoordinates,
+  IPlaceData,
+} from "../../common/types/placeTypes/placeTypes.js";
 
-function RegisterPlace() {
+function RegisterPlace(props: { editPlaceId: string | undefined }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<IPlaceRegisterValues>({
     name: "",
@@ -40,9 +40,33 @@ function RegisterPlace() {
   const [error, setError] = useState(null);
   const provider = new OpenStreetMapProvider();
 
-  async function handleAdressButton(): void {
+  const tagListWithoutSelected = [
+    ...new Set(
+      tagList
+        .filter(
+          (tag) =>
+            !formData.tagList
+              .map((formDataTag) => formDataTag._id)
+              .includes(tag._id)
+        )
+        .map((x) => JSON.stringify(x))
+    ),
+  ]
+    .map((x) => JSON.parse(x))
+    .sort((a: ITag, b: ITag) =>
+      a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+    );
+
+  async function handleAdressButton(): Promise<void> {
     const results = await provider.search({ query: formData.address });
     setNewResults(results);
+    if (results.length === 1) {
+      setFormData({
+        ...formData,
+        address: results[0].label,
+        gpsCoordinates: { latitude: results[0].y, longitude: results[0].x },
+      });
+    }
   }
 
   async function getUserTags() {
@@ -54,8 +78,33 @@ function RegisterPlace() {
     }
   }
 
+  async function getPlaceEditValue(id: string) {
+    try {
+      const currentPlace = await APIService.fetchPlacesByIds([id]);
+      const currentPlaceData: IPlaceData = currentPlace.data[0];
+      const currentPlaceTagIds = currentPlaceData.tagsList;
+      const placeTags = await APIService.fetchTagsByIds(currentPlaceTagIds);
+
+      setFormData({
+        name: currentPlaceData.name,
+        description: currentPlaceData.description,
+        address: currentPlaceData.address,
+        gpsCoordinates: {
+          longitude: currentPlaceData.gpsCoordinates.longitude,
+          latitude: currentPlaceData.gpsCoordinates.latitude,
+        },
+        tagList: placeTags.data,
+      });
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
   useEffect(() => {
     getUserTags();
+    if (props.editPlaceId !== undefined) {
+      getPlaceEditValue(props.editPlaceId);
+    }
   }, []);
 
   function decideRegistration() {
@@ -95,27 +144,58 @@ function RegisterPlace() {
 
   async function sendRegistrationForm(event) {
     event.preventDefault();
-    const token = "";
     try {
-      const response = await APIService.generatePlace(formData, token);
-      setResponseMessage(response.message);
+      if (props.editPlaceId === undefined) {
+        const response = await APIService.generatePlace(formData);
+        setResponseMessage(response.message);
+      } else {
+        const response = await APIService.updatePlaceById(
+          formData,
+          props.editPlaceId
+        );
+        setResponseMessage(response.message);
+      }
       navigate("/myplaces");
     } catch (err) {
       setError(err.message);
     }
-    console.log("Poop!");
   }
 
+  function handleManualCoordinates() {
+    setFormData({
+      ...formData,
+      gpsCoordinates: {
+        longitude: temporaryCoordinates.longitude
+          ? temporaryCoordinates.longitude
+          : formData.gpsCoordinates.longitude
+          ? formData.gpsCoordinates.longitude
+          : 0,
+        latitude: temporaryCoordinates.latitude
+          ? temporaryCoordinates.latitude
+          : formData.gpsCoordinates.latitude
+          ? formData.gpsCoordinates.latitude
+          : 0,
+      },
+    });
+  }
+
+  console.log(formData.gpsCoordinates);
   return (
     <>
       <h1>Register a place</h1>
       <div className={styles.registerContainer}>
-        <form onSubmit={sendRegistrationForm}>
+        <form>
           <ul>
             <li>
               <p>
                 <label>Name : </label>
-                <input type="text" name="name" required onInput={updateField} />
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  onInput={updateField}
+                  value={formData.name}
+                />
               </p>
             </li>
             <li>
@@ -126,6 +206,7 @@ function RegisterPlace() {
                   name="description"
                   required
                   onInput={updateField}
+                  value={formData.description}
                 />
               </p>
             </li>
@@ -135,8 +216,8 @@ function RegisterPlace() {
                 <input
                   type="text"
                   name="address"
-                  required
                   onInput={updateField}
+                  value={formData.address}
                 />
                 <button type="button" onClick={handleAdressButton}>
                   Get locations
@@ -173,11 +254,17 @@ function RegisterPlace() {
                   name="latitude"
                   min="-90"
                   max="90"
-                  onInput={(event) =>
+                  onChange={(e) => {
+                    console.log(e.target);
                     setTemporaryCoordinates({
                       ...temporaryCoordinates,
-                      latitude: event.target.valueAsNumber,
-                    })
+                      latitude: Number(e.target.value),
+                    });
+                  }}
+                  placeholder={
+                    formData.gpsCoordinates.latitude !== null
+                      ? formData.gpsCoordinates.latitude.toString()
+                      : "0"
                   }
                 />
                 <label>Longitude : </label>
@@ -186,11 +273,16 @@ function RegisterPlace() {
                   name="longitude"
                   min="-180"
                   max="180"
-                  onInput={(e) =>
+                  onChange={(e) =>
                     setTemporaryCoordinates({
                       ...temporaryCoordinates,
-                      longitude: e.target.value,
+                      longitude: Number(e.target.value),
                     })
+                  }
+                  placeholder={
+                    formData.gpsCoordinates.longitude !== null
+                      ? formData.gpsCoordinates.longitude.toString()
+                      : "0"
                   }
                 />
                 <button type="button" onClick={handleManualCoordinates}>
@@ -247,11 +339,12 @@ function RegisterPlace() {
                 isIn={formData.tagList.some(
                   (tagData) => tagData._id === tag._id
                 )}
+                key={tag.name}
               />
             ))}
           <p>Select tags:</p>
-          {tagList.length > 0 &&
-            tagList.map((tag) => (
+          {tagListWithoutSelected.length > 0 &&
+            tagListWithoutSelected.map((tag) => (
               <Tag
                 customStyle={{
                   color: tag.nameColor,
@@ -271,8 +364,12 @@ function RegisterPlace() {
                 key={tag.name}
               />
             ))}
-          <button type="submit" disabled={isValidForSending}>
-            Register place
+          <button
+            type="button"
+            disabled={!isValidForSending}
+            onClick={sendRegistrationForm}
+          >
+            {props.editPlaceId === undefined ? "Register place" : "Edit place"}
           </button>
         </form>
       </div>

@@ -18,12 +18,12 @@ appRouter.get("/", (req, res) => {
   });
 });
 
-appRouter.use("/appliances", appliances);
+appRouter.use("/appliances", checkAccessToken, appliances);
 appRouter.use("/auth", authentication);
-appRouter.use("/maps", maps);
-appRouter.use("/placeIterations", placeIterations);
-appRouter.use("/places", places);
-appRouter.use("/security", security);
+appRouter.use("/maps", checkAccessToken, maps);
+appRouter.use("/placeIterations", checkAccessToken, placeIterations);
+appRouter.use("/places", checkAccessToken, places);
+appRouter.use("/security", checkAccessToken, security);
 appRouter.use("/tags", checkAccessToken, tags);
 appRouter.use("/users", users);
 

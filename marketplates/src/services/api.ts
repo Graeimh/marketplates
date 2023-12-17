@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { ILoginValues, IMapValues, IPlaceIterationValues, IPlaceValues, IRegisterValues, ITagValues, PrivacyStatus } from '../common/types/userTypes/userTypes';
+import { ILoginValues, IMapValues, IPlaceIterationValues, IPlaceRegisterValues, IPlaceValues, IRegisterValues, ITagValues, PrivacyStatus } from '../common/types/userTypes/userTypes';
 
 const apiInstance = axios.create({
     baseURL: import.meta.env.VITE_SERVER_URL,
@@ -76,10 +76,9 @@ export async function checkIfActive(refreshToken: string | null) {
 //////////////////////////////////////////////////////////////////////////////////////
 //     USERS   ///////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-export async function generateUser(formData: IRegisterValues, token: string) {
+export async function generateUser(formData: IRegisterValues) {
     const response = await apiInstance.post('/users/create', {
         formData,
-        token,
     });
     return response.data;
 }
@@ -95,7 +94,7 @@ export async function fetchUsersByIds(userIds: string[]) {
     return response.data;
 }
 
-export async function updateUserById(userId: string, token: string, displayName?: string, email?: string, firstName?: string, lastName?: string, streetAddress?: string, county?: string, city?: string, country?: string) {
+export async function updateUserById(userId: string, displayName?: string, email?: string, firstName?: string, lastName?: string, streetAddress?: string, county?: string, city?: string, country?: string) {
     const response = await apiInstance.post('/users/update', {
         userId,
         displayName,
@@ -106,25 +105,22 @@ export async function updateUserById(userId: string, token: string, displayName?
         county,
         city,
         country,
-        token
     });
     return response.data;
 }
 
-export async function deleteUserById(userId: string, token: string) {
+export async function deleteUserById(userId: string) {
 
     const response = await apiInstance.post('/users/delete', {
         userId,
-        token,
     });
     return response.data;
 }
 
-export async function deleteUsersByIds(tagIds: string[], token: string) {
+export async function deleteUsersByIds(tagIds: string[]) {
 
     const response = await apiInstance.post('/users/deleteMany', {
         tagIds,
-        token
     });
     return response.data;
 }
@@ -134,14 +130,12 @@ export async function deleteUsersByIds(tagIds: string[], token: string) {
 //////////////////////////////////////////////////////////////////////////////////////
 //     APPLIANCES   //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-export async function generateAppliance(applianceName: string, imageURL: string, imageCaption: string, token: string) {
+export async function generateAppliance(applianceName: string, imageURL: string, imageCaption: string) {
 
     const response = await apiInstance.post('/appliances/create', {
         applianceName,
         imageURL,
         imageCaption,
-        token
-
     });
     return response.data;
 }
@@ -169,41 +163,37 @@ export async function updateApplianceById(token: string, applianceId: string, ap
     return response.data;
 }
 
-export async function deleteApplianceById(applianceId: string, token: string) {
+export async function deleteApplianceById(applianceId: string) {
 
     const response = await apiInstance.post('/appliances/delete', {
         applianceId,
-        token
     });
     return response.data;
 }
 
-export async function deleteAppliancesByIds(applianceIds: string[], token: string) {
+export async function deleteAppliancesByIds(applianceIds: string[]) {
 
     const response = await apiInstance.post('/appliances/deleteMany', {
         applianceIds,
-        token
     });
     return response.data;
 }
 //////////////////////////////////////////////////////////////////////////////////////
 //     MAPS   ////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-export async function generateMap(formData: IMapValues, token: string) {
+export async function generateMap(formData: IMapValues) {
     const response = await apiInstance.post('/maps/create', {
         formData,
-        token,
     });
     return response.data;
 }
 
-export async function updateMapById(userId: string, token: string, description?: string, name?: string, privacyStatus?: PrivacyStatus) {
+export async function updateMapById(userId: string, description?: string, name?: string, privacyStatus?: PrivacyStatus) {
     const response = await apiInstance.post('/maps/update', {
         description,
         name,
         userId,
         privacyStatus,
-        token
     });
     return response.data;
 }
@@ -230,20 +220,18 @@ export async function fetchMapsByIds(mapIds: string[]) {
     return response.data;
 }
 
-export async function deleteMapById(mapId: string, token: string) {
+export async function deleteMapById(mapId: string) {
 
     const response = await apiInstance.post('/maps/delete', {
         mapId,
-        token
     });
     return response.data;
 }
 
-export async function deleteMapsByIds(mapIds: string[], token: string) {
+export async function deleteMapsByIds(mapIds: string[]) {
 
     const response = await apiInstance.post('/maps/deleteMany', {
         mapIds,
-        token
     });
     return response.data;
 }
@@ -251,11 +239,9 @@ export async function deleteMapsByIds(mapIds: string[], token: string) {
 //////////////////////////////////////////////////////////////////////////////////////
 //     PLACES   //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-export async function generatePlace(formData: IPlaceValues, token: string, userId: string) {
+export async function generatePlace(formData: IPlaceRegisterValues) {
     const response = await apiInstance.post('/places/create', {
         formData,
-        token,
-        userId,
     });
     return response.data;
 }
@@ -265,41 +251,38 @@ export async function fetchAllPlaces() {
     return response.data;
 }
 
-export async function fetchPlacesByIds(placeIds: string[]) {
-    const applianceIdsParameter = placeIds.join('&');
-    const response = await apiInstance.get(`/places/${applianceIdsParameter}`);
+export async function fetchUserPlaces() {
+    const response = await apiInstance.get(`/places/forUser`);
     return response.data;
 }
 
-export async function updatePlaceById(token: string, placeId: string, streetAddress?: string, county?: string, city?: string, country?: string, name?: string, tagsList?: string[]) {
+export async function fetchPlacesByIds(placeIds: string[]) {
+    const applianceIdsParameter = placeIds.join('&');
+    const response = await apiInstance.get(`/places/byId/${applianceIdsParameter}`);
+    return response.data;
+}
 
-    const response = await apiInstance.post('/appliances/update', {
+export async function updatePlaceById(formData: IPlaceRegisterValues, placeId: string) {
+
+    const response = await apiInstance.post('/places/update', {
+        formData,
         placeId,
-        streetAddress,
-        county,
-        city,
-        country,
-        name,
-        tagsList,
-        token
     });
     return response.data;
 }
 
-export async function deletePlaceById(placeId: string, token: string) {
+export async function deletePlaceById(placeId: string) {
 
     const response = await apiInstance.post('/places/delete', {
         placeId,
-        token
     });
     return response.data;
 }
 
-export async function deletePlacesByIds(placeIds: string[], token: string) {
+export async function deletePlacesByIds(placeIds: string[]) {
 
     const response = await apiInstance.post('/places/deleteMany', {
         placeIds,
-        token
     });
     return response.data;
 }
@@ -308,10 +291,9 @@ export async function deletePlacesByIds(placeIds: string[], token: string) {
 //     PLACEITERATIONS   /////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 
-export async function createPlaceIterationById(formData: IPlaceIterationValues, originalPlaceId: string, token: string) {
+export async function createPlaceIterationById(formData: IPlaceIterationValues, originalPlaceId: string) {
     const response = await apiInstance.post('/placeIterations/create', {
         formData,
-        token,
         originalPlaceId,
     });
     return response.data;
@@ -350,33 +332,30 @@ export async function fetchPlaceIterationForUser(userId: string) {
     return response.data;
 }
 
-export async function deletePlaceIterationById(iterationId: string, token: string) {
+export async function deletePlaceIterationById(iterationId: string) {
 
     const response = await apiInstance.post('/placeIterations/delete', {
         iterationId,
-        token
     });
     return response.data;
 }
 
-export async function deletePlaceIterationsByIds(iterationIds: string[], token: string) {
+export async function deletePlaceIterationsByIds(iterationIds: string[]) {
 
     const response = await apiInstance.post('/placeIterations/deleteMany', {
         iterationIds,
-        token
     });
     return response.data;
 }
 //////////////////////////////////////////////////////////////////////////////////////
 //     TAGS   ////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-export async function generateTag(tagName: string, tagNameColor: string, tagBackgroundColor: string, userId: string, token: string) {
+export async function generateTag(tagName: string, tagNameColor: string, tagBackgroundColor: string, userId: string) {
     const response = await apiInstance.post('/tags/create', {
         tagName,
         tagNameColor,
         tagBackgroundColor,
         userId,
-        token,
     });
     return response.data;
 }
@@ -388,7 +367,7 @@ export async function fetchAllTags() {
 
 export async function fetchTagsByIds(tagIds: string[]) {
     const tagIdsParameter = tagIds.join('&');
-    const response = await apiInstance.get(`/tags/${tagIdsParameter}`);
+    const response = await apiInstance.get(`/tags/byId/${tagIdsParameter}`);
     return response.data;
 }
 
@@ -408,33 +387,30 @@ export async function fetchMapperTagsByIds(userIds: string[]) {
     return response.data;
 }
 
-export async function updateTagById(tagId: string, token: string, backgroundColor?: string, name?: string, nameColor?: string) {
+export async function updateTagById(tagId: string, backgroundColor?: string, name?: string, nameColor?: string) {
 
     const response = await apiInstance.post('/tags/update', {
         tagId,
         backgroundColor,
         name,
         nameColor,
-        token
 
     });
     return response.data;
 }
 
-export async function deleteTagById(tagId: string, token: string) {
+export async function deleteTagById(tagId: string) {
 
     const response = await apiInstance.post('/tags/delete', {
         tagId,
-        token
     });
     return response.data;
 }
 
-export async function deleteTagsByIds(tagIds: string[], token: string) {
+export async function deleteTagsByIds(tagIds: string[]) {
 
     const response = await apiInstance.post('/tags/deleteMany', {
         tagIds,
-        token
     });
     return response.data;
 }
