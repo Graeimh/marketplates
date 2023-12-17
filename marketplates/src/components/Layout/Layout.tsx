@@ -89,10 +89,10 @@ const Layout = (contextSetter: Dispatch<SetStateAction<null>>) => {
               <Link to="/places">Manipulate places</Link>
             </li>
             <li className={styles.navigationOption}>
-              <Link to="/createplace">Create a place</Link>
+              <Link to="/myplaces">My places</Link>
             </li>
             <li className={styles.navigationOption}>
-              <Link to="/myplaces">My places</Link>
+              <Link to="/mymaps">My maps</Link>
             </li>
 
             {/* <li className={styles.navigationOption}>

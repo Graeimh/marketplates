@@ -33,15 +33,27 @@ export interface ITagValues {
 export interface IMapValues {
     description: string;
     name: string;
-    userId: string;
+    participants: IParticipant[];
+    placeIterationIds: string[];
     privacyStatus: PrivacyStatus;
+}
+
+export interface IParticipant {
+    userId: string,
+    userPrivileges: UserPrivileges,
+}
+
+export enum UserPrivileges {
+    Editer = "Editer",
+    Viewer = "Viewer",
+    Owner = "Owner",
 }
 
 export enum PrivacyStatus {
     Private = "Private",
     Protected = "Protected",
     Public = "Public",
-};
+}
 
 export interface IPlaceValues {
     city: string;

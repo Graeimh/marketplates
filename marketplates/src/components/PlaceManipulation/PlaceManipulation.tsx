@@ -55,7 +55,7 @@ function PlaceManipulation() {
 
   async function deletePrimedForDeletion() {
     try {
-      const responseForDelete = APIService.deletePlacesByIds(
+      const responseForDelete = await APIService.deletePlacesByIds(
         primedForDeletionList
       );
       setResponseMessage(responseForDelete.message);

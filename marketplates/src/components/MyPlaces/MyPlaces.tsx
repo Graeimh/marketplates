@@ -32,6 +32,13 @@ function MyPlaces() {
   return (
     <>
       <h1>Hi! Here are your places!</h1>
+      <button
+        onClick={() => {
+          navigate("/createplace");
+        }}
+      >
+        Create a place
+      </button>
       <ul>
         {userPlacesList &&
           userPlacesList.map((place) => (

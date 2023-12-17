@@ -74,12 +74,12 @@ function App() {
       <UserContext.Provider value={sessionData}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Layout contextSetter={setSessionData} />}>
+            <Route element={<Layout contextSetter={setSessionData} />}>
               <Route index element={<Home />} />
               <Route path="aboutus" element={<AboutUs />} />
               <Route path="explore" element={<Explore />} />
             </Route>
-            <Route path="/" element={<LayoutLogged />}>
+            <Route element={<LayoutLogged />}>
               <Route
                 path="profile"
                 element={
@@ -91,6 +91,10 @@ function App() {
               <Route
                 path="createplace"
                 element={<RegisterPlace editPlaceId={undefined} />}
+              />
+              <Route
+                path="createmap"
+                element={<MapEditor editedMap={undefined} />}
               />
               <Route path="editplace/:id" element={<EditPlaceWrapper />} />
               <Route
@@ -111,7 +115,7 @@ function App() {
                 }
               />
             </Route>
-            <Route path="/" element={<LayoutForms />}>
+            <Route element={<LayoutForms />}>
               <Route path="register" element={<Register />} />
               <Route path="login" element={<Login />} />
             </Route>
