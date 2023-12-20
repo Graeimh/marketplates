@@ -11,6 +11,7 @@ const mapsSchema = new mongoose.Schema<IMaps>(
     creationDate: { type: Date, default: Date.now() },
     description: { type: String, required: true },
     name: { type: String, required: true },
+    ownerId: { type: mongoose.SchemaTypes.ObjectId, required: true },
     participants: [{
       userId: { type: [mongoose.SchemaTypes.ObjectId], required: true },
       userPrivileges: { type: [String], enum: UserPrivileges, required: true }

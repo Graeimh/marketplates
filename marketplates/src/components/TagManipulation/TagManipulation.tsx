@@ -182,6 +182,7 @@ function TagManipulation() {
                       backgroundColor: tagBackgroundColor,
                     }}
                     tagName={tagName}
+                    isTiny={false}
                   />
                 </p>
               </li>

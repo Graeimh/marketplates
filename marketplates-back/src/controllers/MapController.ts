@@ -1,12 +1,19 @@
 import sanitizeHtml from "sanitize-html";
 import { IMaps, PrivacyStatus, UserPrivileges } from "../types.js";
 import MapsModel from "../models/Maps.js";
+import jwt from "jsonwebtoken"
 
 
 export async function createMap(req, res) {
     try {
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
+
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
         const map: IMaps = {
             description: sanitizeHtml(req.body.formData.description, { allowedTags: [] }),
+            ownerId: decryptedCookie.userId,
             name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }),
             participants: [{
                 userId: req.body.formData.userId,
@@ -64,9 +71,29 @@ export async function getAllPublicMaps(req, res) {
 
 export async function getAllMapsAvailable(req, res) {
     try {
-        const allAvailableMaps = await MapsModel.find({ $or: [{ privacyStatus: PrivacyStatus.Public }, { "participants.userId": req.params.userId }] });
+        const allAvailableMaps = await MapsModel.find({ $or: [{ privacyStatus: PrivacyStatus.Public }, { ownerId: req.params.userId }, { "participants.userId": req.params.userId }] });
         res.status(200).json({
             data: allAvailableMaps,
+            message: '(200 OK)-Successfully fetched all maps for the user',
+            success: true
+        });
+    } catch (err) {
+        res.status(404).json({
+            message: '(404 Not found)-No map was found',
+            success: false
+        });
+    }
+}
+
+export async function getUserMaps(req, res) {
+    try {
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
+
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+        const allUserMaps = await MapsModel.find({ ownerId: decryptedCookie.userId });
+        res.status(200).json({
+            data: allUserMaps,
             message: '(200 OK)-Successfully fetched all maps for the user',
             success: true
         });
@@ -96,6 +123,11 @@ export async function getMapsByIds(req, res) {
 
 export async function updateMapById(req, res) {
     try {
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
+
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
         const mapById: IMaps = await MapsModel.findOne({ _id: { $in: req.body.mapId } });
 
         if (!mapById) {
@@ -108,6 +140,7 @@ export async function updateMapById(req, res) {
         const mapToUpdate = await MapsModel.updateOne({ _id: { $in: req.body.mapId } }, {
             description: req.body.formData.description ? sanitizeHtml(req.body.formData.description, { allowedTags: [] }) : mapById.description,
             name: req.body.formData.name ? sanitizeHtml(req.body.formData.name, { allowedTags: [] }) : mapById.name,
+            ownerId: decryptedCookie.userId,
             participants: req.body.formData.participants,
             privacyStatus: (req.body.formData.privacyStatus && req.body.creatorId === mapById.participants.some(user => user.userPrivileges.includes(UserPrivileges.Owner))) ?
                 req.body.formData.privacyStatus : mapById.privacyStatus,

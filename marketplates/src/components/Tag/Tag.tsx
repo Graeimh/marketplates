@@ -4,13 +4,17 @@ import styles from "./Tag.module.scss";
 function Tag(props: {
   customStyle: ITagStyle;
   tagName: string;
+  isTiny: boolean;
   onClose?: () => void;
   onClick?: () => void;
   isIn?: boolean;
 }) {
   return (
     <>
-      <div style={props.customStyle} className={styles.tagContainer}>
+      <div
+        style={props.customStyle}
+        className={props.isTiny ? styles.tinyTagContainer : styles.tagContainer}
+      >
         {props.tagName}
         {props.isIn !== undefined ? (
           props.isIn ? (

@@ -313,7 +313,24 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
                     formData.gpsCoordinates.longitude,
                   ]}
                 >
-                  <Popup>Hi!</Popup>
+                  <Popup>
+                    <h3>{formData.name}</h3>
+                    <p>{formData.description}</p>
+                    <ul>
+                      {formData.tagList.map((tag) => (
+                        <li>
+                          <Tag
+                            tagName={tag.name}
+                            customStyle={{
+                              color: tag.nameColor,
+                              backgroundColor: tag.backgroundColor,
+                            }}
+                            isTiny={true}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </Popup>
                 </Marker>
               )}
           </MapContainer>
@@ -339,6 +356,7 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
                 isIn={formData.tagList.some(
                   (tagData) => tagData._id === tag._id
                 )}
+                isTiny={false}
                 key={tag.name}
               />
             ))}
@@ -361,6 +379,7 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
                 isIn={formData.tagList.some(
                   (tagData) => tagData._id === tag._id
                 )}
+                isTiny={false}
                 key={tag.name}
               />
             ))}

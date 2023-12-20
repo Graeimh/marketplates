@@ -106,6 +106,7 @@ export interface IMaps {
     creationDate?: Date;
     description: string
     name: string
+    ownerId: Types.ObjectId;
     participants: IParticipants[];
     placeIterationIds: Types.ObjectId[];
     privacyStatus: PrivacyStatus;

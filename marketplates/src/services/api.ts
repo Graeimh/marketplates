@@ -208,6 +208,11 @@ export async function fetchAllPublicMaps() {
     return response.data;
 }
 
+export async function fetchUserMaps() {
+    const response = await apiInstance.get(`/maps/byUser/`);
+    return response.data;
+}
+
 export async function fetchMapsAvailableToUser(userId: string) {
     const response = await apiInstance.get(`/maps/available/${userId}`);
     return response.data;

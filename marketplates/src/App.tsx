@@ -36,6 +36,8 @@ import TagManipulation from "./components/TagManipulation";
 import RegisterPlace from "./components/RegisterPlace";
 import EditPlaceWrapper from "./components/EditPlaceWrapper";
 import PlaceManipulation from "./components/PlaceManipulation";
+import MapEditor from "./components/MapEditor";
+import MyMaps from "./components/MyMaps";
 
 interface IUserContext {
   email: string;
@@ -115,6 +117,16 @@ function App() {
                 }
               />
             </Route>
+            <Route
+              path="mymaps"
+              element={
+                <MyMaps />
+                // <PlacePathResolver userTypes={sessionData.status}>
+
+                // </PlacePathResolver>
+              }
+            />
+
             <Route element={<LayoutForms />}>
               <Route path="register" element={<Register />} />
               <Route path="login" element={<Login />} />

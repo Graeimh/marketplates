@@ -81,6 +81,7 @@ function PlaceManipulationItem(props: {
                     backgroundColor: tag.backgroundColor,
                   }}
                   tagName={tag.name}
+                  isTiny={false}
                 />
               ))}
             </li>

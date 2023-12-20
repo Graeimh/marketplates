@@ -144,13 +144,21 @@ function TagManipulationItem(props: {
             <li>Before changes :</li>
             <li>
               {" "}
-              <Tag customStyle={style} tagName={props.tag.name} />
+              <Tag
+                customStyle={style}
+                tagName={props.tag.name}
+                isTiny={false}
+              />
             </li>
             {tagName !== props.tag.name && (
               <>
                 <li>After changes :</li>
                 <li>
-                  <Tag customStyle={updatedStyle} tagName={tagName} />
+                  <Tag
+                    customStyle={updatedStyle}
+                    tagName={tagName}
+                    isTiny={false}
+                  />
                 </li>
               </>
             )}
