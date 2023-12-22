@@ -1,25 +1,55 @@
 import sanitizeHtml from "sanitize-html";
-import { IMaps, PrivacyStatus, UserPrivileges } from "../types.js";
+import { IMaps, IPlaceIteration, IPlaceUpdated, PrivacyStatus, UserPrivileges } from "../types.js";
 import MapsModel from "../models/Maps.js";
 import jwt from "jsonwebtoken"
+import mongoose, { Types } from "mongoose";
+import PlaceIterationsModel from "../models/PlaceIterations.js";
 
 
 export async function createMap(req, res) {
     try {
+        console.log(req.body);
         const cookieValue = req.cookies.token;
         const { LOG_TOKEN_KEY } = process.env;
 
         const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
 
+        const mapId = new mongoose.Types.ObjectId();
+        const iterations: IPlaceUpdated[] = req.body.formData.placeIterations;
+
+        const listOfIterationIds: Types.ObjectId[] = [];
+
+        for (const iteration of iterations) {
+            const newId = new mongoose.Types.ObjectId();
+            const iterationToCreate: IPlaceIteration = {
+                _id: newId,
+                associatedMapIds: [mapId],
+                creatorId: decryptedCookie.userId,
+                customName: iteration.name,
+                customDescription: iteration.description,
+                customTagIds: iteration.tagsIdList,
+                gpsCoordinates: {
+                    longitude: iteration.gpsCoordinates.longitude,
+                    latitude: iteration.gpsCoordinates.latitude,
+                },
+                placeId: iteration._id,
+
+            }
+            listOfIterationIds.push(newId);
+
+            await PlaceIterationsModel.create(iterationToCreate);
+        }
+
         const map: IMaps = {
+            _id: mapId,
             description: sanitizeHtml(req.body.formData.description, { allowedTags: [] }),
             ownerId: decryptedCookie.userId,
             name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }),
-            participants: [{
-                userId: req.body.formData.userId,
+            participants: [...req.body.formData.participants, {
+                userId: decryptedCookie.userId,
                 userPrivileges: [UserPrivileges.Owner],
             }],
-            placeIterationIds: [],
+            placeIterationIds: listOfIterationIds,
             privacyStatus: req.body.formData.privacyStatus
         };
 

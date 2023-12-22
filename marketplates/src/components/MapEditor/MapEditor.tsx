@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styles from "./MapEditor.module.scss";
 import * as APIService from "../../services/api.js";
 import {
@@ -17,9 +17,11 @@ import { SearchResult } from "leaflet-geosearch/dist/providers/provider.js";
 import { RawResult } from "leaflet-geosearch/dist/providers/openStreetMapProvider.js";
 import {
   IGPSCoordinates,
+  IMarkersForMap,
   IPlace,
   IPlaceUpdated,
 } from "../../common/types/placeTypes/placeTypes.js";
+import UserContext from "../UserContext/UserContext.js";
 
 function MapEditor(props: { editedMap: string | undefined }) {
   const navigate = useNavigate();
@@ -27,13 +29,8 @@ function MapEditor(props: { editedMap: string | undefined }) {
     name: "",
     description: "",
     privacyStatus: PrivacyStatus.Public,
-    participants: [
-      {
-        userId: "a",
-        userPrivileges: UserPrivileges.Owner,
-      },
-    ],
-    placeIterationIds: [],
+    participants: [],
+    placeIterations: [],
   });
   const [responseMessage, setResponseMessage] = useState("");
   const [tagList, setTagList] = useState<ITag[]>([]);
@@ -53,16 +50,17 @@ function MapEditor(props: { editedMap: string | undefined }) {
       longitude: null,
       latitude: null,
     },
+    _id: "",
     name: "",
     tagsIdList: [],
     tagsList: [],
   });
+  const [iterationsList, setIterationsList] = useState<IPlaceUpdated[]>([]);
+  const value = useContext(UserContext);
 
   const provider = new OpenStreetMapProvider();
 
-  console.log("coordinates", coordinates);
   async function handleAdressButton(): Promise<void> {
-    console.log("Wah", addressQuery);
     const results = await provider.search({ query: addressQuery });
     setNewResults(results);
     if (results.length === 1) {
@@ -92,19 +90,11 @@ function MapEditor(props: { editedMap: string | undefined }) {
   }
 
   function updateField(event) {
+    decideIterationValidity();
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
     });
-  }
-
-  async function sendRegistrationForm(event) {
-    event.preventDefault();
-    try {
-      const response = await APIService.generateMap(formData);
-    } catch (err) {
-      setError(err.message);
-    }
   }
 
   function doubleClickMaphandler(lon: number, lat: number) {
@@ -142,10 +132,106 @@ function MapEditor(props: { editedMap: string | undefined }) {
     mapmarkers.push(marker);
   }
 
+  const mapMarkersAndIterations: IMarkersForMap[] = [];
+  for (const marker of mapmarkers) {
+    const iterationToList = iterationsList.find(
+      (iteration) => iteration._id === marker._id
+    );
+    if (iterationToList) {
+      const iteration = { ...iterationToList, isIteration: true };
+      mapMarkersAndIterations.push(iteration);
+    } else {
+      const regularMarker = { ...marker, isIteration: false };
+      mapMarkersAndIterations.push(regularMarker);
+    }
+  }
+
+  const tagListWithoutSelected = [
+    ...new Set(
+      tagList
+        .filter(
+          (tag) =>
+            !iterationValues.tagsList
+              .map((formDataTag) => formDataTag._id)
+              .includes(tag._id)
+        )
+        .map((x) => JSON.stringify(x))
+    ),
+  ]
+    .map((x) => JSON.parse(x))
+    .sort((a: ITag, b: ITag) =>
+      a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+    );
+
+  async function createIteration(event) {
+    event.preventDefault();
+    if (iterationValues.name.length > 0) {
+      setFormData({
+        ...formData,
+        placeIterations: [...formData.placeIterations, iterationValues],
+      });
+      setIterationsList([...iterationsList, iterationValues]);
+      setIterationValues({
+        address: "",
+        description: "",
+        gpsCoordinates: {
+          longitude: null,
+          latitude: null,
+        },
+        name: "",
+        tagsIdList: [],
+        tagsList: [],
+      });
+    }
+  }
+
+  console.log("iterationsList", iterationsList);
+
+  async function sendRegistrationForm(event) {
+    event.preventDefault();
+    try {
+      await APIService.generateMap({
+        ...formData,
+        participants: [
+          ...formData.participants,
+          { userId: value.userId, userPrivileges: UserPrivileges.Owner },
+        ],
+      });
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
   return (
     <>
       <h1>Map editor</h1>
       <form>
+        <ul>
+          <li>
+            <p>
+              <label>Name : </label>
+              <input
+                type="text"
+                name="name"
+                required
+                onInput={updateField}
+                value={formData.name}
+              />
+            </p>
+          </li>
+          <li>
+            <p>
+              <label>Description : </label>
+              <input
+                type="text"
+                name="description"
+                required
+                onInput={updateField}
+                value={formData.description}
+              />
+            </p>
+          </li>
+        </ul>
         <div>
           <input
             type="radio"
@@ -234,8 +320,8 @@ function MapEditor(props: { editedMap: string | undefined }) {
         />
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {mapmarkers &&
-          mapmarkers.map((place) => (
+        {mapMarkersAndIterations &&
+          mapMarkersAndIterations.map((place) => (
             <Marker
               position={[
                 place.gpsCoordinates.latitude
@@ -262,21 +348,23 @@ function MapEditor(props: { editedMap: string | undefined }) {
                       />
                     </li>
                   ))}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIterationValues(place);
-                    }}
-                  >
-                    Create iteration
-                  </button>
+                  {!place.isIteration && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIterationValues(place);
+                      }}
+                    >
+                      Create iteration
+                    </button>
+                  )}
                 </ul>
               </Popup>
             </Marker>
           ))}
       </MapContainer>
 
-      {iterationValues.name.length > 0 && (
+      {iterationValues.address.length > 0 && (
         <>
           <h2>Create an iteration</h2>
           <form>
@@ -306,17 +394,74 @@ function MapEditor(props: { editedMap: string | undefined }) {
                     type="text"
                     name="description"
                     required
-                    onInput={updateField}
-                    value={(e) => {
+                    onInput={(e) => {
                       setIterationValues({
                         ...iterationValues,
                         description: e.target.value,
                       });
                     }}
+                    value={iterationValues.description}
                   />
                 </p>
               </li>
+              <p>Selected tags :</p>
+              {iterationValues.tagsList.length > 0 &&
+                iterationValues.tagsList.map((tag) => (
+                  <Tag
+                    customStyle={{
+                      color: tag.nameColor,
+                      backgroundColor: tag.backgroundColor,
+                    }}
+                    tagName={tag.name}
+                    onClose={() => {
+                      setIterationValues({
+                        ...iterationValues,
+                        tagsList: iterationValues.tagsList.filter(
+                          (tagId) => tagId._id !== tag._id
+                        ),
+                      });
+                      setTagList([...tagList, tag]);
+                    }}
+                    isIn={iterationValues.tagsList.some(
+                      (tagData) => tagData._id === tag._id
+                    )}
+                    isTiny={false}
+                    key={tag.name}
+                  />
+                ))}
+              <p>Select tags:</p>
+              {tagListWithoutSelected.length > 0 &&
+                tagListWithoutSelected.map((tag) => (
+                  <Tag
+                    customStyle={{
+                      color: tag.nameColor,
+                      backgroundColor: tag.backgroundColor,
+                    }}
+                    tagName={tag.name}
+                    onClick={() => {
+                      setIterationValues({
+                        ...iterationValues,
+                        tagsList: [...iterationValues.tagsList, tag],
+                      });
+                      setTagList(
+                        tagList.filter((tagId) => tagId._id !== tag._id)
+                      );
+                    }}
+                    isIn={iterationValues.tagsList.some(
+                      (tagData) => tagData._id === tag._id
+                    )}
+                    isTiny={false}
+                    key={tag.name}
+                  />
+                ))}
             </ul>
+            <button
+              onClick={(e) => {
+                createIteration(e);
+              }}
+            >
+              Create iteration
+            </button>
           </form>
         </>
       )}
@@ -328,10 +473,11 @@ function MapEditor(props: { editedMap: string | undefined }) {
 
       <button
         type="button"
-        onClick={() => {
-          sendRegistrationForm();
+        onClick={(e) => {
+          sendRegistrationForm(e);
           navigate("mymaps");
         }}
+        disabled={!isValidForSending}
       >
         Save and quit
       </button>

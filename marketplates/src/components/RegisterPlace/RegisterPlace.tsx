@@ -37,10 +37,14 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
       longitude: null,
       latitude: null,
     });
+  const [tagQuery, setTagQuery] = useState("");
+
   const [error, setError] = useState(null);
   const provider = new OpenStreetMapProvider();
 
-  const tagListWithoutSelected = [
+  const tagSelection: ITag[] = [...tagList].slice(0, 10);
+
+  const tagListWithoutSelected: ITag[] = [
     ...new Set(
       tagList
         .filter(
@@ -56,6 +60,13 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
     .sort((a: ITag, b: ITag) =>
       a.name > b.name ? 1 : b.name > a.name ? -1 : 0
     );
+
+  const tagListWithoutSelectedAndFiltered: ITag[] = [
+    ...tagListWithoutSelected,
+  ].filter((tag) => new RegExp(tagQuery).test(tag.name));
+
+  const tagListToDisplay: ITag[] =
+    tagQuery.length > 0 ? tagListWithoutSelectedAndFiltered : tagSelection;
 
   async function handleAdressButton(): Promise<void> {
     const results = await provider.search({ query: formData.address });
@@ -179,7 +190,6 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
     });
   }
 
-  console.log(formData.gpsCoordinates);
   return (
     <>
       <h1>Register a place</h1>
@@ -255,7 +265,6 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
                   min="-90"
                   max="90"
                   onChange={(e) => {
-                    console.log(e.target);
                     setTemporaryCoordinates({
                       ...temporaryCoordinates,
                       latitude: Number(e.target.value),
@@ -335,6 +344,38 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
               )}
           </MapContainer>
 
+          <label>Search for a tag : </label>
+          <input
+            type="text"
+            name="tagQuery"
+            onChange={(e) => {
+              setTagQuery(e.target.value);
+            }}
+          />
+
+          <p>Select tags:</p>
+          {tagListToDisplay.length > 0 &&
+            tagListToDisplay.map((tag) => (
+              <Tag
+                customStyle={{
+                  color: tag.nameColor,
+                  backgroundColor: tag.backgroundColor,
+                }}
+                tagName={tag.name}
+                onClick={() => {
+                  setFormData({
+                    ...formData,
+                    tagList: [...formData.tagList, tag],
+                  });
+                  setTagList(tagList.filter((tagId) => tagId._id !== tag._id));
+                }}
+                isIn={formData.tagList.some(
+                  (tagData) => tagData._id === tag._id
+                )}
+                isTiny={false}
+                key={tag.name}
+              />
+            ))}
           <p>Selected tags :</p>
           {formData.tagList.length > 0 &&
             formData.tagList.map((tag) => (
@@ -360,29 +401,7 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
                 key={tag.name}
               />
             ))}
-          <p>Select tags:</p>
-          {tagListWithoutSelected.length > 0 &&
-            tagListWithoutSelected.map((tag) => (
-              <Tag
-                customStyle={{
-                  color: tag.nameColor,
-                  backgroundColor: tag.backgroundColor,
-                }}
-                tagName={tag.name}
-                onClick={() => {
-                  setFormData({
-                    ...formData,
-                    tagList: [...formData.tagList, tag],
-                  });
-                  setTagList(tagList.filter((tagId) => tagId._id !== tag._id));
-                }}
-                isIn={formData.tagList.some(
-                  (tagData) => tagData._id === tag._id
-                )}
-                isTiny={false}
-                key={tag.name}
-              />
-            ))}
+
           <button
             type="button"
             disabled={!isValidForSending}

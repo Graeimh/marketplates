@@ -21,6 +21,7 @@ export async function createPlaceIterationById(req, res) {
             customName: req.body.formData.customName ? sanitizeHtml(req.body.formData.customName, { allowedTags: [] }) : placeToIterateUpon.name,
             customDescription: req.body.formData.customDescription ? sanitizeHtml(req.body.formData.customDescription, { allowedTags: [] }) : placeToIterateUpon.description,
             customTagIds: placeToIterateUpon.tagsList,
+            gpsCoordinates: { longitude: req.body.formData.longitude, latitude: req.body.formData.latitude },
             placeId: placeToIterateUpon._id,
         }
 

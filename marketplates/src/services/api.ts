@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { ILoginValues, IMapValues, IPlaceIterationValues, IPlaceRegisterValues, IPlaceValues, IRegisterValues, ITagValues, PrivacyStatus } from '../common/types/userTypes/userTypes';
+import { IPlaceUpdated } from '../common/types/placeTypes/placeTypes';
 
 const apiInstance = axios.create({
     baseURL: import.meta.env.VITE_SERVER_URL,
@@ -90,7 +91,7 @@ export async function fetchAllUsers() {
 
 export async function fetchUsersByIds(userIds: string[]) {
     const userIdsParameter = userIds.join('&');
-    const response = await apiInstance.get(`/users/${userIdsParameter}`);
+    const response = await apiInstance.get(`/users/byId/${userIdsParameter}`);
     return response.data;
 }
 
@@ -182,6 +183,7 @@ export async function deleteAppliancesByIds(applianceIds: string[]) {
 //     MAPS   ////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 export async function generateMap(formData: IMapValues) {
+    console.log("Form data", formData);
     const response = await apiInstance.post('/maps/create', {
         formData,
     });
@@ -296,10 +298,9 @@ export async function deletePlacesByIds(placeIds: string[]) {
 //     PLACEITERATIONS   /////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 
-export async function createPlaceIterationById(formData: IPlaceIterationValues, originalPlaceId: string) {
+export async function createPlaceIterationById(formData: IPlaceUpdated) {
     const response = await apiInstance.post('/placeIterations/create', {
         formData,
-        originalPlaceId,
     });
     return response.data;
 }

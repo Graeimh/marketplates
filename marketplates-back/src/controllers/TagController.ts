@@ -14,8 +14,6 @@ export async function createTag(req, res) {
             nameColor: sanitizeHtml(req.body.tagNameColor, { allowedTags: [] }),
             isOfficial: true,
         };
-        console.log(tag);
-        console.log(req.body)
         await TagsModel.create(tag);
 
         res.status(201).json({

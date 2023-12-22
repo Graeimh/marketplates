@@ -8,7 +8,7 @@ mapRouter.get("/", getAllMaps);
 mapRouter.get("/public", getAllPublicMaps);
 mapRouter.get("/available/:userId", getAllMapsAvailable);
 mapRouter.get("/byId/:ids", getMapsByIds);
-mapRouter.get("/byUserId", getUserMaps);
+mapRouter.get("/byUser", getUserMaps);
 mapRouter.post("/create", createMap);
 mapRouter.post("/update", updateMapById);
 mapRouter.post("/delete", deleteMapById);

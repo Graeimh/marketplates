@@ -23,6 +23,21 @@ export interface IPlaceUpdated {
     tagsList: ITag[];
 }
 
+export interface IMarkersForMap {
+    _id?: string;
+    address: string;
+    creationDate?: Date;
+    description: string;
+    gpsCoordinates: IGPSCoordinates;
+    owner_id?: string;
+    name: string;
+    tagsIdList: string[];
+    tagsList: ITag[];
+    isIteration: boolean;
+}
+
+
+
 export interface IPlaceData {
     _id?: string;
     address: string;

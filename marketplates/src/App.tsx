@@ -38,6 +38,7 @@ import EditPlaceWrapper from "./components/EditPlaceWrapper";
 import PlaceManipulation from "./components/PlaceManipulation";
 import MapEditor from "./components/MapEditor";
 import MyMaps from "./components/MyMaps";
+import EditProfile from "./components/EditProfile";
 
 interface IUserContext {
   email: string;
@@ -142,6 +143,10 @@ function App() {
             <Route
               path="createplace"
               element={<RegisterPlace editPlaceId={undefined} />}
+            />
+            <Route
+              path="myprofile"
+              element={<EditProfile userId={sessionData.userId} />}
             />
             {/* <Route path="baskets" element={<BasketManipulation />} />
               <Route path="iterations" element={<IterationManipulation />} />

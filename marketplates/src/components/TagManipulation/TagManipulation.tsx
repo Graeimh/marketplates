@@ -22,6 +22,7 @@ function TagManipulation() {
 
   const sessionValue = useContext(UserContext);
   const [isAllSelected, setIsAllSelected] = useState(false);
+  const [tagQuery, setTagQuery] = useState("");
 
   async function getAllTags() {
     try {
@@ -68,6 +69,12 @@ function TagManipulation() {
       setPrimedForDeletionList([]);
     }
     setIsAllSelected(!isAllSelected);
+  }
+
+  function selectAllPresentTags(taglist: ITag[]) {
+    setPrimedForDeletionList(
+      tagList.filter((tag) => taglist.includes(tag)).map((tag) => tag._id)
+    );
   }
 
   function cancelSelection() {
@@ -126,6 +133,11 @@ function TagManipulation() {
       setError(err.message);
     }
   }
+
+  const filteredTagList = tagList.filter((tag) =>
+    new RegExp(tagQuery).test(tag.name)
+  );
+  const displayedTagList = tagQuery.length > 0 ? filteredTagList : tagList;
 
   return (
     <>
@@ -197,10 +209,22 @@ function TagManipulation() {
         Delete {primedForDeletionList.length} tags
       </button>
       {primedForDeletionList.length !== tagList.length && (
-        <button type="button" onClick={() => selectAllTags()}>
-          Select all ({tagList.length}) tags
-        </button>
+        <>
+          <button type="button" onClick={() => selectAllTags()}>
+            Select all ({tagList.length}) tags
+          </button>
+
+          {displayedTagList.length < tagList.length && (
+            <button
+              type="button"
+              onClick={() => selectAllPresentTags(displayedTagList)}
+            >
+              Select ({displayedTagList.length}) tags
+            </button>
+          )}
+        </>
       )}
+
       <button type="button" onClick={() => cancelSelection()}>
         Cancel selection{" "}
       </button>
@@ -208,8 +232,18 @@ function TagManipulation() {
       {responseMessage && (
         <div className={styles.success}>{responseMessage}</div>
       )}
-      {tagList.length > 0 &&
-        tagList.map((tag) => (
+
+      <label>Search for a tag : </label>
+      <input
+        type="text"
+        name="tagQuery"
+        onChange={(e) => {
+          setTagQuery(e.target.value);
+        }}
+      />
+
+      {displayedTagList.length > 0 &&
+        displayedTagList.map((tag) => (
           <TagManipulationItem
             tag={tag}
             primeForDeletion={manageDeletionList}

@@ -1,4 +1,4 @@
-import { IGPSCoordinates } from "../placeTypes/placeTypes";
+import { IGPSCoordinates, IPlaceUpdated } from "../placeTypes/placeTypes";
 import { ITag } from "../tagTypes/tagTypes";
 
 export interface IRegisterValues {
@@ -12,6 +12,31 @@ export interface IRegisterValues {
     streetAddress: string;
     password: string;
     passwordMatch: string;
+}
+
+export interface IRegisterValues {
+    email: string;
+    firstName: string;
+    lastName: string;
+    nickName: string;
+    country: string;
+    city: string;
+    county: string;
+    streetAddress: string;
+    password: string;
+    passwordMatch: string;
+}
+
+export interface IUserData {
+    displayName: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    streetAddress: string;
+    country: string;
+    county: string;
+    city: string;
+
 }
 
 export interface IPlaceRegisterValues {
@@ -34,7 +59,7 @@ export interface IMapValues {
     description: string;
     name: string;
     participants: IParticipant[];
-    placeIterationIds: string[];
+    placeIterations: IPlaceUpdated[];
     privacyStatus: PrivacyStatus;
 }
 

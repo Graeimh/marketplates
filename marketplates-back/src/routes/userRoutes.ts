@@ -6,7 +6,7 @@ const usersRouter = Router();
 
 usersRouter.get("/", getAllUsers);
 usersRouter.post("/create", createUser);
-usersRouter.get("/:ids", checkAccessToken, getUsersById);
+usersRouter.get("/byId/:ids", checkAccessToken, getUsersById);
 usersRouter.post("/update", checkAccessToken, updateUserById);
 usersRouter.post("/delete", checkAccessToken, deleteUserById);
 usersRouter.post("/deleteMany", checkAccessToken, deleteUsersByIds);

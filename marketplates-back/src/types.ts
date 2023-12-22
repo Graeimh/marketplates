@@ -178,9 +178,21 @@ export interface IPlaceIteration {
     customName: string;
     customDescription: string;
     customTagIds: Types.ObjectId[];
+    gpsCoordinates: IGPSCoordinates;
     placeId: Types.ObjectId;
 };
 
+export interface IPlaceUpdated {
+    _id?: Types.ObjectId;
+    address: string;
+    creationDate?: Date;
+    description: string;
+    gpsCoordinates: IGPSCoordinates;
+    owner_id?: string;
+    name: string;
+    tagsIdList: Types.ObjectId[];
+    tagsList: ITag[];
+}
 
 
 export interface IPost {

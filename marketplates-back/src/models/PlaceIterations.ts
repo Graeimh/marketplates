@@ -14,6 +14,10 @@ const PlaceIterationsSchema = new mongoose.Schema<IPlaceIteration>(
     customName: { type: String, required: true },
     customDescription: { type: String, required: true },
     customTagIds: { type: [mongoose.SchemaTypes.ObjectId], required: true },
+    gpsCoordinates: {
+      longitude: { type: Number, required: true },
+      latitude: { type: Number, required: true },
+    },
     placeId: { type: mongoose.SchemaTypes.ObjectId, required: true },
   },
   { versionKey: false }

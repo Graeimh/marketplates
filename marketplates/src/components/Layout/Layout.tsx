@@ -12,7 +12,6 @@ import UserContext from "../UserContext";
 
 const Layout = (contextSetter: Dispatch<SetStateAction<null>>) => {
   const [message, setMessage] = useState(null);
-  //TYPE OF CONTEXT NEEDS FIXING
   const value = useContext(UserContext);
 
   useEffect(() => {
@@ -50,6 +49,12 @@ const Layout = (contextSetter: Dispatch<SetStateAction<null>>) => {
           <h1 id={styles.mainTitle}>Marketplates</h1>
         </div>
         <h1>API STATUS</h1>
+
+        {value && (
+          <div>
+            <span>{value.displayName}</span>
+          </div>
+        )}
         {sessionStorage.getItem("refreshToken") && (
           <button type="button" onClick={logoutUser}>
             Log out
@@ -93,6 +98,9 @@ const Layout = (contextSetter: Dispatch<SetStateAction<null>>) => {
             </li>
             <li className={styles.navigationOption}>
               <Link to="/mymaps">My maps</Link>
+            </li>
+            <li className={styles.navigationOption}>
+              <Link to="/myprofile">Edit profile</Link>
             </li>
 
             {/* <li className={styles.navigationOption}>
