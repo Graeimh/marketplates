@@ -26,7 +26,7 @@ export async function createMap(req, res) {
                 creatorId: decryptedCookie.userId,
                 customName: iteration.name,
                 customDescription: iteration.description,
-                customTagIds: iteration.tagsIdList,
+                customTagIds: iteration.tagsList.map(tag => tag._id),
                 gpsCoordinates: {
                     longitude: iteration.gpsCoordinates.longitude,
                     latitude: iteration.gpsCoordinates.latitude,

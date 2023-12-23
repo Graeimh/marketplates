@@ -5,7 +5,7 @@ const placeIterationsRouter = Router();
 
 placeIterationsRouter.get("/", getAllPlaceIterations);
 placeIterationsRouter.post("/create", createPlaceIterationById);
-placeIterationsRouter.get("/:ids", getPlaceIterationByIds);
+placeIterationsRouter.get("/byIds/:ids", getPlaceIterationByIds);
 placeIterationsRouter.get("/userIterations/:userId", getPlaceIterationForUser);
 placeIterationsRouter.get("/places/:placeId", getAllPlaceIterationsFromPlace);
 placeIterationsRouter.post("/update", updatePlaceIterationById);

@@ -328,7 +328,7 @@ export async function fetchAllPlaceIterationsFromPlace(placeId: string[]) {
 
 export async function fetchPlaceIterationsByIds(placeIterationIds: string[]) {
     const applianceIdsParameter = placeIterationIds.join('&');
-    const response = await apiInstance.get(`/placeIterations/${applianceIdsParameter}`);
+    const response = await apiInstance.get(`/placeIterations/byIds/${applianceIdsParameter}`);
     return response.data;
 }
 

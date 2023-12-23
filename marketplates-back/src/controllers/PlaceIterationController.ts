@@ -113,7 +113,7 @@ export async function updatePlaceIterationById(req, res) {
 
 export async function getPlaceIterationByIds(req, res) {
     try {
-        const allPlacesIterationsByIds = await PlaceIterationsModel.find({ $in: req.params.ids.split("&") });
+        const allPlacesIterationsByIds = await PlaceIterationsModel.find({ _id: { $in: req.params.ids.split("&") } });
         res.status(200).json({
             data: allPlacesIterationsByIds,
             message: '(200 OK)-Successfully fetched all place iterations by id',

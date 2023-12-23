@@ -63,10 +63,8 @@ function MapEditor(props: { editedMap: string | undefined }) {
     tagName: "",
     tags: [],
   });
-  const value = useContext(UserContext);
   const provider = new OpenStreetMapProvider();
 
-  console.log("editedMap", props.editedMap);
   async function handleAdressButton(): Promise<void> {
     const results = await provider.search({ query: addressQuery });
     setNewResults(results);
@@ -84,25 +82,57 @@ function MapEditor(props: { editedMap: string | undefined }) {
       setPlaceList(allPlaces.data);
       if (props.editedMap) {
         const mapToEdit = await APIService.fetchMapsByIds([props.editedMap]);
-        console.log("Ayo!", mapToEdit.data);
+        const mapIterations = await APIService.fetchPlaceIterationsByIds(
+          mapToEdit.data[0].placeIterationIds
+        );
+        const mapToEditIterations: IPlaceUpdated[] = mapIterations.data.map(
+          (iteration) => ({
+            address: allPlaces.data.find(
+              (place) => place._id === iteration.placeId
+            )?.address,
+            description: iteration.customDescription,
+            gpsCoordinates: {
+              longitude: iteration.gpsCoordinates.longitude,
+              latitude: iteration.gpsCoordinates.latitude,
+            },
+            _id: iteration._id,
+            name: iteration.customName,
+            place_id: iteration.placeId,
+            tagsIdList: iteration.customTagIds,
+            tagsList: allTags.data.filter((tag) =>
+              iteration.customTagIds.some(
+                (iterationTag) => tag._id === iterationTag
+              )
+            ),
+          })
+        );
+
+        setFormData({
+          name: mapToEdit.data[0].name,
+          description: mapToEdit.data[0].description,
+          privacyStatus: mapToEdit.data[0].privacyStatus,
+          participants: mapToEdit.data[0].participants,
+          placeIterations: mapToEditIterations,
+        });
+        setIterationsList(mapToEditIterations);
+        setIsValidForSending(true);
       }
     } catch (err) {
       setError(err.message);
     }
   }
-
   useEffect(() => {
     getMapEditorTools();
   }, []);
 
-  function decideIterationValidity() {
+  function decideMapValidity() {
     setIsValidForSending(
       formData.name.length > 1 && formData.description.length > 1
     );
   }
 
   function updateField(event) {
-    decideIterationValidity();
+    decideMapValidity();
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
@@ -115,24 +145,6 @@ function MapEditor(props: { editedMap: string | undefined }) {
       latitude: lat,
     });
   }
-
-  // function handleManualCoordinates() {
-  //   setFormData({
-  //     ...formData,
-  //     gpsCoordinates: {
-  //       longitude: temporaryCoordinates.longitude
-  //         ? temporaryCoordinates.longitude
-  //         : formData.gpsCoordinates.longitude
-  //         ? formData.gpsCoordinates.longitude
-  //         : 0,
-  //       latitude: temporaryCoordinates.latitude
-  //         ? temporaryCoordinates.latitude
-  //         : formData.gpsCoordinates.latitude
-  //         ? formData.gpsCoordinates.latitude
-  //         : 0,
-  //     },
-  //   });
-  // }
 
   const mapmarkers: IPlaceUpdated[] = [];
   for (const place of placeList) {
@@ -147,7 +159,8 @@ function MapEditor(props: { editedMap: string | undefined }) {
   const mapMarkersAndIterations: IMarkersForMap[] = [];
   for (const marker of mapmarkers) {
     const iterationToList = iterationsList.find(
-      (iteration) => iteration._id === marker._id
+      (iteration) =>
+        iteration._id === marker._id || iteration.place_id === marker._id
     );
     if (iterationToList) {
       const iteration = { ...iterationToList, isIteration: true };
@@ -216,8 +229,6 @@ function MapEditor(props: { editedMap: string | undefined }) {
     .filter((marker) =>
       placeFilterQuery.tags.every((tag) => marker.tagsList.includes(tag))
     );
-
-  console.log("placeFilterQuery", mapMarkersAfterFilter);
 
   return (
     <>
@@ -324,6 +335,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
                 privacyStatus: PrivacyStatus.Private,
               });
             }}
+            checked={formData.privacyStatus === PrivacyStatus.Private}
           />
           <label htmlFor="privacyStatus1">Private</label>
 
@@ -338,6 +350,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
                 privacyStatus: PrivacyStatus.Protected,
               });
             }}
+            checked={formData.privacyStatus === PrivacyStatus.Protected}
           />
           <label htmlFor="privacyStatus2">Friends only</label>
 
@@ -349,6 +362,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
             onChange={() => {
               setFormData({ ...formData, privacyStatus: PrivacyStatus.Public });
             }}
+            checked={formData.privacyStatus === PrivacyStatus.Public}
           />
           <label htmlFor="privacyStatus3">Public</label>
         </div>
@@ -589,16 +603,29 @@ function MapEditor(props: { editedMap: string | undefined }) {
       )}
       {error && <div className={styles.error}>{error}</div>}
 
-      <button
-        type="button"
-        onClick={(e) => {
-          sendRegistrationForm(e);
-          navigate("mymaps");
-        }}
-        disabled={!isValidForSending}
-      >
-        Save and quit
-      </button>
+      {props.editedMap ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            sendRegistrationForm(e);
+            navigate("mymaps");
+          }}
+          disabled={!isValidForSending}
+        >
+          Edit map
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={(e) => {
+            sendRegistrationForm(e);
+            navigate("mymaps");
+          }}
+          disabled={!isValidForSending}
+        >
+          Create map
+        </button>
+      )}
     </>
   );
 }

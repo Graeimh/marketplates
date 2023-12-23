@@ -18,6 +18,7 @@ export interface IPlaceUpdated {
     description: string;
     gpsCoordinates: IGPSCoordinates;
     owner_id?: string;
+    place_id?: string;
     name: string;
     tagsIdList: string[];
     tagsList: ITag[];
