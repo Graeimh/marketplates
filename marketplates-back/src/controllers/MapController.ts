@@ -8,7 +8,6 @@ import PlaceIterationsModel from "../models/PlaceIterations.js";
 
 export async function createMap(req, res) {
     try {
-        console.log(req.body);
         const cookieValue = req.cookies.token;
         const { LOG_TOKEN_KEY } = process.env;
 
@@ -137,7 +136,7 @@ export async function getUserMaps(req, res) {
 
 export async function getMapsByIds(req, res) {
     try {
-        const allPublicMaps = await MapsModel.find({ $in: req.params.ids.split("&") });
+        const allPublicMaps = await MapsModel.find({ _id: { $in: req.params.ids.split("&") } });
         res.status(200).json({
             data: allPublicMaps,
             message: '(200 OK)-Successfully fetched all maps by id',

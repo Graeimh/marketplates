@@ -223,7 +223,7 @@ export async function fetchMapsAvailableToUser(userId: string) {
 
 export async function fetchMapsByIds(mapIds: string[]) {
     const mapIdsParameter = mapIds.join('&');
-    const response = await apiInstance.get(`/maps/${mapIdsParameter}`);
+    const response = await apiInstance.get(`/maps/byId/${mapIdsParameter}`);
     return response.data;
 }
 

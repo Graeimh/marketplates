@@ -19,6 +19,7 @@ import {
   IGPSCoordinates,
   IMarkersForMap,
   IPlace,
+  IPlaceFilterQuery,
   IPlaceUpdated,
 } from "../../common/types/placeTypes/placeTypes.js";
 import UserContext from "../UserContext/UserContext.js";
@@ -34,6 +35,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
   });
   const [responseMessage, setResponseMessage] = useState("");
   const [tagList, setTagList] = useState<ITag[]>([]);
+  const [tagFilterList, setTagFilterList] = useState<ITag[]>([]);
   const [newResults, setNewResults] = useState<SearchResult<RawResult>[]>([]);
   const [coordinates, setCoordinates] = useState<IGPSCoordinates>({
     longitude: null,
@@ -56,10 +58,15 @@ function MapEditor(props: { editedMap: string | undefined }) {
     tagsList: [],
   });
   const [iterationsList, setIterationsList] = useState<IPlaceUpdated[]>([]);
+  const [placeFilterQuery, setPlaceFilterQuery] = useState<IPlaceFilterQuery>({
+    name: "",
+    tagName: "",
+    tags: [],
+  });
   const value = useContext(UserContext);
-
   const provider = new OpenStreetMapProvider();
 
+  console.log("editedMap", props.editedMap);
   async function handleAdressButton(): Promise<void> {
     const results = await provider.search({ query: addressQuery });
     setNewResults(results);
@@ -72,8 +79,13 @@ function MapEditor(props: { editedMap: string | undefined }) {
     try {
       const allTags = await APIService.fetchTagsForUser();
       setTagList(allTags.data);
+      setTagFilterList(allTags.data);
       const allPlaces = await APIService.fetchAllPlaces();
       setPlaceList(allPlaces.data);
+      if (props.editedMap) {
+        const mapToEdit = await APIService.fetchMapsByIds([props.editedMap]);
+        console.log("Ayo!", mapToEdit.data);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -146,23 +158,6 @@ function MapEditor(props: { editedMap: string | undefined }) {
     }
   }
 
-  const tagListWithoutSelected = [
-    ...new Set(
-      tagList
-        .filter(
-          (tag) =>
-            !iterationValues.tagsList
-              .map((formDataTag) => formDataTag._id)
-              .includes(tag._id)
-        )
-        .map((x) => JSON.stringify(x))
-    ),
-  ]
-    .map((x) => JSON.parse(x))
-    .sort((a: ITag, b: ITag) =>
-      a.name > b.name ? 1 : b.name > a.name ? -1 : 0
-    );
-
   async function createIteration(event) {
     event.preventDefault();
     if (iterationValues.name.length > 0) {
@@ -185,26 +180,108 @@ function MapEditor(props: { editedMap: string | undefined }) {
     }
   }
 
-  console.log("iterationsList", iterationsList);
-
   async function sendRegistrationForm(event) {
     event.preventDefault();
     try {
-      await APIService.generateMap({
-        ...formData,
-        participants: [
-          ...formData.participants,
-          { userId: value.userId, userPrivileges: UserPrivileges.Owner },
-        ],
-      });
+      await APIService.generateMap(formData);
     } catch (err) {
       setError(err.message);
     }
   }
 
+  const tagSelection: ITag[] = [...tagFilterList].slice(0, 10);
+
+  const tagListWithoutSelected: ITag[] = [
+    ...new Set(
+      tagFilterList.filter(
+        (tag) =>
+          !placeFilterQuery.tags
+            .map((formDataTag) => formDataTag._id)
+            .includes(tag._id)
+      )
+    ),
+  ];
+
+  const tagListWithoutSelectedAndFiltered: ITag[] = [
+    ...tagListWithoutSelected,
+  ].filter((tag) => new RegExp(placeFilterQuery.tagName).test(tag.name));
+
+  const tagListToDisplay: ITag[] =
+    placeFilterQuery.tagName.length > 0
+      ? tagListWithoutSelectedAndFiltered
+      : tagSelection;
+
+  const mapMarkersAfterFilter: IMarkersForMap[] = [...mapMarkersAndIterations]
+    .filter((marker) => new RegExp(placeFilterQuery.name).test(marker.name))
+    .filter((marker) =>
+      placeFilterQuery.tags.every((tag) => marker.tagsList.includes(tag))
+    );
+
+  console.log("placeFilterQuery", mapMarkersAfterFilter);
+
   return (
     <>
       <h1>Map editor</h1>
+
+      <MapContainer
+        style={{ height: "30rem", width: "100%" }}
+        center={[48.85, 2.34]}
+        zoom={5}
+        maxZoom={18}
+      >
+        <MapValuesManager
+          latitude={coordinates.latitude}
+          longitude={coordinates.longitude}
+          doubleClickEvent={doubleClickMaphandler}
+        />
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+        {mapMarkersAfterFilter.length > 0 &&
+          mapMarkersAfterFilter.map((place) => (
+            <Marker
+              position={[
+                place.gpsCoordinates.latitude
+                  ? place.gpsCoordinates.latitude
+                  : 0,
+                place.gpsCoordinates.longitude
+                  ? place.gpsCoordinates.longitude
+                  : 0,
+              ]}
+              key={place.name}
+            >
+              <Popup key={place.name}>
+                <h3>{place.name}</h3>
+                <p>{place.description}</p>
+                <ul>
+                  {place.tagsList.map((tag) => (
+                    <li>
+                      <Tag
+                        tagName={tag.name}
+                        customStyle={{
+                          color: tag.nameColor,
+                          backgroundColor: tag.backgroundColor,
+                        }}
+                        isTiny={true}
+                        key={tag._id}
+                      />
+                    </li>
+                  ))}
+                  {!place.isIteration && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIterationValues(place);
+                      }}
+                    >
+                      Create iteration
+                    </button>
+                  )}
+                </ul>
+              </Popup>
+            </Marker>
+          ))}
+      </MapContainer>
+      <h3>Map data</h3>
       <form>
         <ul>
           <li>
@@ -232,6 +309,9 @@ function MapEditor(props: { editedMap: string | undefined }) {
             </p>
           </li>
         </ul>
+
+        <h3>Privacy</h3>
+
         <div>
           <input
             type="radio"
@@ -272,6 +352,9 @@ function MapEditor(props: { editedMap: string | undefined }) {
           />
           <label htmlFor="privacyStatus3">Public</label>
         </div>
+
+        <h3>Find an address</h3>
+
         <label>Get an address : </label>
         <input
           type="text"
@@ -293,6 +376,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
         <ul>
           {newResults.map((result) => (
             <li
+              key={result.label}
               onClick={() => {
                 setCoordinates({
                   longitude: result.x,
@@ -307,62 +391,96 @@ function MapEditor(props: { editedMap: string | undefined }) {
         </ul>
       )}
 
-      <MapContainer
-        style={{ height: "30rem", width: "100%" }}
-        center={[48.85, 2.34]}
-        zoom={5}
-        maxZoom={18}
-      >
-        <MapValuesManager
-          latitude={coordinates.latitude}
-          longitude={coordinates.longitude}
-          doubleClickEvent={doubleClickMaphandler}
+      <h3>Filter</h3>
+      <p>
+        <label>Filter places by name: </label>
+        <input
+          type="text"
+          name="filterNameQuery"
+          required
+          onInput={(e) => {
+            setPlaceFilterQuery({
+              ...placeFilterQuery,
+              name: e.target.value,
+            });
+          }}
+          value={placeFilterQuery.name}
         />
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-        {mapMarkersAndIterations &&
-          mapMarkersAndIterations.map((place) => (
-            <Marker
-              position={[
-                place.gpsCoordinates.latitude
-                  ? place.gpsCoordinates.latitude
-                  : 0,
-                place.gpsCoordinates.longitude
-                  ? place.gpsCoordinates.longitude
-                  : 0,
-              ]}
-            >
-              <Popup>
-                <h3>{place.name}</h3>
-                <p>{place.description}</p>
-                <ul>
-                  {place.tagsList.map((tag) => (
-                    <li>
-                      <Tag
-                        tagName={tag.name}
-                        customStyle={{
-                          color: tag.nameColor,
-                          backgroundColor: tag.backgroundColor,
-                        }}
-                        isTiny={true}
-                      />
-                    </li>
-                  ))}
-                  {!place.isIteration && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIterationValues(place);
-                      }}
-                    >
-                      Create iteration
-                    </button>
-                  )}
-                </ul>
-              </Popup>
-            </Marker>
-          ))}
-      </MapContainer>
+      </p>
+      <label>Filter places by tags: </label>
+      <input
+        type="text"
+        name="filterTagQuery"
+        required
+        onInput={(e) => {
+          setPlaceFilterQuery({
+            ...placeFilterQuery,
+            tagName: e.target.value,
+          });
+        }}
+        value={placeFilterQuery.tagName}
+      />
+      <p>Select tags:</p>
+      {tagListToDisplay.length > 0 &&
+        tagListToDisplay.map((tag) => (
+          <Tag
+            customStyle={{
+              color: tag.nameColor,
+              backgroundColor: tag.backgroundColor,
+            }}
+            tagName={tag.name}
+            onClick={() => {
+              setPlaceFilterQuery({
+                ...placeFilterQuery,
+                tags: [...placeFilterQuery.tags, tag],
+              });
+              setTagFilterList(
+                tagFilterList.filter((tagId) => tagId._id !== tag._id)
+              );
+            }}
+            isIn={placeFilterQuery.tags.some(
+              (tagData) => tagData._id === tag._id
+            )}
+            isTiny={false}
+            key={tag.name}
+          />
+        ))}
+      <p>Selected tags :</p>
+      {placeFilterQuery.tags.length > 0 &&
+        placeFilterQuery.tags.map((tag) => (
+          <Tag
+            customStyle={{
+              color: tag.nameColor,
+              backgroundColor: tag.backgroundColor,
+            }}
+            tagName={tag.name}
+            onClose={() => {
+              setPlaceFilterQuery({
+                ...placeFilterQuery,
+                tags: placeFilterQuery.tags.filter(
+                  (tagId) => tagId._id !== tag._id
+                ),
+              });
+              setTagFilterList([...tagFilterList, tag]);
+            }}
+            isIn={placeFilterQuery.tags.some(
+              (tagData) => tagData._id === tag._id
+            )}
+            isTiny={false}
+            key={tag.name}
+          />
+        ))}
+      <button
+        onClick={() => {
+          setPlaceFilterQuery({
+            name: "",
+            tagName: "",
+            tags: [],
+          });
+        }}
+      >
+        Clear filter
+      </button>
 
       {iterationValues.address.length > 0 && (
         <>

@@ -23,6 +23,12 @@ export interface IPlaceUpdated {
     tagsList: ITag[];
 }
 
+export interface IPlaceFilterQuery {
+    name: string;
+    tagName: string;
+    tags: ITag[];
+}
+
 export interface IMarkersForMap {
     _id?: string;
     address: string;

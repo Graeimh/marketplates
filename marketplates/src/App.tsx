@@ -39,6 +39,7 @@ import PlaceManipulation from "./components/PlaceManipulation";
 import MapEditor from "./components/MapEditor";
 import MyMaps from "./components/MyMaps";
 import EditProfile from "./components/EditProfile";
+import EditMapWrapper from "./components/EditMapWrapper";
 
 interface IUserContext {
   email: string;
@@ -99,6 +100,8 @@ function App() {
                 path="createmap"
                 element={<MapEditor editedMap={undefined} />}
               />
+              <Route path="editmap/:id" element={<EditMapWrapper />} />
+
               <Route path="editplace/:id" element={<EditPlaceWrapper />} />
               <Route
                 path="dashboard"
@@ -118,25 +121,12 @@ function App() {
                 }
               />
             </Route>
-            <Route
-              path="mymaps"
-              element={
-                <MyMaps />
-                // <PlacePathResolver userTypes={sessionData.status}>
-
-                // </PlacePathResolver>
-              }
-            />
+            <Route path="mymaps" element={<MyMaps />} />
 
             <Route element={<LayoutForms />}>
               <Route path="register" element={<Register />} />
               <Route path="login" element={<Login />} />
             </Route>
-
-            {/* <Route index element={<MyNotifications />} />
-              <Route index element={<MyMaps />} />       
-              <Route index element={<MyPlaces />} />  
-              <Route index element={<Dashboard />} />         */}
             <Route path="users" element={<UserManipulation />} />
             <Route path="tags" element={<TagManipulation />} />
             <Route path="places" element={<PlaceManipulation />} />
@@ -148,18 +138,6 @@ function App() {
               path="myprofile"
               element={<EditProfile userId={sessionData.userId} />}
             />
-            {/* <Route path="baskets" element={<BasketManipulation />} />
-              <Route path="iterations" element={<IterationManipulation />} />
-              <Route path="menuitems" element={<MenuItemManipulation />} />
-              <Route path="menus" element={<MenuManipulation />} />
-              <Route path="menussections" element={<MenusSectionManipulation />} />
-              <Route path="opinions" element={<OpinionManipulation />} />
-              <Route path="places" element={<PlaceManipulation />} />
-              <Route path="posts" element={<PostManipulation />} />
-              <Route path="products" element={<ProductManipulation />} />
-              <Route path="recipes" element={<RecipeManipulation />} />
-              <Route path="tags" element={<TagManipulation />} />
-              <Route path="users" element={<UserManipulation />} /> */}
           </Routes>
         </BrowserRouter>
       </UserContext.Provider>
