@@ -21,6 +21,7 @@ import {
   IPlace,
   IPlaceFilterQuery,
   IPlaceUpdated,
+  ITagFilterQuery,
 } from "../../common/types/placeTypes/placeTypes.js";
 import UserContext from "../UserContext/UserContext.js";
 
@@ -63,6 +64,11 @@ function MapEditor(props: { editedMap: string | undefined }) {
     tagName: "",
     tags: [],
   });
+  const [iterationTagFilterQuery, setIterationTagFilterQuery] =
+    useState<ITagFilterQuery>({
+      tagName: "",
+      tags: [],
+    });
   const provider = new OpenStreetMapProvider();
 
   async function handleAdressButton(): Promise<void> {
@@ -151,7 +157,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
     const marker: IPlaceUpdated = {
       ...place,
       tagsIdList: place.tagsList,
-      tagsList: tagList.filter((tag) => place.tagsList.includes(tag._id)),
+      tagsList: [...tagList].filter((tag) => place.tagsList.includes(tag._id)),
     };
     mapmarkers.push(marker);
   }
@@ -174,11 +180,26 @@ function MapEditor(props: { editedMap: string | undefined }) {
   async function createIteration(event) {
     event.preventDefault();
     if (iterationValues.name.length > 0) {
-      setFormData({
-        ...formData,
-        placeIterations: [...formData.placeIterations, iterationValues],
-      });
-      setIterationsList([...iterationsList, iterationValues]);
+      if (
+        iterationsList.some(
+          (iteration) => iteration._id === iterationValues._id
+        )
+      ) {
+        const iterationToFind = iterationsList.find(
+          (iteration) => iteration._id === iterationValues._id
+        );
+        const iterationIndex = iterationToFind
+          ? iterationsList.indexOf(iterationToFind)
+          : "0";
+        iterationsList[iterationIndex] = iterationValues;
+        setIterationsList(iterationsList);
+      } else {
+        setFormData({
+          ...formData,
+          placeIterations: [...formData.placeIterations, iterationValues],
+        });
+        setIterationsList([...iterationsList, iterationValues]);
+      }
       setIterationValues({
         address: "",
         description: "",
@@ -215,6 +236,14 @@ function MapEditor(props: { editedMap: string | undefined }) {
     ),
   ];
 
+  const tagListForIterationWithoutSelected: ITag[] = [
+    ...new Set(
+      tagFilterList.filter(
+        (tag) => !iterationValues.tagsIdList.includes(tag._id)
+      )
+    ),
+  ];
+
   const tagListWithoutSelectedAndFiltered: ITag[] = [
     ...tagListWithoutSelected,
   ].filter((tag) => new RegExp(placeFilterQuery.tagName).test(tag.name));
@@ -223,6 +252,15 @@ function MapEditor(props: { editedMap: string | undefined }) {
     placeFilterQuery.tagName.length > 0
       ? tagListWithoutSelectedAndFiltered
       : tagSelection;
+
+  const tagListForIterationWithoutSelectedAndFiltered: ITag[] = [
+    ...tagListForIterationWithoutSelected,
+  ].filter((tag) => new RegExp(iterationTagFilterQuery.tagName).test(tag.name));
+
+  const tagListForIterationToDisplay: ITag[] =
+    iterationTagFilterQuery.tagName.length > 0
+      ? tagListForIterationWithoutSelectedAndFiltered
+      : tagListForIterationWithoutSelected;
 
   const mapMarkersAfterFilter: IMarkersForMap[] = [...mapMarkersAndIterations]
     .filter((marker) => new RegExp(placeFilterQuery.name).test(marker.name))
@@ -258,7 +296,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
                   ? place.gpsCoordinates.longitude
                   : 0,
               ]}
-              key={place.name}
+              key={place._id}
             >
               <Popup key={place.name}>
                 <h3>{place.name}</h3>
@@ -285,6 +323,16 @@ function MapEditor(props: { editedMap: string | undefined }) {
                       }}
                     >
                       Create iteration
+                    </button>
+                  )}
+                  {place.isIteration && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIterationValues(place);
+                      }}
+                    >
+                      Edit iteration
                     </button>
                   )}
                 </ul>
@@ -405,7 +453,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
         </ul>
       )}
 
-      <h3>Filter</h3>
+      <h3>Filter map markers</h3>
       <p>
         <label>Filter places by name: </label>
         <input
@@ -498,7 +546,13 @@ function MapEditor(props: { editedMap: string | undefined }) {
 
       {iterationValues.address.length > 0 && (
         <>
-          <h2>Create an iteration</h2>
+          <h2>
+            {iterationsList.some(
+              (iteration) => iteration._id === iterationValues._id
+            )
+              ? "Edit an iteration"
+              : "Create an iteration"}
+          </h2>
           <form>
             {" "}
             <ul>
@@ -561,9 +615,24 @@ function MapEditor(props: { editedMap: string | undefined }) {
                     key={tag.name}
                   />
                 ))}
+              <p>
+                <label>Filter tags: </label>
+                <input
+                  type="text"
+                  name="filterTagQuery"
+                  required
+                  onInput={(e) => {
+                    setIterationTagFilterQuery({
+                      ...iterationTagFilterQuery,
+                      tagName: e.target.value,
+                    });
+                  }}
+                  value={iterationTagFilterQuery.tagName}
+                />
+              </p>
               <p>Select tags:</p>
-              {tagListWithoutSelected.length > 0 &&
-                tagListWithoutSelected.map((tag) => (
+              {tagListForIterationToDisplay.length > 0 &&
+                tagListForIterationToDisplay.map((tag) => (
                   <Tag
                     customStyle={{
                       color: tag.nameColor,
@@ -574,10 +643,8 @@ function MapEditor(props: { editedMap: string | undefined }) {
                       setIterationValues({
                         ...iterationValues,
                         tagsList: [...iterationValues.tagsList, tag],
+                        tagsIdList: [...iterationValues.tagsIdList, tag._id],
                       });
-                      setTagList(
-                        tagList.filter((tagId) => tagId._id !== tag._id)
-                      );
                     }}
                     isIn={iterationValues.tagsList.some(
                       (tagData) => tagData._id === tag._id
@@ -592,7 +659,11 @@ function MapEditor(props: { editedMap: string | undefined }) {
                 createIteration(e);
               }}
             >
-              Create iteration
+              {iterationsList.some(
+                (iteration) => iteration._id === iterationValues._id
+              )
+                ? "Edit iteration"
+                : "Create iteration"}
             </button>
           </form>
         </>

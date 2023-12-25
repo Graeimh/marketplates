@@ -30,6 +30,11 @@ export interface IPlaceFilterQuery {
     tags: ITag[];
 }
 
+export interface ITagFilterQuery {
+    tagName: string;
+    tags: ITag[];
+}
+
 export interface IMarkersForMap {
     _id?: string;
     address: string;
