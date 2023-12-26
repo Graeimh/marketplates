@@ -1,3 +1,4 @@
+import { IGPSCoordinates } from "../commonTypes.ts/commonTypes";
 import { ITag } from "../tagTypes/tagTypes";
 
 export interface IPlace {
@@ -48,8 +49,6 @@ export interface IMarkersForMap {
     isIteration: boolean;
 }
 
-
-
 export interface IPlaceData {
     _id?: string;
     address: string;
@@ -61,35 +60,10 @@ export interface IPlaceData {
     tagsList: string[];
 }
 
-export interface IMaps {
-    _id?: string;
-    creationDate?: Date;
-    description: string
-    name: string
-    ownerId: string;
-    participants: IParticipants[];
-    placeIterationIds: string[];
-    privacyStatus: PrivacyStatus;
-};
-
-export interface IGPSCoordinates {
-    longitude: number | null;
-    latitude: number | null;
-}
-
-export enum PrivacyStatus {
-    Private = "Private",
-    Protected = "Protected",
-    Public = "Public",
-}
-
-export interface IParticipants {
-    userId: string;
-    userPrivileges: UserPrivileges[];
-}
-
-export enum UserPrivileges {
-    Editer = "Editer",
-    Viewer = "Viewer",
-    Owner = "Owner",
+export interface IPlaceRegisterValues {
+    name: string;
+    description: string;
+    address: string;
+    gpsCoordinates: IGPSCoordinates
+    tagList: ITag[];
 }

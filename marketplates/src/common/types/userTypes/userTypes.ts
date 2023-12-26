@@ -1,6 +1,3 @@
-import { IGPSCoordinates, IPlaceUpdated } from "../placeTypes/placeTypes";
-import { ITag } from "../tagTypes/tagTypes";
-
 export interface IRegisterValues {
     email: string;
     firstName: string;
@@ -25,6 +22,14 @@ export interface IRegisterValues {
     streetAddress: string;
     password: string;
     passwordMatch: string;
+}
+
+export interface IUserContext {
+    email: string;
+    displayName: string;
+    userId: string;
+    status: string;
+    iat: number;
 }
 
 export interface IUserData {
@@ -39,61 +44,10 @@ export interface IUserData {
 
 }
 
-export interface IPlaceRegisterValues {
-    name: string;
-    description: string;
-    address: string;
-    gpsCoordinates: IGPSCoordinates
-    tagList: ITag[];
-}
-
-export interface ITagValues {
-    backgroundColor: string;
-    creatorId?: string;
-    isOfficial?: boolean;
-    nameColor: string;
-    tagName: string;
-}
-
-export interface IMapValues {
-    description: string;
-    name: string;
-    participants: IParticipant[];
-    placeIterations: IPlaceUpdated[];
-    privacyStatus: PrivacyStatus;
-}
-
-export interface IParticipant {
-    userId: string,
-    userPrivileges: UserPrivileges,
-}
-
 export enum UserPrivileges {
     Editer = "Editer",
     Viewer = "Viewer",
     Owner = "Owner",
-}
-
-export enum PrivacyStatus {
-    Private = "Private",
-    Protected = "Protected",
-    Public = "Public",
-}
-
-export interface IPlaceValues {
-    city: string;
-    country: string;
-    county: string;
-    description: string;
-    name: string;
-    streetAddress: string;
-}
-
-export interface IPlaceIterationValues {
-    mapId: string;
-    userId: string;
-    customName: string;
-    customDescription: string;
 }
 
 export interface ILoginValues {
@@ -109,23 +63,21 @@ export interface IPasswordFitnessCriteria {
     containsSpecialCharacter: boolean;
 }
 
-
 export interface IUser {
     _id: string;
     displayName: string;
     email: string;
     firstName: string;
     lastName: string;
-    location: ILocation;
+    location: IUserLocation;
 }
 
-export interface ILocation {
+export interface IUserLocation {
     city: string
     country: string
     county: string
     streetAddress: string
 }
-
 
 export enum UserType {
     Restaurant = "Restaurant",

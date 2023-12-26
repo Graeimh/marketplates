@@ -1,53 +1,31 @@
 import { useEffect, useState } from "react";
-import * as APIService from "../src/services/api";
+import * as authenticationService from "../src/services/authenticationService.js";
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Layout from "./components/Layout";
-import Home from "./components/Home";
-import ApplianceManipulation from "./components/ApplianceManipulation";
-// import BasketManipulation from './components/BasketManipulation';
-// import IterationManipulation from './components/IterationManipulation';
-// import MenuItemManipulation from './components/MenuItemManipulation';
-// import MenuManipulation from './components/MenuManipulation';
-// import MenusSectionManipulation from './components/MenusSectionManipulation';
-// import OpinionManipulation from './components/OpinionManipulation';
-// import PlaceManipulation from './components/PlaceManipulation';
-// import PostManipulation from './components/PostManipulation';
-// import ProductManipulation from './components/ProductManipulation';
-// import RecipeManipulation from './components/RecipeManipulation';
-// import TagManipulation from './components/TagManipulation';
-// import UserManipulation from './components/UserManipulation';
-import AboutUs from "./components/AboutUs";
-import Explore from "./components/Explore";
-import Register from "./components/Register";
-import Login from "./components/Login";
-import Profile from "./components/Profile";
+import Layout from "./components/Layouts/Layout/index.js";
+import AboutUs from "./components/VisitorPagesComponents/AboutUs/index.js";
+import Explore from "./components/UserPagesComponents/Explore/index.js";
+import Register from "./components/VisitorPagesComponents/Register/index.js";
+import Login from "./components/VisitorPagesComponents/Login/index.js";
+import Profile from "./components/UserPagesComponents/Profile/index.js";
 import * as jose from "jose";
-import UserContext from "./components/UserContext";
-import UserPathResolver from "./components/UserPathResolver";
-import AdminPathResolver from "./components/AdminPathResolver";
-import PlacePathResolver from "./components/PlacePathResolver";
-import Dashboard from "./components/Dashboard";
-import MyPlaces from "./components/MyPlaces";
-import LayoutForms from "./components/LayoutForms";
-import LayoutLogged from "./components/LayoutLogged";
-import UserManipulation from "./components/UserManipulation";
-import TagManipulation from "./components/TagManipulation";
-import RegisterPlace from "./components/RegisterPlace";
-import EditPlaceWrapper from "./components/EditPlaceWrapper";
-import PlaceManipulation from "./components/PlaceManipulation";
-import MapEditor from "./components/MapEditor";
-import MyMaps from "./components/MyMaps";
-import EditProfile from "./components/EditProfile";
-import EditMapWrapper from "./components/EditMapWrapper";
-
-interface IUserContext {
-  email: string;
-  displayName: string;
-  userId: string;
-  status: string;
-  iat: number;
-}
+import UserContext from "./components/Contexts/UserContext/index.js";
+import UserPathResolver from "./components/PathResolvers/UserPathResolver/index.js";
+import AdminPathResolver from "./components/PathResolvers/AdminPathResolver/index.js";
+import Dashboard from "./components/AdminDashboard/Dashboard/index.js";
+import MyPlaces from "./components/UserPagesComponents/MyPlaces/index.js";
+import LayoutForms from "./components/Layouts/LayoutForms/index.js";
+import LayoutLogged from "./components/Layouts/LayoutLogged/index.js";
+import UserManipulation from "./components/AdminDashboard/UserManipulation/index.js";
+import TagManipulation from "./components/AdminDashboard/TagManipulation/index.js";
+import RegisterPlace from "./components/MapGenerationComponents/RegisterPlace/index.js";
+import EditPlaceWrapper from "./components/MapGenerationComponents/EditPlaceWrapper/index.js";
+import PlaceManipulation from "./components/AdminDashboard/PlaceManipulation/index.js";
+import MapEditor from "./components/MapGenerationComponents/MapEditor/index.js";
+import MyMaps from "./components/UserPagesComponents/MyMaps/index.js";
+import EditProfile from "./components/UserPagesComponents/EditProfile/index.js";
+import EditMapWrapper from "./components/MapGenerationComponents/EditMapWrapper/index.js";
+import { IUserContext } from "./common/types/userTypes/userTypes.js";
 
 function App() {
   const [message, setMessage] = useState(null);
@@ -62,7 +40,7 @@ function App() {
   useEffect(() => {
     async function getResponse() {
       try {
-        const loadedSessionData = await APIService.getSessionData();
+        const loadedSessionData = await authenticationService.getSessionData();
         setSessionData(jose.decodeJwt(loadedSessionData.cookie));
       } catch (err) {
         setMessage(err.message);
@@ -77,9 +55,8 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route element={<Layout contextSetter={setSessionData} />}>
-              <Route index element={<Home />} />
+              <Route path="" element={<Explore />} />
               <Route path="aboutus" element={<AboutUs />} />
-              <Route path="explore" element={<Explore />} />
             </Route>
             <Route element={<LayoutLogged />}>
               <Route
@@ -109,15 +86,7 @@ function App() {
                   </AdminPathResolver>
                 }
               />
-              <Route
-                path="myplaces"
-                element={
-                  <MyPlaces />
-                  // <PlacePathResolver userTypes={sessionData.status}>
-
-                  // </PlacePathResolver>
-                }
-              />
+              <Route path="myplaces" element={<MyPlaces />} />
             </Route>
             <Route path="mymaps" element={<MyMaps />} />
 
