@@ -1,9 +1,7 @@
 import sanitizeHtml from "sanitize-html";
-import TagsModel from "../models/Tags.js";
-import { IPlace, IPlaceIteration } from "../types.js";
 import PlacesModel from "../models/Places.js";
-import PlaceIterationsModel from "../models/PlaceIterations.js";
 import jwt from "jsonwebtoken"
+import { IPlace } from "../types/placeTypes.js";
 
 
 export async function createPlace(req, res) {

@@ -1,7 +1,7 @@
 import UserModel from "../models/Users.js"
 import argon2 from 'argon2';
 import jwt from "jsonwebtoken"
-import { IUser } from "../types.js";
+import { IUser } from "../types/userTypes.js";
 
 
 export async function login(req, res) {
@@ -81,7 +81,7 @@ export async function produceNewAccessToken(req, res, next) {
         await matchingUser.save();
         try {
             //Verify user-based data from within the refresh token
-            const decryptedRefreshToken = jwt.verify(req.body.refreshToken, REFRESH_TOKEN_KEY);
+            jwt.verify(req.body.refreshToken, REFRESH_TOKEN_KEY);
 
             //Check if the user's database entry does contain the refresh token, if it does not, the user most likely attempted to attack the website
             if (!actualUserTokenList.includes(req.body.refreshToken)) {
@@ -153,7 +153,7 @@ export async function checkSessionStatus(req, res) {
         const cookieValue = req.cookies.token;
         const { LOG_TOKEN_KEY } = process.env;
 
-        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+        jwt.verify(cookieValue, LOG_TOKEN_KEY);
 
         res.json({
             cookie: req.cookies.token
@@ -167,9 +167,3 @@ export async function checkSessionStatus(req, res) {
         });
     }
 };
-
-export function checkIfActive(req, res) {
-    res.status(200).json({
-        message: "GOT ME!"
-    })
-}

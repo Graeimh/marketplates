@@ -1,7 +1,7 @@
 import UserModel from "../models/Users.js"
-import { IUser, UserType } from "../types.js";
 import argon2 from 'argon2';
 import sanitizeHtml from 'sanitize-html';
+import { IUser, UserType } from "../types/userTypes.js";
 
 export async function createUser(req, res) {
   try {
@@ -83,7 +83,7 @@ export async function updateUserById(req, res) {
   try {
     const userById: IUser = await UserModel.findOne({ _id: { $in: req.body.userId } });
 
-    const userToUpdate = await UserModel.updateOne({ _id: { $in: req.body.userId } }, {
+    await UserModel.updateOne({ _id: { $in: req.body.userId } }, {
       displayName: req.body.displayName ? sanitizeHtml(req.body.displayName, { allowedTags: [] }) : userById.displayName,
       email: req.body.email ? sanitizeHtml(req.body.email, { allowedTags: [] }) : userById.email,
       firstName: req.body.firstName ? sanitizeHtml(req.body.firstName, { allowedTags: [] }) : userById.firstName,
@@ -112,7 +112,7 @@ export async function updateUserById(req, res) {
 
 export async function deleteUserById(req, res) {
   try {
-    const userToDelete = await UserModel.deleteOne({ _id: { $in: req.body.userId } });
+    await UserModel.deleteOne({ _id: { $in: req.body.userId } });
 
     res.status(204).json({
       message: '(204 No Content)-User successfully deleted',
@@ -129,7 +129,7 @@ export async function deleteUserById(req, res) {
 
 export async function deleteUsersByIds(req, res) {
   try {
-    const usersToDelete = await UserModel.deleteMany({ _id: { $in: req.body.tagIds } });
+    await UserModel.deleteMany({ _id: { $in: req.body.tagIds } });
 
     res.status(204).json({
       message: '(204 No Content)-Users successfully deleted',

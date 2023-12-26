@@ -1,14 +1,15 @@
 import { Router } from "express";
-import { getAllTags, getTagsByIds, getAllOfficialTags, getUserSingleTags, getCommonMapperTags, createTag, updateTagById, deleteTagById, deleteTagsByIds } from "../controllers/TagController.js";
+import { getAllTags, getTagsByIds, getAllOfficialTags, getUserSingleTags, getCommonMapperTags, createTag, updateTagById, deleteTagById, deleteTagsByIds } from "../../controllers/TagController.js";
+import { idChecker } from "../../middlewares/idChecker.js";
 
 
 const tagRouter = Router();
 
 tagRouter.get("/", getAllTags);
-tagRouter.get("/byId/:ids", getTagsByIds);
+tagRouter.get("/byId/:ids", idChecker, getTagsByIds);
 tagRouter.get("/officialIds", getAllOfficialTags);
 tagRouter.get("/userTags", getUserSingleTags);
-tagRouter.get("/mapperTags/:userIds", getCommonMapperTags);
+tagRouter.get("/mapperTags/:ids", idChecker, getCommonMapperTags);
 tagRouter.post("/create", createTag);
 tagRouter.post("/update", updateTagById);
 tagRouter.post("/delete", deleteTagById);

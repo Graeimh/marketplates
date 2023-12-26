@@ -27,13 +27,6 @@ apiInstance.interceptors.response.use(
     }
 );
 
-export async function getApiStatus() {
-    const response = await apiInstance.get('/');
-    return response.data;
-}
-
-
-
 //////////////////////////////////////////////////////////////////////////////////////
 //     SECURITY   ////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
@@ -63,14 +56,6 @@ export async function getSessionData() {
     const response = await apiInstance.get('/auth/checkSession');
     return response.data;
 }
-
-export async function checkIfActive(refreshToken: string | null) {
-    const response = await apiInstance.post('/auth/tester', { refreshToken });
-    return response.data;
-}
-
-
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -190,12 +175,10 @@ export async function generateMap(formData: IMapValues) {
     return response.data;
 }
 
-export async function updateMapById(userId: string, description?: string, name?: string, privacyStatus?: PrivacyStatus) {
+export async function updateMapById(mapId: string, formData: IMapValues) {
     const response = await apiInstance.post('/maps/update', {
-        description,
-        name,
-        userId,
-        privacyStatus,
+        mapId,
+        formData,
     });
     return response.data;
 }

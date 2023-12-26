@@ -62,10 +62,8 @@ function App() {
   useEffect(() => {
     async function getResponse() {
       try {
-        const status = await APIService.getApiStatus();
         const loadedSessionData = await APIService.getSessionData();
         setSessionData(jose.decodeJwt(loadedSessionData.cookie));
-        setMessage(status);
       } catch (err) {
         setMessage(err.message);
       }

@@ -1,9 +1,10 @@
 import sanitizeHtml from "sanitize-html";
-import { IMaps, IPlaceIteration, IPlaceUpdated, PrivacyStatus, UserPrivileges } from "../types.js";
 import MapsModel from "../models/Maps.js";
 import jwt from "jsonwebtoken"
 import mongoose, { Types } from "mongoose";
 import PlaceIterationsModel from "../models/PlaceIterations.js";
+import { IMaps, IPlaceUpdated, PrivacyStatus, UserPrivileges } from "../types/mapTypes.js";
+import { IPlaceIteration } from "../types/placeIterationTypes.js";
 
 
 export async function createMap(req, res) {
@@ -100,7 +101,7 @@ export async function getAllPublicMaps(req, res) {
 
 export async function getAllMapsAvailable(req, res) {
     try {
-        const allAvailableMaps = await MapsModel.find({ $or: [{ privacyStatus: PrivacyStatus.Public }, { ownerId: req.params.userId }, { "participants.userId": req.params.userId }] });
+        const allAvailableMaps = await MapsModel.find({ $or: [{ privacyStatus: PrivacyStatus.Public }, { ownerId: req.params.ids }, { "participants.userId": req.params.ids }] });
         res.status(200).json({
             data: allAvailableMaps,
             message: '(200 OK)-Successfully fetched all maps for the user',
@@ -166,16 +167,60 @@ export async function updateMapById(req, res) {
             });
         }
 
-        const mapToUpdate = await MapsModel.updateOne({ _id: { $in: req.body.mapId } }, {
+        const iterations: IPlaceUpdated[] = req.body.formData.placeIterations;
+        const listOfIterationIds: Types.ObjectId[] = [];
+
+        for (const iteration of iterations) {
+            const foundPreexistingIteration = await PlaceIterationsModel.find({ _id: { $in: [iteration._id] } })
+            if (foundPreexistingIteration) {
+                try {
+                    await PlaceIterationsModel.updateOne({ _id: { $in: foundPreexistingIteration[0]._id } }, {
+                        customName: iteration.name,
+                        customDescription: iteration.description,
+                        customTagIds: iteration.tagsList.map(tag => tag._id),
+                    })
+                    listOfIterationIds.push(foundPreexistingIteration[0]._id);
+                } catch {
+                    res.status(500).json({
+                        message: '(500 Internal Server Error)-A server side error has occured.',
+                        success: false
+                    });
+                }
+            } else {
+                try {
+                    const newId = new mongoose.Types.ObjectId();
+                    const iterationToCreate: IPlaceIteration = {
+                        _id: newId,
+                        associatedMapIds: [req.body.mapId],
+                        creatorId: decryptedCookie.userId,
+                        customName: iteration.name,
+                        customDescription: iteration.description,
+                        customTagIds: iteration.tagsList.map(tag => tag._id),
+                        gpsCoordinates: {
+                            longitude: iteration.gpsCoordinates.longitude,
+                            latitude: iteration.gpsCoordinates.latitude,
+                        },
+                        placeId: iteration._id,
+
+                    }
+                    listOfIterationIds.push(newId);
+
+                    await PlaceIterationsModel.create(iterationToCreate);
+                } catch {
+                    res.status(500).json({
+                        message: '(500 Internal Server Error)-A server side error has occured.',
+                        success: false
+                    });
+                }
+            }
+        }
+
+        await MapsModel.updateOne({ _id: { $in: req.body.mapId } }, {
             description: req.body.formData.description ? sanitizeHtml(req.body.formData.description, { allowedTags: [] }) : mapById.description,
             name: req.body.formData.name ? sanitizeHtml(req.body.formData.name, { allowedTags: [] }) : mapById.name,
-            ownerId: decryptedCookie.userId,
             participants: req.body.formData.participants,
-            privacyStatus: (req.body.formData.privacyStatus && req.body.creatorId === mapById.participants.some(user => user.userPrivileges.includes(UserPrivileges.Owner))) ?
-                req.body.formData.privacyStatus : mapById.privacyStatus,
-            placeIterationIds: (req.body.formData.placeIterations && req.body.creatorId === mapById.participants.some(user => user.userPrivileges.includes(UserPrivileges.Owner) || user.userPrivileges.includes(UserPrivileges.Editer)))
-                ?
-                req.body.formData.placeIterations : mapById.placeIterationIds,
+            privacyStatus: req.body.formData.privacyStatus,
+            placeIterationIds: listOfIterationIds,
 
         })
 
@@ -194,7 +239,7 @@ export async function updateMapById(req, res) {
 
 export async function deleteMapById(req, res) {
     try {
-        const mapToDelete = await MapsModel.deleteOne({ _id: { $in: req.body.mapId } });
+        await MapsModel.deleteOne({ _id: { $in: req.body.mapId } });
 
         res.status(204).json({
             message: '(204 No Content)-Map successfully deleted',
@@ -211,7 +256,7 @@ export async function deleteMapById(req, res) {
 
 export async function deleteMapsByIds(req, res) {
     try {
-        const mapsToDelete = await MapsModel.deleteMany({ _id: { $in: req.body.mapIds } });
+        await MapsModel.deleteMany({ _id: { $in: req.body.mapIds } });
 
         res.status(204).json({
             message: '(204 No Content)-Maps successfully deleted',

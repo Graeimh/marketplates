@@ -1,33 +1,12 @@
 import { Outlet, Link } from "react-router-dom";
 import styles from "./Layout.module.scss";
-import {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useContext, useState } from "react";
 import * as APIService from "../../services/api";
 import UserContext from "../UserContext";
 
 const Layout = (contextSetter: Dispatch<SetStateAction<null>>) => {
   const [message, setMessage] = useState(null);
   const value = useContext(UserContext);
-
-  useEffect(() => {
-    async function getResponse() {
-      try {
-        // const status = await APIService.getApiStatus();
-        const status = await APIService.checkIfActive(
-          sessionStorage.getItem("refreshToken")
-        );
-        setMessage(status);
-      } catch (err) {
-        setMessage(err.message);
-      }
-    }
-    getResponse();
-  }, []);
 
   async function logoutUser() {
     try {

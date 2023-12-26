@@ -1,7 +1,7 @@
 import sanitizeHtml from "sanitize-html";
 import TagsModel from "../models/Tags.js";
-import { ITag } from "../types.js";
 import jwt from "jsonwebtoken"
+import { ITag } from "../types/tagTypes.js";
 
 
 export async function createTag(req, res) {
@@ -81,7 +81,7 @@ export async function getUserSingleTags(req, res) {
 
 export async function getCommonMapperTags(req, res) {
     try {
-        const allParticipantTags = await TagsModel.find({ $or: [{ creatorId: { $in: req.body.creatorIds.split("&") } }, { isOfficial: true }] });
+        const allParticipantTags = await TagsModel.find({ $or: [{ creatorId: { $in: req.params.ids.split("&") } }, { isOfficial: true }] });
         res.status(200).json({
             data: allParticipantTags,
             message: '(200 OK)-Successfully fetched all the tags for these users',
@@ -115,7 +115,7 @@ export async function updateTagById(req, res) {
     try {
         const tagById: ITag = await TagsModel.findOne({ _id: { $in: req.body.tagId } });
 
-        const tagToUpdate = await TagsModel.updateOne({ _id: { $in: req.body.tagId } }, {
+        await TagsModel.updateOne({ _id: { $in: req.body.tagId } }, {
             backgroundColor: sanitizeHtml(req.body.backgroundColor, { allowedTags: [] }) ? sanitizeHtml(req.body.backgroundColor, { allowedTags: [] }) : tagById.backgroundColor,
             name: sanitizeHtml(req.body.name, { allowedTags: [] }) ? sanitizeHtml(req.body.name, { allowedTags: [] }) : tagById.name,
             nameColor: sanitizeHtml(req.body.nameColor, { allowedTags: [] }) ? sanitizeHtml(req.body.nameColor, { allowedTags: [] }) : tagById.nameColor,
@@ -137,7 +137,7 @@ export async function updateTagById(req, res) {
 
 export async function deleteTagById(req, res) {
     try {
-        const tagToDelete = await TagsModel.deleteOne({ _id: { $in: req.body.tagId } });
+        await TagsModel.deleteOne({ _id: { $in: req.body.tagId } });
 
         res.status(204).json({
             message: '(204 No Content)-Appliance successfully deleted',
@@ -154,7 +154,7 @@ export async function deleteTagById(req, res) {
 
 export async function deleteTagsByIds(req, res) {
     try {
-        const tagsToDelete = await TagsModel.deleteMany({ _id: { $in: req.body.tagIds } });
+        await TagsModel.deleteMany({ _id: { $in: req.body.tagIds } });
 
         res.status(204).json({
             message: '(204 No Content)-Tags successfully deleted',

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { ITagAffinity, ITag, IImageData } from '../types.js';
+import { ITag, ITagAffinity } from '../types/tagTypes.js';
 
 const TagsSchema = new mongoose.Schema<ITag>(
   {

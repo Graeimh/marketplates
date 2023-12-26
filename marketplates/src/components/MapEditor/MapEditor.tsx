@@ -71,6 +71,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
     });
   const provider = new OpenStreetMapProvider();
 
+  console.log("formData", formData);
   async function handleAdressButton(): Promise<void> {
     const results = await provider.search({ query: addressQuery });
     setNewResults(results);
@@ -217,7 +218,11 @@ function MapEditor(props: { editedMap: string | undefined }) {
   async function sendRegistrationForm(event) {
     event.preventDefault();
     try {
-      await APIService.generateMap(formData);
+      if (!props.editedMap) {
+        await APIService.generateMap(formData);
+      } else {
+        await APIService.updateMapById(props.editedMap, formData);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -674,29 +679,16 @@ function MapEditor(props: { editedMap: string | undefined }) {
       )}
       {error && <div className={styles.error}>{error}</div>}
 
-      {props.editedMap ? (
-        <button
-          type="button"
-          onClick={(e) => {
-            sendRegistrationForm(e);
-            navigate("mymaps");
-          }}
-          disabled={!isValidForSending}
-        >
-          Edit map
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={(e) => {
-            sendRegistrationForm(e);
-            navigate("mymaps");
-          }}
-          disabled={!isValidForSending}
-        >
-          Create map
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={(e) => {
+          sendRegistrationForm(e);
+          navigate("mymaps");
+        }}
+        disabled={!isValidForSending}
+      >
+        {props.editedMap ? "Edit map" : "Create map"}
+      </button>
     </>
   );
 }

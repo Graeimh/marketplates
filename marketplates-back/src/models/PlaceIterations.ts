@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IPlaceIteration } from '../types.js';
+import { IPlaceIteration } from '../types/placeIterationTypes.js';
 
 const PlaceIterationsSchema = new mongoose.Schema<IPlaceIteration>(
   {

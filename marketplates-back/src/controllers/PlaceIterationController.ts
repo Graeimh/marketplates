@@ -1,8 +1,7 @@
 import sanitizeHtml from "sanitize-html";
 import PlacesModel from "../models/Places.js";
-import { IPlaceIteration } from "../types.js";
 import PlaceIterationsModel from "../models/PlaceIterations.js";
-import IterationsModel from "../models/Iterations.js";
+import { IPlaceIteration } from "../types/placeIterationTypes.js";
 
 export async function createPlaceIterationById(req, res) {
     try {
@@ -69,7 +68,7 @@ export async function getPlaceIterationsByIds(req, res) {
 
 export async function getAllPlaceIterationsFromPlace(req, res) {
     try {
-        const allPlacesIterationsFromPlace = await PlaceIterationsModel.find({ placeId: req.params.placeId });
+        const allPlacesIterationsFromPlace = await PlaceIterationsModel.find({ placeId: req.params.ids });
         res.json({
             data: allPlacesIterationsFromPlace,
             message: '(200 OK)-Successfully fetched all iterations from the given place',
@@ -94,7 +93,7 @@ export async function updatePlaceIterationById(req, res) {
             });
         }
 
-        const placeIterationToUpdate = await PlaceIterationsModel.updateOne({ _id: { $in: req.body.placeIterationId } }, {
+        await PlaceIterationsModel.updateOne({ _id: { $in: req.body.placeIterationId } }, {
             customName: req.body.customName ? sanitizeHtml(req.body.customName, { allowedTags: [] }) : placeIterationById.customName,
             customDescription: req.body.customDescription ? sanitizeHtml(req.body.customDescription, { allowedTags: [] }) : placeIterationById.customDescription,
             customTagIds: req.body.customTagIds ? req.body.customTagIds : placeIterationById.customTagIds,
@@ -129,7 +128,7 @@ export async function getPlaceIterationByIds(req, res) {
 
 export async function getPlaceIterationForUser(req, res) {
     try {
-        const allPlacesIterationsForUser = await PlaceIterationsModel.find({ creatorId: req.params.userId });
+        const allPlacesIterationsForUser = await PlaceIterationsModel.find({ creatorId: req.params.ids });
         res.json({
             data: allPlacesIterationsForUser,
             message: '(200 OK)-Successfully fetched all place iterations for the given user',
@@ -143,9 +142,9 @@ export async function getPlaceIterationForUser(req, res) {
     }
 }
 
-export async function deleteIterationById(req, res) {
+export async function deletePlaceIterationById(req, res) {
     try {
-        const iterationToDelete = await IterationsModel.deleteMany({ _id: { $in: req.body.iterationId } });
+        await PlaceIterationsModel.deleteMany({ _id: { $in: req.body.iterationId } });
 
         res.status(204).json({
             message: '(204 No Content)-Iteration successfully deleted',
@@ -160,18 +159,18 @@ export async function deleteIterationById(req, res) {
     }
 }
 
-export async function deleteIterationsByIds(req, res) {
+export async function deletePlaceIterationsByIds(req, res) {
     try {
-        const iterationsToDelete = await IterationsModel.deleteMany({ _id: { $in: req.body.iterationIds } });
+        await PlaceIterationsModel.deleteMany({ _id: { $in: req.body.iterationIds } });
 
         res.status(204).json({
-            message: '(204 No Content)-Iterations successfully deleted',
+            message: '(204 No Content)-Place iterations successfully deleted',
             success: true
         });
 
     } catch (err) {
         res.status(404).json({
-            message: '(404 Not found)-One or several iterations to be deleted were not found',
+            message: '(404 Not found)-One or several place iterations to be deleted were not found',
             success: false
         });
     }

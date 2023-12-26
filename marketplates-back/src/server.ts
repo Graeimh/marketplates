@@ -3,7 +3,7 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import mongoose from "mongoose";
-import routes from "./routes/routes.js";
+import routes from "./routes/mainRoutes.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -22,14 +22,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Starting the API
 const app = express();
 
-// CSRF-CSRF Setup
-
-// CSRF quand POST & GET
-// Vérification token CSRF d'abord, token de session après
-// Token CSRF doit être lié à la session actuelle (généré par le serveur en fonction de la session)
-// Records of token (Refresh Token)
-
-
 // CORS authorization, JSON data formatting for API communication
 app.use(cookieParser());
 app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
@@ -47,7 +39,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 
 // ==========
-// App routers
+// App router
 // ==========
 
 app.use("/", routes);
