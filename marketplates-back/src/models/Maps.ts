@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { IMaps, PrivacyStatus, UserPrivileges } from '../types/mapTypes.js';
 
+// Defining a schema matching the interface IMaps
 const mapsSchema = new mongoose.Schema<IMaps>(
   {
     _id: {
@@ -22,7 +23,9 @@ const mapsSchema = new mongoose.Schema<IMaps>(
   { versionKey: false }
 )
 
-const collectionName = 'Maps'
-const MapsModel = mongoose.model('Maps', mapsSchema, collectionName)
+const collectionName = 'Maps';
+
+// Creating a model for database interactions
+const MapsModel = mongoose.model('Maps', mapsSchema, collectionName);
 
 export default MapsModel

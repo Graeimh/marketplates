@@ -50,8 +50,10 @@ app.use("/", routes);
 
 try {
   await mongoose.connect(`${MONGO_STRING}${MONGO_DB_NAME}`);
+  //Confirm in the terminal that the database is connected
   console.log(`✅ Connecté à la base MongoDB ${MONGO_DB_NAME}`);
   app.listen(APP_PORT, () => {
+    //Confirm in the terminal that the back end is ready to be called upon
     console.log(`API started on http://${APP_HOSTNAME}:${APP_PORT}`);
   });
 } catch (err) {

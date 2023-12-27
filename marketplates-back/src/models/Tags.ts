@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { ITag, ITagAffinity } from '../types/tagTypes.js';
 
+// Defining a schema matching the interface ITag
 const TagsSchema = new mongoose.Schema<ITag>(
   {
     _id: {
@@ -25,7 +26,9 @@ const TagsSchema = new mongoose.Schema<ITag>(
   { versionKey: false }
 );
 
-const collectionName = 'Tags'
-const TagsModel = mongoose.model('Tags', TagsSchema, collectionName)
+const collectionName = 'Tags';
+
+// Creating a model for database interactions
+const TagsModel = mongoose.model('Tags', TagsSchema, collectionName);
 
 export default TagsModel

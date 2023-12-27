@@ -3,8 +3,19 @@ import argon2 from 'argon2';
 import sanitizeHtml from 'sanitize-html';
 import { IUser, UserType } from "../types/userTypes.js";
 
+/**
+   * Creates a user
+   *
+   *
+   * @param req - The request object associated with the route parameters, specifically the formData held within the body
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If the email used matches with that of an existing user (403), or if the data provided causes an error in the creation of the user (403) 
+   * @responds - By informing the user their data has been saved into the database (201)
+*/
 export async function createUser(req, res) {
   try {
+    // Check if a user with the same email doesn't already exist
     const preExistingUser = await UserModel.find({ email: req.body.formData.email });
 
     if (preExistingUser.length > 0) {
@@ -13,6 +24,7 @@ export async function createUser(req, res) {
         success: false
       });
     } else {
+      // Creating the user according to the IUser interface, sanitizing every text input given using sanitizeHtml
       const user: IUser = {
         activeBasketlistIds: [],
         displayName: sanitizeHtml(req.body.formData.nickName, { allowedTags: [] }),
@@ -32,6 +44,7 @@ export async function createUser(req, res) {
       }
 
       await UserModel.create(user);
+
       res.status(201).json({
         message: '(201 Created)-User Created',
         success: true
@@ -46,43 +59,76 @@ export async function createUser(req, res) {
   }
 }
 
+/**
+   * Fetches all users
+   *
+   *
+   * @param req - The request object associated with the route parameters, not used here
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If no user is found (404)
+   * @responds - With an array of all the users in the database (200)
+*/
 export async function getAllUsers(req, res) {
   try {
     const allUsers = await UserModel.find();
-    res.json({
+    res.status(200).json({
       data: allUsers,
       message: '(200 OK)-Successfully fetched all users',
       success: true
     });
   } catch (err) {
-    res.json({
+    res.status(404).json({
       message: '(404 Not found)-No user was found',
       success: false
     });
   }
 }
 
+/**
+   * Fetches all users matching to the Ids given
+   *
+   *
+   * @param req - The request object associated with the route parameters, specifically the Ids in the params
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If no map is found (404)
+   * @responds - With an array of users who match the Ids given (200)
+*/
 export async function getUsersById(req, res) {
   try {
+    // Ids, when sent in groups are sent in a single string, each Id tied to the others by a & character, hence the need for a split on that character
     const allUsers = await UserModel.find({ _id: { $in: req.params.ids.split("&") } });
-    res.json({
+    res.status(200).json({
       data: allUsers,
       message: '(200 OK)-Successfully fetched all users by Ids',
       success: true
     });
   } catch (err) {
-    res.json({
+    res.status(404).json({
       message: '(404 Not found)-No users were found',
       success: false
     });
   }
 }
 
+/**
+   * Updates a user's data in the database
+   *
+   *
+   * @param req - The request object associated with the route parameters, specifically the formData held within the body
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If the user to update was not found (404)
+   * @responds - With a message informing the user the update is done (204)
+*/
 export async function updateUserById(req, res) {
 
   try {
+    // Find the user to update
     const userById: IUser = await UserModel.findOne({ _id: { $in: req.body.userId } });
 
+    // Updating the user according to the IUser interface, sanitizing every text input given using sanitizeHtml, keeping the old values if no new one is given
     await UserModel.updateOne({ _id: { $in: req.body.userId } }, {
       displayName: req.body.displayName ? sanitizeHtml(req.body.displayName, { allowedTags: [] }) : userById.displayName,
       email: req.body.email ? sanitizeHtml(req.body.email, { allowedTags: [] }) : userById.email,
@@ -110,6 +156,16 @@ export async function updateUserById(req, res) {
   }
 }
 
+/**
+   * Deletes a specific user
+   *
+   *
+   * @param req - The request object associated with the route parameters, especially its body property
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If no matching user is found (404)
+   * @responds - With a message informing the user the deletion has been carried out (204)
+*/
 export async function deleteUserById(req, res) {
   try {
     await UserModel.deleteOne({ _id: { $in: req.body.userId } });
@@ -127,6 +183,16 @@ export async function deleteUserById(req, res) {
   }
 }
 
+/**
+   * Deletes a specific set of users
+   *
+   *
+   * @param req - The request object associated with the route parameters, especially its body property
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If no user is found (404)
+   * @responds - With a message informing the user the deletion has been carried out (204)
+*/
 export async function deleteUsersByIds(req, res) {
   try {
     await UserModel.deleteMany({ _id: { $in: req.body.tagIds } });

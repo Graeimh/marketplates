@@ -1,6 +1,7 @@
-import mongoose, { Schema } from 'mongoose'
+import mongoose, { Schema } from 'mongoose';
 import { IUser, UserType } from '../types/userTypes.js';
 
+// Defining a schema matching the interface IUser
 const UsersSchema = new mongoose.Schema<IUser>(
   {
     _id: {
@@ -32,7 +33,9 @@ const UsersSchema = new mongoose.Schema<IUser>(
   { versionKey: false }
 );
 
-const collectionName = 'Users'
-const UsersModel = mongoose.model('Users', UsersSchema, collectionName)
+const collectionName = 'Users';
+
+// Creating a model for database interactions
+const UsersModel = mongoose.model('Users', UsersSchema, collectionName);
 
 export default UsersModel

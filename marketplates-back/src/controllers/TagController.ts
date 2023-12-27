@@ -3,10 +3,21 @@ import TagsModel from "../models/Tags.js";
 import jwt from "jsonwebtoken"
 import { ITag } from "../types/tagTypes.js";
 
+/**
+   * Creates a tag
+   *
+   *
+   * @param req - The request object associated with the route parameters, specifically the formData held within the body
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If the data provided causes an error in the creation of the tag (403)
+   * @responds - By informing the user the tag has been created (201)
+*/
 
 export async function createTag(req, res) {
 
     try {
+        // Creating the tag according to the ITag interface, sanitizing every text input given using sanitizeHtml
         const tag: ITag = {
             backgroundColor: sanitizeHtml(req.body.tagBackgroundColor, { allowedTags: [] }),
             creatorId: req.body.userId,
@@ -28,6 +39,16 @@ export async function createTag(req, res) {
     };
 }
 
+/**
+   * Fetches all tags
+   *
+   *
+   * @param req - The request object associated with the route parameters, not used here
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If no tag is found (404)
+   * @responds - With an array of all the tags in the database (200)
+*/
 export async function getAllTags(req, res) {
     try {
         const allTags = await TagsModel.find();
@@ -44,6 +65,16 @@ export async function getAllTags(req, res) {
     }
 }
 
+/**
+   * Fetches all tags whose isOfficial value is true
+   *
+   *
+   * @param req - The request object associated with the route parameters, not used here
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If no tag is found (404)
+   * @responds - With an array of all the official tags in the database (200)
+*/
 export async function getAllOfficialTags(req, res) {
     try {
         const allOfficialTags = await TagsModel.find({ isOfficial: true });
@@ -60,9 +91,22 @@ export async function getAllOfficialTags(req, res) {
     }
 }
 
+/**
+   * Fetches all tags who are either official or belonging to a user
+   *
+   *
+   * @param req - The request object associated with the route parameters, not used here
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If no tag is found (404)
+   * @responds - With an array of all the matching tags in the database (200)
+*/
 export async function getUserSingleTags(req, res) {
     try {
+        // Get access token from the front end and the key that serves to create and verify them
         const { LOG_TOKEN_KEY } = process.env;
+
+        // Get the token's contents, verifying its validity in the process
         const decryptedCookieValue = jwt.verify(req.cookies.token, LOG_TOKEN_KEY);
 
         const allUserTags = await TagsModel.find({ $or: [{ creatorId: decryptedCookieValue.userId }, { isOfficial: true }] });
@@ -79,8 +123,19 @@ export async function getUserSingleTags(req, res) {
     }
 }
 
+/**
+   * Fetches all tags who are either official or belonging to a tag creator whose id matches
+   *
+   *
+   * @param req - The request object associated with the route parameters, specifically the Ids within the parameter property
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If no tag is found (404)
+   * @responds - With an array of all the matching tags in the database (200)
+*/
 export async function getCommonMapperTags(req, res) {
     try {
+        // Ids, when sent in groups are sent in a single string, each Id tied to the others by a & character, hence the need for a split on that character
         const allParticipantTags = await TagsModel.find({ $or: [{ creatorId: { $in: req.params.ids.split("&") } }, { isOfficial: true }] });
         res.status(200).json({
             data: allParticipantTags,
@@ -95,8 +150,19 @@ export async function getCommonMapperTags(req, res) {
     }
 }
 
+/**
+   * Fetches all tags whose Ids match the ones given
+   *
+   *
+   * @param req - The request object associated with the route parameters, specifically the Ids within the parameter property
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If no tag is found (404)
+   * @responds - With an array of all the matching tags in the database (200)
+*/
 export async function getTagsByIds(req, res) {
     try {
+        // Ids, when sent in groups are sent in a single string, each Id tied to the others by a & character, hence the need for a split on that character
         const tagsByIds = await TagsModel.find({ _id: { $in: req.params.ids.split("&") } });
         res.status(200).json({
             data: tagsByIds,
@@ -111,10 +177,22 @@ export async function getTagsByIds(req, res) {
     }
 }
 
+/**
+   * Updates a tag's data in the database
+   *
+   *
+   * @param req - The request object associated with the route parameters, specifically the formData held within the body
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If the tag to update was not found (404)
+   * @responds - With a message informing the user the update is done (204)
+*/
 export async function updateTagById(req, res) {
     try {
+        // Find the tag to update
         const tagById: ITag = await TagsModel.findOne({ _id: { $in: req.body.tagId } });
 
+        // Updating the tag according to the ITag interface, sanitizing every text input given using sanitizeHtml, keeping the old values if no new one is given
         await TagsModel.updateOne({ _id: { $in: req.body.tagId } }, {
             backgroundColor: sanitizeHtml(req.body.backgroundColor, { allowedTags: [] }) ? sanitizeHtml(req.body.backgroundColor, { allowedTags: [] }) : tagById.backgroundColor,
             name: sanitizeHtml(req.body.name, { allowedTags: [] }) ? sanitizeHtml(req.body.name, { allowedTags: [] }) : tagById.name,
@@ -135,6 +213,16 @@ export async function updateTagById(req, res) {
     }
 }
 
+/**
+   * Deletes a tag
+   *
+   *
+   * @param req - The request object associated with the route parameters, especially its body property
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If no tag is found (404)
+   * @responds - With a message informing the user the deletion has been carried out (204)
+*/
 export async function deleteTagById(req, res) {
     try {
         await TagsModel.deleteOne({ _id: { $in: req.body.tagId } });
@@ -152,6 +240,16 @@ export async function deleteTagById(req, res) {
     }
 }
 
+/**
+   * Deletes a specific set of tags
+   *
+   *
+   * @param req - The request object associated with the route parameters, especially its body property
+   * @param res - The response object associated with the route
+   * 
+   * @catches - If no tag is found (404)
+   * @responds - With a message informing the user the deletion has been carried out (204)
+*/
 export async function deleteTagsByIds(req, res) {
     try {
         await TagsModel.deleteMany({ _id: { $in: req.body.tagIds } });

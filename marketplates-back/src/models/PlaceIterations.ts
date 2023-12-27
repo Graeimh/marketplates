@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { IPlaceIteration } from '../types/placeIterationTypes.js';
 
+// Defining a schema matching the interface IPlaceIteration
 const PlaceIterationsSchema = new mongoose.Schema<IPlaceIteration>(
   {
     _id: {
@@ -21,10 +22,12 @@ const PlaceIterationsSchema = new mongoose.Schema<IPlaceIteration>(
     placeId: { type: mongoose.SchemaTypes.ObjectId, required: true },
   },
   { versionKey: false }
-)
+);
 
 
-const collectionName = 'PlaceIterations'
-const PlaceIterationsModel = mongoose.model('PlaceIterations', PlaceIterationsSchema, collectionName)
+const collectionName = 'PlaceIterations';
+
+// Creating a model for database interactions
+const PlaceIterationsModel = mongoose.model('PlaceIterations', PlaceIterationsSchema, collectionName);
 
 export default PlaceIterationsModel

@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { IPlace } from '../types/placeTypes.js';
 
+// Defining a schema matching the interface IPlace
 const PlacesSchema = new mongoose.Schema<IPlace>(
   {
     _id: {
@@ -22,7 +23,9 @@ const PlacesSchema = new mongoose.Schema<IPlace>(
   { versionKey: false }
 )
 
-const collectionName = 'Places'
-const PlacesModel = mongoose.model('Places', PlacesSchema, collectionName)
+const collectionName = 'Places';
+
+// Creating a model for database interactions
+const PlacesModel = mongoose.model('Places', PlacesSchema, collectionName);
 
 export default PlacesModel
