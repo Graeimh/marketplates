@@ -1,5 +1,6 @@
 import sanitizeHtml from "sanitize-html";
 import PlacesModel from "../models/Places.js";
+import jwt from "jsonwebtoken";
 import PlaceIterationsModel from "../models/PlaceIterations.js";
 import { IPlaceIteration } from "../types/placeIterationTypes.js";
 
@@ -133,7 +134,7 @@ export async function getAllPlaceIterationsFromPlace(req, res) {
    * Fetches all place iterations from a given owner
    *
    *
-   * @param req - The request object associated with the route parameters, specifically the single id contained in the ids from the params property
+   * @param req - The request object associated with the route parameters
    * @param res - The response object associated with the route
    * 
    * @catches - If no place iteration is found (404)
@@ -141,7 +142,14 @@ export async function getAllPlaceIterationsFromPlace(req, res) {
 */
 export async function getPlaceIterationForUser(req, res) {
     try {
-        const allPlacesIterationsForUser = await PlaceIterationsModel.find({ creatorId: req.params.ids });
+        // Get access token from the front end and the key that serves to create and verify them
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
+
+        // Get the token's contents, verifying its validity in the process
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
+        const allPlacesIterationsForUser = await PlaceIterationsModel.find({ creatorId: decryptedCookie.userId });
         res.status(200).json({
             data: allPlacesIterationsForUser,
             message: '(200 OK)-Successfully fetched all place iterations for the given user',

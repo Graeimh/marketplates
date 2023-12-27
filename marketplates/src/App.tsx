@@ -28,7 +28,11 @@ import EditMapWrapper from "./components/MapGenerationComponents/EditMapWrapper/
 import { IUserContext } from "./common/types/userTypes/userTypes.js";
 
 function App() {
+  // Setting states
+  // Messages meant to give users feedback on the state of their actions
   const [message, setMessage] = useState(null);
+
+  // Session values tied to the user, logged or not
   const [sessionData, setSessionData] = useState<IUserContext>({
     email: "",
     displayName: "",
@@ -37,10 +41,14 @@ function App() {
     iat: 0,
   });
 
+  // Upon rendering
   useEffect(() => {
     async function getResponse() {
       try {
+        // Obtaining the session's data through the access token stored in the cookie
         const loadedSessionData = await authenticationService.getSessionData();
+
+        // Decoding the cookie and assigning its value to the session context data
         setSessionData(jose.decodeJwt(loadedSessionData.cookie));
       } catch (err) {
         setMessage(err.message);
@@ -54,14 +62,17 @@ function App() {
       <UserContext.Provider value={sessionData}>
         <BrowserRouter>
           <Routes>
+            {/* setSessionData is given to the layout for the logout button, it's aim is to set the session data back to its base value*/}
             <Route element={<Layout contextSetter={setSessionData} />}>
               <Route path="" element={<Explore />} />
               <Route path="aboutus" element={<AboutUs />} />
             </Route>
+            {/* LayoutLogged is used if the user accesses pages where the user is supposed to be logged in */}
             <Route element={<LayoutLogged />}>
               <Route
                 path="profile"
                 element={
+                  // A path resolver ensures that the user doesn't try to deviate from the paths proposed
                   <UserPathResolver userTypes={sessionData.status}>
                     <Profile />
                   </UserPathResolver>
@@ -81,6 +92,7 @@ function App() {
               <Route
                 path="dashboard"
                 element={
+                  // A path resolver ensures that the non-Admin users don't try to access the admin pages
                   <AdminPathResolver userTypes={sessionData.status}>
                     <Dashboard />
                   </AdminPathResolver>

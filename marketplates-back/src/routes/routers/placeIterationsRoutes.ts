@@ -14,7 +14,7 @@ placeIterationsRouter.post("/create", createPlaceIterationById);
 placeIterationsRouter.get("/byIds/:ids", idChecker, getPlaceIterationsByIds);
 
 // Fetches all iterations owned by a user, will be used in the future to allow editing without using the map editor
-placeIterationsRouter.get("/userIterations/:ids", idChecker, getPlaceIterationForUser);
+placeIterationsRouter.get("/userIterations/", idChecker, getPlaceIterationForUser);
 
 // Fetches all iterations from a specific place, will be used in the future for statistics
 placeIterationsRouter.get("/places/:ids", idChecker, getAllPlaceIterationsFromPlace);
