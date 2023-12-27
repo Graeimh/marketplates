@@ -27,7 +27,8 @@ import {
 import { IGPSCoordinates } from "../../../common/types/commonTypes.ts/commonTypes.js";
 
 function MapEditor(props: { editedMap: string | undefined }) {
-  const navigate = useNavigate();
+  // Setting states
+  // Contains the data needed to create a map
   const [formData, setFormData] = useState<IMapValues>({
     name: "",
     description: "",
@@ -35,18 +36,36 @@ function MapEditor(props: { editedMap: string | undefined }) {
     participants: [],
     placeIterations: [],
   });
+
+  // Response message display
   const [responseMessage, setResponseMessage] = useState("");
+
+  // Contains all the tags available for the user pulled from the database
   const [tagList, setTagList] = useState<ITag[]>([]);
+
+  // Contains the tags remaining post filtering
   const [tagFilterList, setTagFilterList] = useState<ITag[]>([]);
+
+  //
   const [newResults, setNewResults] = useState<SearchResult<RawResult>[]>([]);
   const [coordinates, setCoordinates] = useState<IGPSCoordinates>({
     longitude: null,
     latitude: null,
   });
+
+  // Error message display
   const [error, setError] = useState(null);
+
+  // Contains all the places available for all maps
   const [placeList, setPlaceList] = useState<IPlace[]>([]);
+
+  // Contains the address' value to be used with the OpenStreetMapProvider
   const [addressQuery, setAddressQuery] = useState<string>("");
+
+  // Checks if the values for the map's data fit a criteria before allowing its creation or editing
   const [isValidForSending, setIsValidForSending] = useState<boolean>(false);
+
+  // Contains the values used to create an iteration for the map itself before being sent to backend alongside with it
   const [iterationValues, setIterationValues] = useState<IPlaceUpdated>({
     address: "",
     description: "",
@@ -59,23 +78,33 @@ function MapEditor(props: { editedMap: string | undefined }) {
     tagsIdList: [],
     tagsList: [],
   });
+
+  // Contains all the iterations already present or created for the map
   const [iterationsList, setIterationsList] = useState<IPlaceUpdated[]>([]);
+
+  // Contains the values used to filter places and iterations, either via name, or via tags which can be filtered using tagName
   const [placeFilterQuery, setPlaceFilterQuery] = useState<IPlaceFilterQuery>({
     name: "",
     tagName: "",
     tags: [],
   });
+
+  // Contains the values used to filter iterations via name mostly for now
   const [iterationTagFilterQuery, setIterationTagFilterQuery] =
     useState<ITagFilterQuery>({
       tagName: "",
-      tags: [],
     });
+
+  const navigate = useNavigate();
+
+  // Allows to interact with a map address search api
   const provider = new OpenStreetMapProvider();
 
-  console.log("formData", formData);
   async function handleAdressButton(): Promise<void> {
     const results = await provider.search({ query: addressQuery });
     setNewResults(results);
+
+    // If there is only one result possible, its address is assigned to the place
     if (results.length === 1) {
       setCoordinates({ latitude: results[0].y, longitude: results[0].x });
     }
@@ -83,11 +112,16 @@ function MapEditor(props: { editedMap: string | undefined }) {
 
   async function getMapEditorTools() {
     try {
+      // Getting all the tags available for the user
       const allTags = await tagService.fetchTagsForUser();
       setTagList(allTags.data);
       setTagFilterList(allTags.data);
+
+      // Getting all the places available for basic maps
       const allPlaces = await placeService.fetchAllPlaces();
       setPlaceList(allPlaces.data);
+
+      // If the map is being edited, fetch the place iterations it already had and pre-fill all fields with the map's current values in the database
       if (props.editedMap) {
         const mapToEdit = await mapService.fetchMapsByIds([props.editedMap]);
         const mapIterations =
@@ -165,6 +199,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
     mapmarkers.push(marker);
   }
 
+  // Places are replaced with iterations if their ids or place ids match
   const mapMarkersAndIterations: IMarkersForMap[] = [];
   for (const marker of mapmarkers) {
     const iterationToList = iterationsList.find(
@@ -183,11 +218,13 @@ function MapEditor(props: { editedMap: string | undefined }) {
   async function createIteration(event) {
     event.preventDefault();
     if (iterationValues.name.length > 0) {
+      //Check if the iteration is being updated and not created
       if (
         iterationsList.some(
           (iteration) => iteration._id === iterationValues._id
         )
       ) {
+        // Update the iteration
         const iterationToFind = iterationsList.find(
           (iteration) => iteration._id === iterationValues._id
         );
@@ -197,6 +234,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
         iterationsList[iterationIndex] = iterationValues;
         setIterationsList(iterationsList);
       } else {
+        // Create the iteration
         setFormData({
           ...formData,
           placeIterations: [...formData.placeIterations, iterationValues],
@@ -230,8 +268,10 @@ function MapEditor(props: { editedMap: string | undefined }) {
     }
   }
 
+  // A smaller selection of tags to avoid overcrowding the user's page
   const tagSelection: ITag[] = [...tagFilterList].slice(0, 10);
 
+  // Once a tag is bound to an iteration it is no longer within the available tags
   const tagListWithoutSelected: ITag[] = [
     ...new Set(
       tagFilterList.filter(
@@ -251,6 +291,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
     ),
   ];
 
+  // Tags are also filtered through user input if they are looking for specific tags
   const tagListWithoutSelectedAndFiltered: ITag[] = [
     ...tagListWithoutSelected,
   ].filter((tag) => new RegExp(placeFilterQuery.tagName).test(tag.name));
@@ -260,6 +301,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
       ? tagListWithoutSelectedAndFiltered
       : tagSelection;
 
+  // The same process goes for the tags list involved when creating or editing an iteration
   const tagListForIterationWithoutSelectedAndFiltered: ITag[] = [
     ...tagListForIterationWithoutSelected,
   ].filter((tag) => new RegExp(iterationTagFilterQuery.tagName).test(tag.name));
@@ -278,7 +320,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
   return (
     <>
       <h1>Map editor</h1>
-
+      {/* Here we give the map's basic values according to screen size, for now the placement is arbitrary, but later we could center the map on the user's location in the database */}
       <MapContainer
         style={{ height: "30rem", width: "100%" }}
         center={[48.85, 2.34]}
@@ -290,6 +332,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
           longitude={coordinates.longitude}
           doubleClickEvent={doubleClickMaphandler}
         />
+        {/* Defines the style of the map */}
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
         {mapMarkersAfterFilter.length > 0 &&
@@ -305,6 +348,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
               ]}
               key={place._id}
             >
+              {/* Upon clicking the user either sees a place's data, or the iteration values for it*/}
               <Popup key={place.name}>
                 <h3>{place.name}</h3>
                 <p>{place.description}</p>

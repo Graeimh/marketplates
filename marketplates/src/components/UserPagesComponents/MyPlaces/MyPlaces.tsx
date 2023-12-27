@@ -4,7 +4,11 @@ import { IPlace } from "../../../common/types/placeTypes/placeTypes.js";
 import { useNavigate } from "react-router-dom";
 
 function MyPlaces() {
+  // Setting states
+  // Array of user owned places meant to be displayed, edited or deleted
   const [userPlacesList, setUserPlacesList] = useState<IPlace[]>([]);
+
+  // Error message display
   const [error, setError] = useState("");
   const navigate = useNavigate();
 

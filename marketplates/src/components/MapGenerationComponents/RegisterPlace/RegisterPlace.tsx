@@ -12,13 +12,14 @@ import { OpenStreetMapProvider } from "leaflet-geosearch";
 import { SearchResult } from "leaflet-geosearch/dist/providers/provider.js";
 import { RawResult } from "leaflet-geosearch/dist/providers/openStreetMapProvider.js";
 import {
-  IPlaceData,
+  IPlace,
   IPlaceRegisterValues,
 } from "../../../common/types/placeTypes/placeTypes.js";
 import { IGPSCoordinates } from "../../../common/types/commonTypes.ts/commonTypes.js";
 
 function RegisterPlace(props: { editPlaceId: string | undefined }) {
-  const navigate = useNavigate();
+  // Setting states
+  // Contains the data needed to create a place
   const [formData, setFormData] = useState<IPlaceRegisterValues>({
     name: "",
     description: "",
@@ -29,22 +30,40 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
     },
     tagList: [],
   });
+
+  // Serves to check if the values sent have at least a certain number of characters
   const [isValidForSending, setIsValidForSending] = useState(false);
+
+  // Response message display
   const [responseMessage, setResponseMessage] = useState("");
+
+  // Contains the list of tags to pick from to associate to the place
   const [tagList, setTagList] = useState<ITag[]>([]);
+
+  // Contains a list of addresses obtained upon making a prompt to find an address
   const [newResults, setNewResults] = useState<SearchResult<RawResult>[]>([]);
+
+  // Contains the current coordinates after the user double clicks on the map
   const [temporaryCoordinates, setTemporaryCoordinates] =
     useState<IGPSCoordinates>({
       longitude: null,
       latitude: null,
     });
+
+  // Contains a string which is used as a regex to filter the list of tags
   const [tagQuery, setTagQuery] = useState("");
 
+  // Error message display
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  // Allows to interact with a map address search api
   const provider = new OpenStreetMapProvider();
 
+  // A smaller selection of tags to avoid overcrowding the user's page
   const tagSelection: ITag[] = [...tagList].slice(0, 10);
 
+  // Once a tag is bound to a place it is no longer within the available tags
   const tagListWithoutSelected: ITag[] = [
     ...new Set(
       tagList
@@ -62,6 +81,7 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
       a.name > b.name ? 1 : b.name > a.name ? -1 : 0
     );
 
+  // Tags are also filtered through user input if they are looking for specific tags
   const tagListWithoutSelectedAndFiltered: ITag[] = [
     ...tagListWithoutSelected,
   ].filter((tag) => new RegExp(tagQuery).test(tag.name));
@@ -72,6 +92,8 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
   async function handleAdressButton(): Promise<void> {
     const results = await provider.search({ query: formData.address });
     setNewResults(results);
+
+    // If there is only one result possible, its address is assigned to the place
     if (results.length === 1) {
       setFormData({
         ...formData,
@@ -93,7 +115,7 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
   async function getPlaceEditValue(id: string) {
     try {
       const currentPlace = await placeService.fetchPlacesByIds([id]);
-      const currentPlaceData: IPlaceData = currentPlace.data[0];
+      const currentPlaceData: IPlace = currentPlace.data[0];
       const currentPlaceTagIds = currentPlaceData.tagsList;
       const placeTags = await tagService.fetchTagsByIds(currentPlaceTagIds);
 

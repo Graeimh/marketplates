@@ -7,12 +7,15 @@ function MapValuesManager(props: {
   longitude: number | null;
   doubleClickEvent: (lon: number, lat: number) => void;
 }) {
+  // allows to interact with the map
   const map = useMap();
 
   useEffect(() => {
+    // affixes a double click event to the map, giving out coordinates when the user does so
     map.addEventListener("dblclick", (e) => {
       props.doubleClickEvent(e.latlng.lng, e.latlng.lat);
     });
+    // allows to have consistant map loading when the component is loaded
     setTimeout(() => {
       map.invalidateSize();
     }, 250);

@@ -4,7 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { IMaps } from "../../../common/types/mapTypes/mapTypes.js";
 
 function MyPlaces() {
+  // Setting states
+  // Array of user owned maps meant to be edited or deleted
   const [userMapsList, setUserMapsList] = useState<IMaps[]>([]);
+
+  // Error message display
   const [error, setError] = useState("");
   const navigate = useNavigate();
 

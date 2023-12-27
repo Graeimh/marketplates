@@ -1,12 +1,5 @@
 import { createContext } from "react";
-
-interface IUserContext {
-  email: string;
-  displayName: string;
-  userId: string;
-  status: string;
-  iat: number;
-}
+import { IUserContext } from "../../../common/types/userTypes/userTypes";
 
 const UserContext = createContext<IUserContext>({
   email: "",

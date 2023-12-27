@@ -8,7 +8,8 @@ import {
 import { useNavigate } from "react-router-dom";
 
 function Register() {
-  const navigate = useNavigate();
+  // Setting states
+  // Contains the data needed for a user to log in
   const [formData, setFormData] = useState<IRegisterValues>({
     email: "",
     firstName: "",
@@ -21,8 +22,11 @@ function Register() {
     password: "",
     passwordMatch: "",
   });
+
+  // Serves to check if the password and passwordMatch values are the same
   const [arePasswordsMatching, setArePasswordsMatching] = useState(true);
-  const [doesPasswordFitCriteria, setDoesPasswordFitCriteria] = useState(false);
+
+  // Serves to checks if the password has 12 characters or more, contains a lower case or upper case character, a number and a special character
   const [passwordFitnessCriteria, setPasswordFitnessCriteria] =
     useState<IPasswordFitnessCriteria>({
       isLengthCorrect: false,
@@ -32,9 +36,18 @@ function Register() {
       containsSpecialCharacter: false,
     });
 
+  // Is the sum total of passwordFitnessCriteria, if one of its values is false, then this value is false
+  const [doesPasswordFitCriteria, setDoesPasswordFitCriteria] = useState(false);
+
+  // Serves to check if all values have the correct number of characters
   const [validForSending, setValidForSending] = useState(false);
+
+  // Response message display
   const [responseMessage, setResponseMessage] = useState("");
+
+  // Error message display
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   function decideRegistration() {
     setValidForSending(

@@ -8,23 +8,28 @@ import { useNavigate } from "react-router-dom";
 
 function PlaceManipulationItem(props: {
   place: IPlace;
-  uponDeletion: (userId: string) => void;
-  primeForDeletion: (userId: string) => void;
+  uponDeletion: (placeId: string) => void;
+  primeForDeletion: (placeId: string) => void;
   IsSelected: boolean;
 }) {
+  // Setting states
+  // Error message display
   const [error, setError] = useState(null);
+  // Response message display
   const [responseMessage, setResponseMessage] = useState("");
+  // Gives the informaton whether or not the place belongs to the primed for deletion list
   const [isPrimed, setIsPrimed] = useState(false);
+  // Contains the tags associated with the place
   const [placeTagsList, setSpecificPlaceTags] = useState<ITag[]>([]);
   const navigate = useNavigate();
 
   function handleDeletePrimer() {
-    props.primeForDeletion(props.place._id);
+    props.primeForDeletion(props.place._id ? props.place._id : "");
     setIsPrimed(!isPrimed);
   }
 
   function handleDelete() {
-    props.uponDeletion(props.place._id);
+    props.uponDeletion(props.place._id ? props.place._id : "");
   }
 
   async function getSpecificPlaceTags() {

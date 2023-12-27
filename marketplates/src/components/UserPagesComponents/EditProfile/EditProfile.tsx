@@ -5,6 +5,8 @@ import { IUserData } from "../../../common/types/userTypes/userTypes.js";
 import { useNavigate } from "react-router-dom";
 
 function EditProfile(props: { userId: string }) {
+  // Setting states
+  // Contains the data needed to update a user's profile
   const [formData, setFormData] = useState<IUserData>({
     displayName: "",
     email: "",
@@ -15,6 +17,8 @@ function EditProfile(props: { userId: string }) {
     county: "",
     city: "",
   });
+
+  // Error message display
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();

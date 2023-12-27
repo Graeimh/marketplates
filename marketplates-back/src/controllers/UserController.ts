@@ -51,7 +51,6 @@ export async function createUser(req, res) {
       });
     }
   } catch (err) {
-    console.log(err);
     res.status(403).json({
       message: '(403 Forbidden)-The data sent created a user type conflict',
       success: false

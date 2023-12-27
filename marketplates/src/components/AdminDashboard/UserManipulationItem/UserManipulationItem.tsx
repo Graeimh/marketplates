@@ -71,7 +71,6 @@ function UserManipulationItem(props: {
     try {
       const response = await userService.updateUserById(
         props.user._id,
-        "token",
         displayName,
         email,
         firstName,

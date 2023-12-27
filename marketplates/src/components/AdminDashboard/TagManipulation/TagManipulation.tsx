@@ -9,12 +9,21 @@ import { hexifyColors } from "../../../common/functions/hexifyColors.js";
 import Tag from "../../MapGenerationComponents/Tag/Tag.js";
 
 function TagManipulation() {
+  // Setting states
+  // Error message display
   const [error, setError] = useState(null);
+
+  // Response message display
   const [responseMessage, setResponseMessage] = useState("");
+
+  // Array of tags meant to be displayed, edited or deleted
   const [tagList, setTagList] = useState<ITag[]>([]);
+
+  // Array of place by Ids meant to be deleted upon pressing the delete button
   const [primedForDeletionList, setPrimedForDeletionList] = useState<string[]>(
     []
   );
+
   const [tagNameColor, setTagNameColor] = useState("#000000");
   const [tagBackgroundColor, setTagBackgroundColor] = useState("#FFFFFF");
   const [tagName, setTagName] = useState("");
@@ -113,10 +122,6 @@ function TagManipulation() {
         responseforDataRenewal,
       ]).then((values) => values.join(" "));
       setResponseMessage(combinedResponse);
-
-      console.log(
-        `Successfully deleted ${primedForDeletionList.length} appliances`
-      );
       setPrimedForDeletionList([]);
     } catch (err) {
       setError(err.message);
