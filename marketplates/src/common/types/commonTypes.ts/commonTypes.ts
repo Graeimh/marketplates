@@ -4,6 +4,7 @@
  * @interface IGPSCoordinates
  * @member {number | null} longitude is used for longitude
  * @member {number | null} latitude is used for latitude
+ * 
  */
 
 export interface IGPSCoordinates {
@@ -17,7 +18,7 @@ export interface IGPSCoordinates {
  * @interface IAddressData
  * @member {string} imageURL is used to give the URL to fetch the image from
  * @member {string} imageCaption is used to fill in the alt parameter for accessiblity reasons
-
+ *
  */
 
 export interface IImageData {

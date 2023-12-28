@@ -21,6 +21,10 @@ export async function checkCaptcha(req, res, next) {
         // Retrieve the server-side captcha token key provided by ReCaptcha and stored on the server
         const { CAPTCHA_TOKEN_KEY } = process.env;
 
+        if (req.body.captchaToken.length === 0) {
+            return res.status(403).send({ message: '(401 Not Authorized)-The captcha value is empty', success: false });
+        }
+
         // Send a request to GoogleAPI containing both the server-side captcha token as secret and the output provided by the client side captcha as a response
         const response = await axios.post(
             `https://www.google.com/recaptcha/api/siteverify?secret=${CAPTCHA_TOKEN_KEY}&response=${req.body.captchaToken}`
@@ -28,7 +32,7 @@ export async function checkCaptcha(req, res, next) {
         if (response.data.success) {
             next()
         } else {
-            res.status(403).send({ message: '(403 Forbidden)-The captcha value cannot be found or was incorrect', success: false });
+            return res.status(403).send({ message: '(403 Forbidden)-The captcha value cannot be found or was incorrect', success: false });
         }
     }
     catch (err) {

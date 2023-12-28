@@ -16,18 +16,28 @@ import { IUser } from "../types/userTypes.js";
 
 export async function login(req, res) {
 
+    // Checking if the user that attempts to log in isn't already logged in
+    const cookieValue = req.cookies.token;
+
+    if (cookieValue !== undefined) {
+        return res.status(403).json({
+            message: '(403 Forbidden)-An user is already logged in',
+            success: false
+        });
+    }
+
     // Checking if the user exists in the database
     const matchingUser = await UserModel.findOne({ email: req.body.loginData.email })
 
     if (!matchingUser) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not Found)-The user was not found',
             success: false
         });
 
         // Checking if the credentials are filled in and if the user's password matches its hashed version from the user database
     } else if (req.body.loginData.email.length === 0 || req.body.loginData.password.length === 0 || !await argon2.verify(matchingUser.password, req.body.loginData.password)) {
-        res.status(401).json({
+        return res.status(401).json({
             message: '(401 Unauthorized)-Either the email/password are missing, or they do not match.',
             success: false,
         });
@@ -139,7 +149,7 @@ export async function produceNewAccessToken(req, res) {
             const newAccessToken = createToken(matchingUser, LOG_TOKEN_KEY);
 
             //Provide the browser cookies with the new user-nased access token 
-            res.status(201).cookie(
+            res.cookie(
                 "token", newAccessToken, {
                 httpOnly: true,
                 maxAge: 10 * 60 * 1000,
@@ -170,7 +180,7 @@ export async function produceNewAccessToken(req, res) {
    * @param req - The request object associated with the route parameters, most importantly, the refresh token held with the body
    * @param res - The response object associated with the route
    * 
-   * @catches - If the refresh token isn't verified or the user isn't found, but the token cookie is cleared either way (204)
+   * @catches - If the refresh token isn't given or if it isn't verified, but the token cookie is cleared either way just in case (204)
    * @responds - By clearing the token cookie, the given refresh token is also cleared from the user's data
 */
 

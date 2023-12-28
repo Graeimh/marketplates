@@ -115,7 +115,7 @@ function Register() {
       try {
         const response = await userService.generateUser(formData);
         setResponseMessage(response.message);
-        navigate("/");
+        navigate("/login");
       } catch (err) {
         setError(err.message);
       }

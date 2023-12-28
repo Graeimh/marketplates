@@ -124,6 +124,20 @@ export interface IPasswordFitnessCriteria {
 }
 
 /**
+ * Serves to contain the user data coming from the refresh token 
+ *
+ * @interface ISessionValues
+ * @extends IUserContext
+ * 
+ * @member {number} exp or expires at, determines the time at which the refresh token will be expired
+ *
+ */
+
+export interface ISessionValues extends IUserContext {
+    exp: number;
+}
+
+/**
  * Contains the user's data when pulled from the database 
  *
  * @interface IUser

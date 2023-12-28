@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as placeService from "../../../services/placeService.js";
 import styles from "./PlaceManipulation.module.scss";
 import { IPlace } from "../../../common/types/placeTypes/placeTypes.js";
 import PlaceManipulationItem from "../PlaceManipulationItem/PlaceManipulationItem.js";
+import { UserType } from "../../../common/types/userTypes/userTypes.js";
+import UserContext from "../../Contexts/UserContext/UserContext.js";
+import { checkPermission } from "../../../common/functions/checkPermission.js";
 
 function PlaceManipulation() {
   // Setting states
@@ -23,11 +26,14 @@ function PlaceManipulation() {
   // Gives the information whether or not the place belongs to the primed for deletion list
   const [isAllSelected, setIsAllSelected] = useState(false);
 
+  const value = useContext(UserContext);
   async function getAllPlaces() {
     try {
       // Fetching all existing places
-      const allPlaces = await placeService.fetchAllPlaces();
-      setPlaceList(allPlaces.data);
+      if (checkPermission(value.status, UserType.Admin)) {
+        const allPlaces = await placeService.fetchAllPlaces();
+        setPlaceList(allPlaces.data);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -71,14 +77,16 @@ function PlaceManipulation() {
 
   async function deletePrimedForDeletion() {
     try {
-      // Delete all the places whose ids are within the primed for deletion list
-      const responseForDelete = await placeService.deletePlacesByIds(
-        primedForDeletionList
-      );
-      setPrimedForDeletionList([]);
-      // Once the deletion is made, pull the remaining places from the database
-      getAllPlaces();
-      setResponseMessage(responseForDelete.message);
+      if (checkPermission(value.status, UserType.Admin)) {
+        // Delete all the places whose ids are within the primed for deletion list
+        const responseForDelete = await placeService.deletePlacesByIds(
+          primedForDeletionList
+        );
+        setPrimedForDeletionList([]);
+        // Once the deletion is made, pull the remaining places from the database
+        getAllPlaces();
+        setResponseMessage(responseForDelete.message);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -86,12 +94,14 @@ function PlaceManipulation() {
 
   async function sendDeletePlaceCall(id: string) {
     try {
-      // Delete a singular place
-      const response = await placeService.deletePlaceById(id);
-      // Once the deletion is made, pull the remaining places from the database
-      setPrimedForDeletionList([]);
-      getAllPlaces();
-      setResponseMessage(response.message);
+      if (checkPermission(value.status, UserType.Admin)) {
+        // Delete a singular place
+        const response = await placeService.deletePlaceById(id);
+        // Once the deletion is made, pull the remaining places from the database
+        setPrimedForDeletionList([]);
+        getAllPlaces();
+        setResponseMessage(response.message);
+      }
     } catch (err) {
       setError(err.message);
     }

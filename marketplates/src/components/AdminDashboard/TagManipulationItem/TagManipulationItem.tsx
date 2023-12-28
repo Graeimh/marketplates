@@ -8,8 +8,8 @@ import Tag from "../../MapGenerationComponents/Tag/index.js";
 
 function TagManipulationItem(props: {
   tag: ITag;
-  uponDeletion: (userId: string) => void;
-  primeForDeletion: (userId: string) => void;
+  uponDeletion: (tagId: string) => void;
+  primeForDeletion: (tagId: string) => void;
   IsSelected: boolean;
 }) {
   const [error, setError] = useState(null);

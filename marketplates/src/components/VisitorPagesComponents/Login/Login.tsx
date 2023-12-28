@@ -1,12 +1,17 @@
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ILoginValues } from "../../../common/types/userTypes/userTypes.js";
+import {
+  ILoginValues,
+  ISessionValues,
+} from "../../../common/types/userTypes/userTypes.js";
 import * as authenticationService from "../../../services/authenticationService.js";
 import styles from "./Login.module.scss";
 import ReCAPTCHA from "react-google-recaptcha";
 import createTemporaryMessage from "../../../common/functions/createTemporaryMessage.js";
+import * as jose from "jose";
+import UserContext from "../../Contexts/UserContext/UserContext.js";
 
-function Login() {
+function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
   // Setting states
   // Contains the data needed for a user to log in
   const [loginData, setLoginData] = useState<ILoginValues>({
@@ -18,7 +23,7 @@ function Login() {
   const [responseMessage, setResponseMessage] = useState("");
 
   // Error message display
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
 
   // Sets whether or not the user can try to login again
   const [canRetry, setCanRetry] = useState(true);
@@ -27,6 +32,8 @@ function Login() {
 
   // Sets up the captcha value to be changed upon clicking
   const captcha = useRef(null);
+
+  const value = useContext(UserContext);
 
   function putLoginToSleep(time: number) {
     // Upon failing logging in, a set of time is given until the next login attempt
@@ -44,32 +51,53 @@ function Login() {
 
   async function sendLoginForm(event) {
     event.preventDefault();
-    if (canRetry && captcha.current !== null) {
-      try {
-        const captchaToken: string = captcha.current.getValue().toString();
-        const response = await authenticationService.login(
-          loginData,
-          captchaToken
+    // Check if an user is already logged in, if so, redirect them without going through the log in process
+    if (value.userId.length > 0) {
+      navigate("/");
+    }
+    if (canRetry) {
+      if (
+        captcha.current !== null &&
+        captcha.current.getValue().toString().length > 0
+      ) {
+        try {
+          const captchaToken: string = captcha.current.getValue().toString();
+          const response = await authenticationService.login(
+            loginData,
+            captchaToken
+          );
+          // Sets the refresh token within the session storage
+          sessionStorage.setItem("refreshToken", response.refreshToken);
+          const refreshTokenData: ISessionValues = jose.decodeJwt(
+            response.refreshToken
+          );
+          props.contextSetter(refreshTokenData);
+          createTemporaryMessage(response.message, 1500, setResponseMessage);
+          navigate("/");
+        } catch (err) {
+          createTemporaryMessage(err.message, 1500, setError);
+          setCanRetry(false);
+          putLoginToSleep(1500);
+          window.grecaptcha.reset();
+        }
+      } else {
+        createTemporaryMessage(
+          "The captcha was not checked, try again.",
+          1500,
+          setResponseMessage
         );
-        // Sets the refresh token within the session storage
-        sessionStorage.setItem("refreshToken", response.refreshToken);
-        createTemporaryMessage(response.message, 1500, setResponseMessage);
-        navigate("/");
-      } catch (err) {
-        setError(err.message);
         setCanRetry(false);
-        putLoginToSleep(1500);
+        putLoginToSleep(500);
       }
-      captcha.current = null;
     } else {
       createTemporaryMessage(
         "Please wait for a moment before trying again.",
         1500,
         setResponseMessage
       );
+      window.grecaptcha.reset();
     }
   }
-
   return (
     <>
       <h1>Login</h1>

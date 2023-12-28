@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as mapsService from "../../../services/mapService.js";
 import { useNavigate } from "react-router-dom";
 import { IMaps } from "../../../common/types/mapTypes/mapTypes.js";
+import UserContext from "../../Contexts/UserContext/UserContext.js";
+import { UserType } from "../../../common/types/userTypes/userTypes.js";
+import { checkPermission } from "../../../common/functions/checkPermission.js";
 
 function MyPlaces() {
   // Setting states
@@ -12,10 +15,14 @@ function MyPlaces() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const value = useContext(UserContext);
+
   async function getUserMaps() {
     try {
-      const userMaps = await mapsService.fetchUserMaps();
-      setUserMapsList(userMaps.data);
+      if (checkPermission(value.status, UserType.User)) {
+        const userMaps = await mapsService.fetchUserMaps();
+        setUserMapsList(userMaps.data);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -23,8 +30,10 @@ function MyPlaces() {
 
   async function handleUserMapDeleted(placeId: string) {
     try {
-      await mapsService.deleteMapById(placeId);
-      getUserMaps();
+      if (checkPermission(value.status, UserType.User)) {
+        await mapsService.deleteMapById(placeId);
+        getUserMaps();
+      }
     } catch (err) {
       setError(err.message);
     }

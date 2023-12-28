@@ -1,11 +1,15 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useNavigate } from "react-router-dom";
 import styles from "./Layout.module.scss";
-import { Dispatch, SetStateAction, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import * as authenticationService from "../../../services/authenticationService.js";
-import UserContext from "../../Contexts/UserContext/index.js";
+import { ISessionValues } from "../../../common/types/userTypes/userTypes.js";
+import UserContext from "../../Contexts/UserContext/UserContext.js";
 
-const Layout = (contextSetter: Dispatch<SetStateAction<null>>) => {
-  const [message, setMessage] = useState(null);
+const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
+  const [message, setMessage] = useState("");
+  sessionStorage.getItem("refreshToken");
+  const navigate = useNavigate();
+
   const value = useContext(UserContext);
 
   async function logoutUser() {
@@ -13,9 +17,16 @@ const Layout = (contextSetter: Dispatch<SetStateAction<null>>) => {
       const status = await authenticationService.logout(
         sessionStorage.getItem("refreshToken")
       );
-      contextSetter(null);
+      props.contextSetter({
+        email: "",
+        displayName: "",
+        userId: "",
+        status: "",
+        iat: 0,
+        exp: 0,
+      });
       setMessage(status);
-      //REDIRECT NEEDED
+      navigate("/");
     } catch (err) {
       setMessage(err.message);
     }
@@ -29,55 +40,54 @@ const Layout = (contextSetter: Dispatch<SetStateAction<null>>) => {
         </div>
         <h1>API STATUS</h1>
 
-        {value && (
-          <div>
-            <span>{value.displayName}</span>
-          </div>
+        {value.userId.length > 0 && (
+          <>
+            <div>
+              <span>{value.displayName}</span>
+            </div>
+
+            <button type="button" onClick={logoutUser}>
+              Log out
+            </button>
+          </>
         )}
-        {sessionStorage.getItem("refreshToken") && (
-          <button type="button" onClick={logoutUser}>
-            Log out
-          </button>
-        )}
-        {message && <h2>{message ? message.message : "Nope"}</h2>}
+        {message.length > 0 && <h2>{message}</h2>}
         <nav>
           <ul>
             <li className={styles.navigationOption}>
-              <Link to="/">Explore</Link>
+              <Link to="/">About us</Link>
             </li>
-            <li className={styles.navigationOption}>
-              <Link to="/aboutus">About us</Link>
-            </li>
-            <li className={styles.navigationOption}>
-              <Link to="/register">Register</Link>
-            </li>
-            <li className={styles.navigationOption}>
-              <Link to="/login">Login</Link>
-            </li>
-            <li className={styles.navigationOption}>
-              <Link to="/profile">Profile</Link>
-            </li>
-            <li className={styles.navigationOption}>
-              <Link to="/dashboard">Dashboard</Link>
-            </li>
-            <li className={styles.navigationOption}>
-              <Link to="/users">Manipulate users</Link>
-            </li>
-            <li className={styles.navigationOption}>
-              <Link to="/tags">Manipulate tags</Link>
-            </li>
-            <li className={styles.navigationOption}>
-              <Link to="/places">Manipulate places</Link>
-            </li>
-            <li className={styles.navigationOption}>
-              <Link to="/myplaces">My places</Link>
-            </li>
-            <li className={styles.navigationOption}>
-              <Link to="/mymaps">My maps</Link>
-            </li>
-            <li className={styles.navigationOption}>
-              <Link to="/myprofile">Edit profile</Link>
-            </li>
+            {value.userId.length === 0 && (
+              <>
+                <li className={styles.navigationOption}>
+                  <Link to="/register">Register</Link>
+                </li>
+                <li className={styles.navigationOption}>
+                  <Link to="/login">Login</Link>
+                </li>
+              </>
+            )}
+            {value.userId.length > 0 && (
+              <>
+                <li className={styles.navigationOption}>
+                  <Link to="/explore">Explore</Link>
+                </li>
+                <li className={styles.navigationOption}>
+                  <Link to="/profile">Profile</Link>
+                </li>
+                <li className={styles.navigationOption}>
+                  <Link to="/myplaces">My places</Link>
+                </li>
+                <li className={styles.navigationOption}>
+                  <Link to="/mymaps">My maps</Link>
+                </li>
+              </>
+            )}
+            {value.status.split("&").indexOf("Admin") !== -1 && (
+              <li className={styles.navigationOption}>
+                <Link to="/dashboard">Dashboard</Link>
+              </li>
+            )}
           </ul>
         </nav>
       </header>

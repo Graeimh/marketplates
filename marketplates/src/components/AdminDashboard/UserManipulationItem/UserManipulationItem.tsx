@@ -5,6 +5,7 @@ import { IUser } from "../../../common/types/userTypes/userTypes.js";
 
 function UserManipulationItem(props: {
   user: IUser;
+  uponDeletion: (userId: string) => void;
   primeForDeletion: (userId: string) => void;
   IsSelected: boolean;
 }) {
@@ -86,17 +87,10 @@ function UserManipulationItem(props: {
     }
   }
 
-  async function sendDeleteUserCall() {
-    try {
-      const response = await userService.deleteUserById(
-        props.user._id,
-        "token"
-      );
-      setResponseMessage(response.message);
-    } catch (err) {
-      setError(err.message);
-    }
+  function handleDelete() {
+    props.uponDeletion(props.user._id);
   }
+
   return (
     <>
       <h4>User : {props.user.displayName}</h4>
@@ -114,8 +108,8 @@ function UserManipulationItem(props: {
         >
           {props.IsSelected ? "●" : "○"}
         </button>
-        <button type="button" onClick={sendDeleteUserCall}>
-          Delete User
+        <button type="button" onClick={handleDelete}>
+          Delete user
         </button>
         <form onSubmit={sendUpdateForm}>
           <ul>

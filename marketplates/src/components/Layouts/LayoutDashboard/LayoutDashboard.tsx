@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import styles from "./LayoutForms.module.scss";
+import styles from "./LayoutDashboard.module.scss";
 
-const LayoutForms = () => {
+const LayoutDashboard = () => {
   const navigate = useNavigate();
 
   return (
@@ -9,11 +9,11 @@ const LayoutForms = () => {
       <button type="button" onClick={() => navigate(-1)}>
         {"<"}
       </button>
-      <h1>New layout!</h1>
+      <h1>New layout for the dashboard!</h1>
 
       <Outlet />
     </>
   );
 };
 
-export default LayoutForms;
+export default LayoutDashboard;

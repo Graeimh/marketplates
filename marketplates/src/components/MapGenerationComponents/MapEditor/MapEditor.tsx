@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styles from "./MapEditor.module.scss";
 import * as mapService from "../../../services/mapService.js";
 import * as placeIterationService from "../../../services/placeIterationService.js";
@@ -25,6 +25,9 @@ import {
   PrivacyStatus,
 } from "../../../common/types/mapTypes/mapTypes.js";
 import { IGPSCoordinates } from "../../../common/types/commonTypes.ts/commonTypes.js";
+import { checkPermission } from "../../../common/functions/checkPermission.js";
+import { UserType } from "../../../common/types/userTypes/userTypes.js";
+import UserContext from "../../Contexts/UserContext/UserContext.js";
 
 function MapEditor(props: { editedMap: string | undefined }) {
   // Setting states
@@ -95,6 +98,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
       tagName: "",
     });
 
+  const value = useContext(UserContext);
   const navigate = useNavigate();
 
   // Allows to interact with a map address search api
@@ -112,53 +116,55 @@ function MapEditor(props: { editedMap: string | undefined }) {
 
   async function getMapEditorTools() {
     try {
-      // Getting all the tags available for the user
-      const allTags = await tagService.fetchTagsForUser();
-      setTagList(allTags.data);
-      setTagFilterList(allTags.data);
+      if (checkPermission(value.status, UserType.User)) {
+        // Getting all the tags available for the user
+        const allTags = await tagService.fetchTagsForUser();
+        setTagList(allTags.data);
+        setTagFilterList(allTags.data);
 
-      // Getting all the places available for basic maps
-      const allPlaces = await placeService.fetchAllPlaces();
-      setPlaceList(allPlaces.data);
+        // Getting all the places available for basic maps
+        const allPlaces = await placeService.fetchAllPlaces();
+        setPlaceList(allPlaces.data);
 
-      // If the map is being edited, fetch the place iterations it already had and pre-fill all fields with the map's current values in the database
-      if (props.editedMap) {
-        const mapToEdit = await mapService.fetchMapsByIds([props.editedMap]);
-        const mapIterations =
-          await placeIterationService.fetchPlaceIterationsByIds(
-            mapToEdit.data[0].placeIterationIds
+        // If the map is being edited, fetch the place iterations it already had and pre-fill all fields with the map's current values in the database
+        if (props.editedMap) {
+          const mapToEdit = await mapService.fetchMapsByIds([props.editedMap]);
+          const mapIterations =
+            await placeIterationService.fetchPlaceIterationsByIds(
+              mapToEdit.data[0].placeIterationIds
+            );
+          const mapToEditIterations: IPlaceUpdated[] = mapIterations.data.map(
+            (iteration) => ({
+              address: allPlaces.data.find(
+                (place) => place._id === iteration.placeId
+              )?.address,
+              description: iteration.customDescription,
+              gpsCoordinates: {
+                longitude: iteration.gpsCoordinates.longitude,
+                latitude: iteration.gpsCoordinates.latitude,
+              },
+              _id: iteration._id,
+              name: iteration.customName,
+              place_id: iteration.placeId,
+              tagsIdList: iteration.customTagIds,
+              tagsList: allTags.data.filter((tag) =>
+                iteration.customTagIds.some(
+                  (iterationTag) => tag._id === iterationTag
+                )
+              ),
+            })
           );
-        const mapToEditIterations: IPlaceUpdated[] = mapIterations.data.map(
-          (iteration) => ({
-            address: allPlaces.data.find(
-              (place) => place._id === iteration.placeId
-            )?.address,
-            description: iteration.customDescription,
-            gpsCoordinates: {
-              longitude: iteration.gpsCoordinates.longitude,
-              latitude: iteration.gpsCoordinates.latitude,
-            },
-            _id: iteration._id,
-            name: iteration.customName,
-            place_id: iteration.placeId,
-            tagsIdList: iteration.customTagIds,
-            tagsList: allTags.data.filter((tag) =>
-              iteration.customTagIds.some(
-                (iterationTag) => tag._id === iterationTag
-              )
-            ),
-          })
-        );
 
-        setFormData({
-          name: mapToEdit.data[0].name,
-          description: mapToEdit.data[0].description,
-          privacyStatus: mapToEdit.data[0].privacyStatus,
-          participants: mapToEdit.data[0].participants,
-          placeIterations: mapToEditIterations,
-        });
-        setIterationsList(mapToEditIterations);
-        setIsValidForSending(true);
+          setFormData({
+            name: mapToEdit.data[0].name,
+            description: mapToEdit.data[0].description,
+            privacyStatus: mapToEdit.data[0].privacyStatus,
+            participants: mapToEdit.data[0].participants,
+            placeIterations: mapToEditIterations,
+          });
+          setIterationsList(mapToEditIterations);
+          setIsValidForSending(true);
+        }
       }
     } catch (err) {
       setError(err.message);
@@ -258,10 +264,13 @@ function MapEditor(props: { editedMap: string | undefined }) {
   async function sendRegistrationForm(event) {
     event.preventDefault();
     try {
-      if (!props.editedMap) {
-        await mapService.generateMap(formData);
-      } else {
-        await mapService.updateMapById(props.editedMap, formData);
+      if (checkPermission(value.status, UserType.User)) {
+        if (!props.editedMap) {
+          await mapService.generateMap(formData);
+        } else {
+          await mapService.updateMapById(props.editedMap, formData);
+        }
+        navigate("/mymaps");
       }
     } catch (err) {
       setError(err.message);
@@ -729,7 +738,6 @@ function MapEditor(props: { editedMap: string | undefined }) {
         type="button"
         onClick={(e) => {
           sendRegistrationForm(e);
-          navigate("mymaps");
         }}
         disabled={!isValidForSending}
       >

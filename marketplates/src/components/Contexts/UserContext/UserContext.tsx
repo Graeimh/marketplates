@@ -1,12 +1,13 @@
 import { createContext } from "react";
-import { IUserContext } from "../../../common/types/userTypes/userTypes";
+import { ISessionValues } from "../../../common/types/userTypes/userTypes";
 
-const UserContext = createContext<IUserContext>({
+const UserContext = createContext<ISessionValues>({
   email: "",
   displayName: "",
   userId: "",
   status: "",
   iat: 0,
+  exp: 0,
 });
 
 export default UserContext;

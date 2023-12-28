@@ -7,6 +7,8 @@ import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { HexColorPicker } from "react-colorful";
 import { hexifyColors } from "../../../common/functions/hexifyColors.js";
 import Tag from "../../MapGenerationComponents/Tag/Tag.js";
+import { checkPermission } from "../../../common/functions/checkPermission.js";
+import { UserType } from "../../../common/types/userTypes/userTypes.js";
 
 function TagManipulation() {
   // Setting states
@@ -29,14 +31,16 @@ function TagManipulation() {
   const [tagName, setTagName] = useState("");
   const [validForUpdating, setValidForUpdating] = useState(false);
 
-  const sessionValue = useContext(UserContext);
+  const value = useContext(UserContext);
   const [isAllSelected, setIsAllSelected] = useState(false);
   const [tagQuery, setTagQuery] = useState("");
 
   async function getAllTags() {
     try {
-      const allTags = await tagService.fetchAllTags();
-      setTagList(allTags.data);
+      if (checkPermission(value.status, UserType.Admin)) {
+        const allTags = await tagService.fetchAllTags();
+        setTagList(allTags.data);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -92,18 +96,20 @@ function TagManipulation() {
 
   async function sendForm(event) {
     event.preventDefault();
-    if (tagName.length > 2) {
-      try {
-        const response = await tagService.generateTag(
-          tagName,
-          tagNameColor,
-          tagBackgroundColor,
-          sessionValue.userId
-        );
-        setResponseMessage(response.message);
-        getAllTags();
-      } catch (err) {
-        setError(err.message);
+    if (checkPermission(value.status, UserType.Admin)) {
+      if (tagName.length > 2) {
+        try {
+          const response = await tagService.generateTag(
+            tagName,
+            tagNameColor,
+            tagBackgroundColor,
+            value.userId
+          );
+          setResponseMessage(response.message);
+          getAllTags();
+        } catch (err) {
+          setError(err.message);
+        }
       }
     } else {
       setResponseMessage("The tag's name cannot be under 3 characters!");
@@ -112,17 +118,19 @@ function TagManipulation() {
 
   async function deletePrimedForDeletion() {
     try {
-      const responseForDelete = tagService.deleteTagsByIds(
-        primedForDeletionList
-      );
-      const responseforDataRenewal = tagService.fetchAllTags();
+      if (checkPermission(value.status, UserType.Admin)) {
+        const responseForDelete = tagService.deleteTagsByIds(
+          primedForDeletionList
+        );
+        const responseforDataRenewal = tagService.fetchAllTags();
 
-      const combinedResponse = await Promise.all([
-        responseForDelete,
-        responseforDataRenewal,
-      ]).then((values) => values.join(" "));
-      setResponseMessage(combinedResponse);
-      setPrimedForDeletionList([]);
+        const combinedResponse = await Promise.all([
+          responseForDelete,
+          responseforDataRenewal,
+        ]).then((values) => values.join(" "));
+        setResponseMessage(combinedResponse);
+        setPrimedForDeletionList([]);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -130,9 +138,11 @@ function TagManipulation() {
 
   async function sendDeleteTagCall(id: string) {
     try {
-      const response = await tagService.deleteTagById(id);
-      getAllTags();
-      setResponseMessage(response.message);
+      if (checkPermission(value.status, UserType.Admin)) {
+        const response = await tagService.deleteTagById(id);
+        getAllTags();
+        setResponseMessage(response.message);
+      }
     } catch (err) {
       setError(err.message);
     }

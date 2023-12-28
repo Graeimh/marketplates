@@ -1,8 +1,13 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styles from "./EditProfile.module.scss";
 import * as userService from "../../../services/userService.js";
-import { IUserData } from "../../../common/types/userTypes/userTypes.js";
+import {
+  IUserData,
+  UserType,
+} from "../../../common/types/userTypes/userTypes.js";
 import { useNavigate } from "react-router-dom";
+import UserContext from "../../Contexts/UserContext/UserContext.js";
+import { checkPermission } from "../../../common/functions/checkPermission.js";
 
 function EditProfile(props: { userId: string }) {
   // Setting states
@@ -21,21 +26,25 @@ function EditProfile(props: { userId: string }) {
   // Error message display
   const [error, setError] = useState(null);
 
+  const value = useContext(UserContext);
+
   const navigate = useNavigate();
 
   async function getUserData() {
     try {
-      const userData = await userService.fetchUsersByIds([props.userId]);
-      setFormData({
-        displayName: userData.data[0].displayName,
-        email: userData.data[0].email,
-        firstName: userData.data[0].firstName,
-        lastName: userData.data[0].lastName,
-        streetAddress: userData.data[0].location.streetAddress,
-        country: userData.data[0].location.country,
-        county: userData.data[0].location.county,
-        city: userData.data[0].location.city,
-      });
+      if (checkPermission(value.status, UserType.User)) {
+        const userData = await userService.fetchUsersByIds([props.userId]);
+        setFormData({
+          displayName: userData.data[0].displayName,
+          email: userData.data[0].email,
+          firstName: userData.data[0].firstName,
+          lastName: userData.data[0].lastName,
+          streetAddress: userData.data[0].location.streetAddress,
+          country: userData.data[0].location.country,
+          county: userData.data[0].location.county,
+          city: userData.data[0].location.city,
+        });
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -48,18 +57,20 @@ function EditProfile(props: { userId: string }) {
   async function sendEditUserForm(event) {
     event.preventDefault();
     try {
-      await userService.updateUserById(
-        props.userId,
-        formData.displayName,
-        formData.email,
-        formData.firstName,
-        formData.lastName,
-        formData.streetAddress,
-        formData.county,
-        formData.city,
-        formData.city
-      );
-      navigate("/");
+      if (checkPermission(value.status, UserType.User)) {
+        await userService.updateUserById(
+          props.userId,
+          formData.displayName,
+          formData.email,
+          formData.firstName,
+          formData.lastName,
+          formData.streetAddress,
+          formData.county,
+          formData.city,
+          formData.city
+        );
+        navigate("/profile");
+      }
     } catch (err) {
       setError(err.message);
     }

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import styles from "./RegisterPlace.module.scss";
+import { useContext, useEffect, useState } from "react";
+import styles from "./PlaceEditor.module.scss";
 import * as placeService from "../../../services/placeService.js";
 import * as tagService from "../../../services/tagService.js";
 import { useNavigate } from "react-router-dom";
@@ -16,8 +16,11 @@ import {
   IPlaceRegisterValues,
 } from "../../../common/types/placeTypes/placeTypes.js";
 import { IGPSCoordinates } from "../../../common/types/commonTypes.ts/commonTypes.js";
+import UserContext from "../../Contexts/UserContext/UserContext.js";
+import { checkPermission } from "../../../common/functions/checkPermission.js";
+import { UserType } from "../../../common/types/userTypes/userTypes.js";
 
-function RegisterPlace(props: { editPlaceId: string | undefined }) {
+function PlaceEditor(props: { editPlaceId: string | undefined }) {
   // Setting states
   // Contains the data needed to create a place
   const [formData, setFormData] = useState<IPlaceRegisterValues>({
@@ -55,6 +58,9 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
 
   // Error message display
   const [error, setError] = useState(null);
+
+  const value = useContext(UserContext);
+
   const navigate = useNavigate();
 
   // Allows to interact with a map address search api
@@ -105,8 +111,10 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
 
   async function getUserTags() {
     try {
-      const allTags = await tagService.fetchTagsForUser();
-      setTagList(allTags.data);
+      if (checkPermission(value.status, UserType.User)) {
+        const allTags = await tagService.fetchTagsForUser();
+        setTagList(allTags.data);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -114,21 +122,23 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
 
   async function getPlaceEditValue(id: string) {
     try {
-      const currentPlace = await placeService.fetchPlacesByIds([id]);
-      const currentPlaceData: IPlace = currentPlace.data[0];
-      const currentPlaceTagIds = currentPlaceData.tagsList;
-      const placeTags = await tagService.fetchTagsByIds(currentPlaceTagIds);
+      if (checkPermission(value.status, UserType.User)) {
+        const currentPlace = await placeService.fetchPlacesByIds([id]);
+        const currentPlaceData: IPlace = currentPlace.data[0];
+        const currentPlaceTagIds = currentPlaceData.tagsList;
+        const placeTags = await tagService.fetchTagsByIds(currentPlaceTagIds);
 
-      setFormData({
-        name: currentPlaceData.name,
-        description: currentPlaceData.description,
-        address: currentPlaceData.address,
-        gpsCoordinates: {
-          longitude: currentPlaceData.gpsCoordinates.longitude,
-          latitude: currentPlaceData.gpsCoordinates.latitude,
-        },
-        tagList: placeTags.data,
-      });
+        setFormData({
+          name: currentPlaceData.name,
+          description: currentPlaceData.description,
+          address: currentPlaceData.address,
+          gpsCoordinates: {
+            longitude: currentPlaceData.gpsCoordinates.longitude,
+            latitude: currentPlaceData.gpsCoordinates.latitude,
+          },
+          tagList: placeTags.data,
+        });
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -179,17 +189,19 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
   async function sendRegistrationForm(event) {
     event.preventDefault();
     try {
-      if (props.editPlaceId === undefined) {
-        const response = await placeService.generatePlace(formData);
-        setResponseMessage(response.message);
-      } else {
-        const response = await placeService.updatePlaceById(
-          formData,
-          props.editPlaceId
-        );
-        setResponseMessage(response.message);
+      if (checkPermission(value.status, UserType.User)) {
+        if (props.editPlaceId === undefined) {
+          const response = await placeService.generatePlace(formData);
+          setResponseMessage(response.message);
+        } else {
+          const response = await placeService.updatePlaceById(
+            formData,
+            props.editPlaceId
+          );
+          setResponseMessage(response.message);
+        }
+        navigate("/myplaces");
       }
-      navigate("/myplaces");
     } catch (err) {
       setError(err.message);
     }
@@ -443,4 +455,4 @@ function RegisterPlace(props: { editPlaceId: string | undefined }) {
   );
 }
 
-export default RegisterPlace;
+export default PlaceEditor;

@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosInstance } from "axios";
 
 /**
    * Allows a for the creation of an axios instance
@@ -6,7 +6,7 @@ import axios, { AxiosError } from "axios";
    * 
    * @returns An axios instance
 */
-export default function generateApiInstance() {
+export default function generateApiInstance(): AxiosInstance {
 
     const apiInstance = axios.create({
         baseURL: import.meta.env.VITE_SERVER_URL,

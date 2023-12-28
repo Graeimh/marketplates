@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as userService from "../../../services/userService.js";
 import styles from "./UserManipulation.module.scss";
+import UserContext from "../../Contexts/UserContext/UserContext.js";
 import UserManipulationItem from "../UserManipulationItem/UserManipulationItem.js";
-import { IUser } from "../../../common/types/userTypes/userTypes.js";
+import { IUser, UserType } from "../../../common/types/userTypes/userTypes.js";
+import { checkPermission } from "../../../common/functions/checkPermission.js";
 
 function UserManipulation() {
   // Setting states
@@ -23,11 +25,17 @@ function UserManipulation() {
   // Gives the information whether or not the user belongs to the primed for deletion list
   const [isAllSelected, setIsAllSelected] = useState(false);
 
+  const [userQuery, setUserQuery] = useState("");
+
+  const value = useContext(UserContext);
+
   async function getResults() {
     try {
-      // Fetching all existing users
-      const allUsers = await userService.fetchAllUsers();
-      setUserList(allUsers.data);
+      if (checkPermission(value.status, UserType.Admin)) {
+        // Fetching all existing users
+        const allUsers = await userService.fetchAllUsers();
+        setUserList(allUsers.data);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -70,18 +78,37 @@ function UserManipulation() {
 
   async function deletePrimedForDeletion() {
     try {
-      // Delete all the places whose ids are within the primed for deletion list
-      const responseForDelete = userService.deleteUsersByIds(
-        primedForDeletionList
-      );
-      const response = await responseForDelete;
-      setResponseMessage(response);
-      setPrimedForDeletionList([]);
-      getResults();
+      if (checkPermission(value.status, UserType.Admin)) {
+        // Delete all the places whose ids are within the primed for deletion list
+        const responseForDelete = userService.deleteUsersByIds(
+          primedForDeletionList
+        );
+        const response = await responseForDelete;
+        setResponseMessage(response);
+        setPrimedForDeletionList([]);
+        getResults();
+      }
     } catch (err) {
       setError(err.message);
     }
   }
+
+  async function sendDeleteUserCall(id: string) {
+    try {
+      if (checkPermission(value.status, UserType.Admin)) {
+        const response = await userService.deleteUserById(id);
+        getResults();
+        setResponseMessage(response.message);
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  const filteredUserList = userList.filter((user) =>
+    new RegExp(userQuery).test(user.displayName)
+  );
+  const displayedUserList = userQuery.length > 0 ? filteredUserList : userList;
 
   return (
     <>
@@ -99,15 +126,25 @@ function UserManipulation() {
         Cancel selection{" "}
       </button>
 
+      <label>Search for a user via their display name : </label>
+      <input
+        type="text"
+        name="userQuery"
+        onChange={(e) => {
+          setUserQuery(e.target.value);
+        }}
+      />
+
       {error && <div className={styles.error}>{error}</div>}
       {responseMessage && (
         <div className={styles.success}>{responseMessage}</div>
       )}
 
-      {userList.length > 0 &&
-        userList.map((user) => (
+      {displayedUserList.length > 0 &&
+        displayedUserList.map((user) => (
           <UserManipulationItem
             user={user}
+            uponDeletion={sendDeleteUserCall}
             primeForDeletion={manageDeletionList}
             key={user._id}
             IsSelected={primedForDeletionList.indexOf(user._id) !== -1}

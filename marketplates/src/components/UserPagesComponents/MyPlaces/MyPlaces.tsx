@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as placeService from "../../../services/placeService.js";
 import { IPlace } from "../../../common/types/placeTypes/placeTypes.js";
 import { useNavigate } from "react-router-dom";
+import UserContext from "../../Contexts/UserContext/UserContext.js";
+import { checkPermission } from "../../../common/functions/checkPermission.js";
+import { UserType } from "../../../common/types/userTypes/userTypes.js";
 
 function MyPlaces() {
   // Setting states
@@ -10,12 +13,17 @@ function MyPlaces() {
 
   // Error message display
   const [error, setError] = useState("");
+
+  const value = useContext(UserContext);
+
   const navigate = useNavigate();
 
   async function getUserPlaces() {
     try {
-      const userPlaces = await placeService.fetchUserPlaces();
-      setUserPlacesList(userPlaces.data);
+      if (checkPermission(value.status, UserType.User)) {
+        const userPlaces = await placeService.fetchUserPlaces();
+        setUserPlacesList(userPlaces.data);
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -23,8 +31,10 @@ function MyPlaces() {
 
   async function handleUserPlaceDeleted(placeId: string) {
     try {
-      await placeService.deletePlaceById(placeId);
-      getUserPlaces();
+      if (checkPermission(value.status, UserType.User)) {
+        await placeService.deletePlaceById(placeId);
+        getUserPlaces();
+      }
     } catch (err) {
       setError(err.message);
     }
