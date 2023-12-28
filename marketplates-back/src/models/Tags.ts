@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { ITag, ITagAffinity } from '../types/tagTypes.js';
+import { ITag, ITagAffinity } from '../common/types/tagTypes.js';
 
 // Defining a schema matching the interface ITag
 const TagsSchema = new mongoose.Schema<ITag>(

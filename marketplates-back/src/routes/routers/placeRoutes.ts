@@ -17,7 +17,7 @@ placesRouter.get("/forUser", getPlacesForUser);
 placesRouter.post("/create", createPlace);
 
 // Reserved for the owning user or an admin, serves to update a place's data in the database
-placesRouter.post("/update", updatePlaceById);
+placesRouter.put("/update", updatePlaceById);
 
 // Reserved for the owning user or an admin, serves to delete a single place from the database
 placesRouter.post("/delete", deletePlaceById);

@@ -17,6 +17,7 @@ import {
   IMarkersForMap,
   IPlace,
   IPlaceFilterQuery,
+  IPlaceIteration,
   IPlaceUpdated,
   ITagFilterQuery,
 } from "../../../common/types/placeTypes/placeTypes.js";
@@ -119,25 +120,31 @@ function MapEditor(props: { editedMap: string | undefined }) {
       if (checkPermission(value.status, UserType.User)) {
         // Getting all the tags available for the user
         const allTags = await tagService.fetchTagsForUser();
-        setTagList(allTags.data);
-        setTagFilterList(allTags.data);
+        const allTagsData: ITag[] = allTags.data;
+        setTagList(allTagsData);
+        setTagFilterList(allTagsData);
 
         // Getting all the places available for basic maps
         const allPlaces = await placeService.fetchAllPlaces();
-        setPlaceList(allPlaces.data);
+        const allPlacesData: IPlace[] = allPlaces.data;
+        setPlaceList(allPlacesData);
 
         // If the map is being edited, fetch the place iterations it already had and pre-fill all fields with the map's current values in the database
         if (props.editedMap) {
           const mapToEdit = await mapService.fetchMapsByIds([props.editedMap]);
-          const mapIterations =
-            await placeIterationService.fetchPlaceIterationsByIds(
-              mapToEdit.data[0].placeIterationIds
-            );
-          const mapToEditIterations: IPlaceUpdated[] = mapIterations.data.map(
-            (iteration) => ({
-              address: allPlaces.data.find(
-                (place) => place._id === iteration.placeId
-              )?.address,
+
+          let mapToEditIterations: IPlaceUpdated[] = [];
+
+          if (mapToEdit.data[0].placeIterationIds.length > 0) {
+            const mapIterations =
+              await placeIterationService.fetchPlaceIterationsByIds(
+                mapToEdit.data[0].placeIterationIds
+              );
+
+            const mapIterationsData: IPlaceIteration[] = mapIterations.data;
+
+            const lol: IPlaceUpdated[] = mapIterationsData.map((iteration) => ({
+              address: "",
               description: iteration.customDescription,
               gpsCoordinates: {
                 longitude: iteration.gpsCoordinates.longitude,
@@ -147,13 +154,15 @@ function MapEditor(props: { editedMap: string | undefined }) {
               name: iteration.customName,
               place_id: iteration.placeId,
               tagsIdList: iteration.customTagIds,
-              tagsList: allTags.data.filter((tag) =>
+              tagsList: allTagsData.filter((tag) =>
                 iteration.customTagIds.some(
                   (iterationTag) => tag._id === iterationTag
                 )
               ),
-            })
-          );
+            }));
+
+            mapToEditIterations = [...mapToEditIterations, ...lol];
+          }
 
           setFormData({
             name: mapToEdit.data[0].name,

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IMaps, PrivacyStatus, UserPrivileges } from '../types/mapTypes.js';
+import { IMaps, PrivacyStatus, UserPrivileges } from '../common/types/mapTypes.js';
 
 // Defining a schema matching the interface IMaps
 const mapsSchema = new mongoose.Schema<IMaps>(

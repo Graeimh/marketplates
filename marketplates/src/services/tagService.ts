@@ -94,7 +94,7 @@ export async function fetchMapperTagsByIds(userIds: string[]) {
 */
 export async function updateTagById(tagId: string, formData: ITagValues) {
 
-    const response = await tagInstance.post('/tags/update', {
+    const response = await tagInstance.put('/tags/update', {
         tagId,
         formData
 

@@ -20,7 +20,7 @@ placeIterationsRouter.get("/userIterations/", idChecker, getPlaceIterationForUse
 placeIterationsRouter.get("/places/:ids", idChecker, getAllPlaceIterationsFromPlace);
 
 // Reserved for the owning user or an admin, updates a place iteration's data in the database
-placeIterationsRouter.post("/update", updatePlaceIterationById);
+placeIterationsRouter.put("/update", updatePlaceIterationById);
 
 // Reserved for the owning user or an admin, removes a place iteration's data from the database
 placeIterationsRouter.post("/delete", deletePlaceIterationById);

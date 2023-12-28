@@ -2,7 +2,8 @@ import sanitizeHtml from "sanitize-html";
 import PlacesModel from "../models/Places.js";
 import jwt from "jsonwebtoken";
 import PlaceIterationsModel from "../models/PlaceIterations.js";
-import { IPlaceIteration } from "../types/placeIterationTypes.js";
+import { IPlaceIteration } from "../common/types/placeIterationTypes.js";
+import checkOwnership from "../common/functions/checkOwnership.js";
 
 /**
    * Creates a place iteration associated with a place
@@ -39,12 +40,12 @@ export async function createPlaceIterationById(req, res) {
 
         await PlaceIterationsModel.create(iteration);
 
-        res.status(201).json({
+        return res.status(201).json({
             message: '(201 Created)-Place iteration successfully created',
             success: true
         });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: '(500 Internal Server Error)-A server side error has occured.',
             success: false
         });
@@ -64,13 +65,13 @@ export async function createPlaceIterationById(req, res) {
 export async function getAllPlaceIterations(req, res) {
     try {
         const allPlacesIterations = await PlaceIterationsModel.find();
-        res.status(200).json({
+        return res.status(200).json({
             data: allPlacesIterations,
             message: '(200 OK)-Successfully fetched all iterations',
             success: true
         });
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-No iteration was found',
             success: false
         });
@@ -91,13 +92,13 @@ export async function getPlaceIterationsByIds(req, res) {
     try {
         // Ids, when sent in groups are sent in a single string, each Id tied to the others by a & character, hence the need for a split on that character
         const someIterations = await PlaceIterationsModel.find({ _id: { $in: req.params.ids.split("&") } });
-        res.status(200).json({
+        return res.status(200).json({
             data: someIterations,
             message: '(200 OK)-Successfully fetched all iterations by Ids',
             success: true
         });
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-No iterations were found',
             success: false
         });
@@ -117,13 +118,13 @@ export async function getPlaceIterationsByIds(req, res) {
 export async function getAllPlaceIterationsFromPlace(req, res) {
     try {
         const allPlacesIterationsFromPlace = await PlaceIterationsModel.find({ placeId: req.params.ids });
-        res.status(200).json({
+        return res.status(200).json({
             data: allPlacesIterationsFromPlace,
             message: '(200 OK)-Successfully fetched all iterations from the given place',
             success: true
         });
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-No iteration was found for the given place',
             success: false
         });
@@ -150,13 +151,13 @@ export async function getPlaceIterationForUser(req, res) {
         const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
 
         const allPlacesIterationsForUser = await PlaceIterationsModel.find({ creatorId: decryptedCookie.userId });
-        res.status(200).json({
+        return res.status(200).json({
             data: allPlacesIterationsForUser,
             message: '(200 OK)-Successfully fetched all place iterations for the given user',
             success: true
         });
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-No place iteration was found for the given user',
             success: false
         });
@@ -178,28 +179,42 @@ export async function updatePlaceIterationById(req, res) {
         // Find the matching place iteration
         const placeIterationById: IPlaceIteration = await PlaceIterationsModel.findOne({ _id: { $in: req.body.placeIterationId } });
 
+        // Get access token from the front end and the key that serves to create and verify them
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
+
+        // Get the token's contents, verifying its validity in the process
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
         if (!placeIterationById) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: '(404 Not Found)-The place iteration to update was not found',
                 success: false
             });
         }
 
-        // Updating the place iteration's data following the IPlaceIteration interface
-        await PlaceIterationsModel.updateOne({ _id: { $in: req.body.placeIterationId } }, {
-            customName: req.body.formData.customName ? sanitizeHtml(req.body.formData.customName, { allowedTags: [] }) : placeIterationById.customName,
-            customDescription: req.body.formData.customDescription ? sanitizeHtml(req.body.formData.customDescription, { allowedTags: [] }) : placeIterationById.customDescription,
-            customTagIds: req.body.formData.customTagIds ? req.body.formData.customTagIds : placeIterationById.customTagIds,
+        if (checkOwnership(placeIterationById.creatorId, decryptedCookie.userId, decryptedCookie.status)) {
+            // Updating the place iteration's data following the IPlaceIteration interface
+            await PlaceIterationsModel.updateOne({ _id: { $in: req.body.placeIterationId } }, {
+                customName: req.body.formData.customName ? sanitizeHtml(req.body.formData.customName, { allowedTags: [] }) : placeIterationById.customName,
+                customDescription: req.body.formData.customDescription ? sanitizeHtml(req.body.formData.customDescription, { allowedTags: [] }) : placeIterationById.customDescription,
+                customTagIds: req.body.formData.customTagIds ? req.body.formData.customTagIds : placeIterationById.customTagIds,
 
-        })
+            })
 
-        res.status(204).json({
-            message: '(204 No Content)-Place iteration successfully updated',
-            success: true
-        });
+            return res.status(204).json({
+                message: '(204 No Content)-Place iteration successfully updated',
+                success: true
+            });
+        } else {
+            return res.status(403).json({
+                message: '(403 Forbidden)-The user is not the owner of the iteration, or an admin and thus cannot update its data',
+                success: false
+            });
+        }
 
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: '(500 Internal Server Error)-A server side error has occured.',
             success: false
         });
@@ -220,15 +235,31 @@ export async function updatePlaceIterationById(req, res) {
 */
 export async function deletePlaceIterationById(req, res) {
     try {
-        await PlaceIterationsModel.deleteMany({ _id: { $in: req.body.iterationId } });
+        // Find the matching place iteration
+        const placeIterationById: IPlaceIteration = await PlaceIterationsModel.findOne({ _id: { $in: req.body.iterationId } });
 
-        res.status(204).json({
-            message: '(204 No Content)-Iteration successfully deleted',
-            success: true
-        });
+        // Get access token from the front end and the key that serves to create and verify them
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
 
+        // Get the token's contents, verifying its validity in the process
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
+        if (checkOwnership(placeIterationById.creatorId, decryptedCookie.userId, decryptedCookie.status)) {
+            await PlaceIterationsModel.deleteMany({ _id: { $in: req.body.iterationId } });
+
+            return res.status(204).json({
+                message: '(204 No Content)-Iteration successfully deleted',
+                success: true
+            });
+        } else {
+            return res.status(403).json({
+                message: '(403 Forbidden)-The user is not the owner of the iteration, or an admin and thus cannot delete it',
+                success: false
+            })
+        }
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-Iteration to be deleted was not found',
             success: false
         });
@@ -247,15 +278,34 @@ export async function deletePlaceIterationById(req, res) {
 */
 export async function deletePlaceIterationsByIds(req, res) {
     try {
+        // Finding the matching place iterations
+        const placeIterationsByIds: IPlaceIteration[] = await PlaceIterationsModel.find({ _id: { $in: req.body.mapIds } });
+
+        // Get access token from the front end and the key that serves to create and verify them
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
+
+        // Get the token's contents, verifying its validity in the process
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
+        for (const placeIteration of placeIterationsByIds) {
+            if (!checkOwnership(placeIteration.creatorId, decryptedCookie.userId, decryptedCookie.status)) {
+                return res.status(403).json({
+                    message: '(403 Forbidden)-One of place iterations to be deleted does not belong to the user.',
+                    success: false
+                });
+            }
+        }
+
         await PlaceIterationsModel.deleteMany({ _id: { $in: req.body.iterationIds } });
 
-        res.status(204).json({
+        return res.status(204).json({
             message: '(204 No Content)-Place iterations successfully deleted',
             success: true
         });
 
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-One or several place iterations to be deleted were not found',
             success: false
         });

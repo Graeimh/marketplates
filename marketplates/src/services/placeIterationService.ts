@@ -28,7 +28,7 @@ export async function createPlaceIterationById(formData: IPlaceUpdated) {
    * @returns A JSON containing the success status as well as a message,
 */
 export async function updatePlaceIterationById(formData: IPlaceIterationValues) {
-    const response = await placeIterationInstance.post('/placeIterations/update', {
+    const response = await placeIterationInstance.put('/placeIterations/update', {
         formData
     });
     return response.data;
@@ -68,8 +68,10 @@ export async function fetchAllPlaceIterationsFromPlace(placeIds: string[]) {
 */
 export async function fetchPlaceIterationsByIds(placeIterationIds: string[]) {
     const applianceIdsParameter = placeIterationIds.join('&');
-    const response = await placeIterationInstance.get(`/placeIterations/byIds/${applianceIdsParameter}`);
-    return response.data;
+    if (placeIterationIds.length > 0) {
+        const response = await placeIterationInstance.get(`/placeIterations/byIds/${applianceIdsParameter}`);
+        return response.data;
+    }
 }
 
 /**

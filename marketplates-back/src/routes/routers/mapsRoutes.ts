@@ -23,7 +23,7 @@ mapRouter.get("/byUser", getUserMaps);
 mapRouter.post("/create", createMap);
 
 // Reserved for the owning user or an admin, serves to update a map's data in the database
-mapRouter.post("/update", updateMapById);
+mapRouter.put("/update", updateMapById);
 
 // Reserved for the owning user or an admin, serves to delete a map's data from the database
 mapRouter.post("/delete", deleteMapById);

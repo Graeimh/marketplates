@@ -65,7 +65,7 @@ export async function fetchPlacesByIds(placeIds: string[]) {
 */
 export async function updatePlaceById(formData: IPlaceRegisterValues, placeId: string) {
 
-    const response = await placeInstance.post('/places/update', {
+    const response = await placeInstance.put('/places/update', {
         formData,
         placeId,
     });

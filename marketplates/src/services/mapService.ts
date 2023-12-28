@@ -87,7 +87,7 @@ export async function fetchMapsByIds(mapIds: string[]) {
    * @returns A JSON containing the success status as well as a message
 */
 export async function updateMapById(mapId: string, formData: IMapValues) {
-    const response = await mapInstance.post('/maps/update', {
+    const response = await mapInstance.put('/maps/update', {
         mapId,
         formData,
     });

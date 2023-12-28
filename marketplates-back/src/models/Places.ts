@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IPlace } from '../types/placeTypes.js';
+import { IPlace } from '../common/types/placeTypes.js';
 
 // Defining a schema matching the interface IPlace
 const PlacesSchema = new mongoose.Schema<IPlace>(

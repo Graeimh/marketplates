@@ -1,7 +1,7 @@
 import UserModel from "../models/Users.js";
 import argon2 from 'argon2';
 import jwt from "jsonwebtoken";
-import { IUser } from "../types/userTypes.js";
+import { IUser } from "../common/types/userTypes.js";
 
 /**
    * Allows a user to be authenticated when providing the correct credentials
@@ -71,7 +71,7 @@ export async function login(req, res) {
             });
         }
         catch (err) {
-            res.status(500).json({
+            return res.status(500).json({
                 message: '(500 Internal Server Error)-A server side error has occured.',
                 success: false,
             });
@@ -166,7 +166,7 @@ export async function produceNewAccessToken(req, res) {
         }
     }
     else {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not Found)-The token was not found.',
             success: false,
         });
@@ -199,13 +199,13 @@ export async function logout(req, res) {
         matchingUser.refreshToken.filter(token => token !== fetchedRefreshToken);
         await matchingUser.save();
 
-        res.clearCookie("token").status(204).json({
+        return res.clearCookie("token").status(204).json({
             message: '(204 No Content)-Successfully logged out.',
             success: true,
         }).end();
     }
     catch (err) {
-        res.clearCookie("token").status(204).json({
+        return res.clearCookie("token").status(204).json({
             message: '(204 No Content)-Successfully logged out.',
             success: true,
         }).end();
@@ -232,12 +232,12 @@ export async function checkSessionStatus(req, res) {
         // Token verification
         jwt.verify(cookieValue, LOG_TOKEN_KEY);
 
-        res.status(200).json({
+        return res.status(200).json({
             cookie: req.cookies.token
         });
     }
     catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: '(500 Internal Server Error)-A server side error has occured.',
             success: false,
         });

@@ -3,7 +3,7 @@
    *
    * 
    * @param {string} userStatus - The user's current statuses
-   * @param {} statusRequired - The status required for the route to be used
+   * @param {string} statusRequired - The status required for the route to be used
    *
    * @returns A boolean value indicating if the user indeed has the correct permissions or not
 */

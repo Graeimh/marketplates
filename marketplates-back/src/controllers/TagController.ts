@@ -1,7 +1,8 @@
 import sanitizeHtml from "sanitize-html";
 import TagsModel from "../models/Tags.js";
 import jwt from "jsonwebtoken"
-import { ITag } from "../types/tagTypes.js";
+import { ITag } from "../common/types/tagTypes.js";
+import checkOwnership from "../common/functions/checkOwnership.js";
 
 /**
    * Creates a tag
@@ -27,12 +28,12 @@ export async function createTag(req, res) {
         };
         await TagsModel.create(tag);
 
-        res.status(201).json({
+        return res.status(201).json({
             message: '(201 Created)-Tag successfully created',
             success: true
         });
     } catch (err) {
-        res.status(403).json({
+        return res.status(403).json({
             message: '(403 Forbidden)-The data sent created a tag-type conflict',
             success: false
         });
@@ -52,13 +53,13 @@ export async function createTag(req, res) {
 export async function getAllTags(req, res) {
     try {
         const allTags = await TagsModel.find();
-        res.status(200).json({
+        return res.status(200).json({
             data: allTags,
             message: '(200 OK)-Successfully fetched all tags',
             success: true
         });
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-No tag was found',
             success: false
         });
@@ -78,13 +79,13 @@ export async function getAllTags(req, res) {
 export async function getAllOfficialTags(req, res) {
     try {
         const allOfficialTags = await TagsModel.find({ isOfficial: true });
-        res.status(200).json({
+        return res.status(200).json({
             data: allOfficialTags,
             message: '(200 OK)-Successfully fetched all official tags',
             success: true
         });
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-No tag was found',
             success: false
         });
@@ -110,13 +111,13 @@ export async function getUserSingleTags(req, res) {
         const decryptedCookieValue = jwt.verify(req.cookies.token, LOG_TOKEN_KEY);
 
         const allUserTags = await TagsModel.find({ $or: [{ creatorId: decryptedCookieValue.userId }, { isOfficial: true }] });
-        res.status(200).json({
+        return res.status(200).json({
             data: allUserTags,
             message: '(200 OK)-Successfully fetched all the tags for this user',
             success: true
         });
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-No tag was found',
             success: false
         });
@@ -137,13 +138,13 @@ export async function getCommonMapperTags(req, res) {
     try {
         // Ids, when sent in groups are sent in a single string, each Id tied to the others by a & character, hence the need for a split on that character
         const allParticipantTags = await TagsModel.find({ $or: [{ creatorId: { $in: req.params.ids.split("&") } }, { isOfficial: true }] });
-        res.status(200).json({
+        return res.status(200).json({
             data: allParticipantTags,
             message: '(200 OK)-Successfully fetched all the tags for these users',
             success: true
         });
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-No tag was found',
             success: false
         });
@@ -164,13 +165,13 @@ export async function getTagsByIds(req, res) {
     try {
         // Ids, when sent in groups are sent in a single string, each Id tied to the others by a & character, hence the need for a split on that character
         const tagsByIds = await TagsModel.find({ _id: { $in: req.params.ids.split("&") } });
-        res.status(200).json({
+        return res.status(200).json({
             data: tagsByIds,
             message: '(200 OK)-Successfully fetched all the tags',
             success: true
         });
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-No tag matching was found',
             success: false
         });
@@ -192,21 +193,35 @@ export async function updateTagById(req, res) {
         // Find the tag to update
         const tagById: ITag = await TagsModel.findOne({ _id: { $in: req.body.tagId } });
 
-        // Updating the tag according to the ITag interface, sanitizing every text input given using sanitizeHtml, keeping the old values if no new one is given
-        await TagsModel.updateOne({ _id: { $in: req.body.tagId } }, {
-            backgroundColor: sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }) : tagById.backgroundColor,
-            name: sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }) : tagById.name,
-            nameColor: sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }) : tagById.nameColor,
-        }
-        );
+        // Get access token from the front end and the key that serves to create and verify them
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
 
-        res.status(204).json({
-            message: '(204 No Content)-Tag successfully updated',
-            success: true
-        });
+        // Get the token's contents, verifying its validity in the process
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
+        if (checkOwnership(tagById.creatorId, decryptedCookie.userId, decryptedCookie.status)) {
+            // Updating the tag according to the ITag interface, sanitizing every text input given using sanitizeHtml, keeping the old values if no new one is given
+            await TagsModel.updateOne({ _id: { $in: req.body.tagId } }, {
+                backgroundColor: sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }) : tagById.backgroundColor,
+                name: sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }) : tagById.name,
+                nameColor: sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }) : tagById.nameColor,
+            }
+            );
+
+            return res.status(204).json({
+                message: '(204 No Content)-Tag successfully updated',
+                success: true
+            });
+        } else {
+            return res.status(403).json({
+                message: '(403 Forbidden)-The tag does not belong to the user and will not be updated',
+                success: false
+            });
+        }
 
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-Tag to be updated was not found',
             success: false
         });
@@ -225,15 +240,33 @@ export async function updateTagById(req, res) {
 */
 export async function deleteTagById(req, res) {
     try {
-        await TagsModel.deleteOne({ _id: { $in: req.body.tagId } });
+        // Find the tag to update
+        const tagById: ITag = await TagsModel.findOne({ _id: { $in: req.body.tagId } });
 
-        res.status(204).json({
-            message: '(204 No Content)-Appliance successfully deleted',
-            success: true
-        });
+        // Get access token from the front end and the key that serves to create and verify them
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
+
+        // Get the token's contents, verifying its validity in the process
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
+        if (checkOwnership(tagById.creatorId, decryptedCookie.userId, decryptedCookie.status)) {
+
+            await TagsModel.deleteOne({ _id: { $in: req.body.tagId } });
+
+            return res.status(204).json({
+                message: '(204 No Content)-Appliance successfully deleted',
+                success: true
+            });
+        } else {
+            return res.status(403).json({
+                message: '(403 Forbidden)-The tag does not belong to the user and will not be deleted',
+                success: false
+            });
+        }
 
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-Appliance to be deleted was not found',
             success: false
         });
@@ -252,15 +285,34 @@ export async function deleteTagById(req, res) {
 */
 export async function deleteTagsByIds(req, res) {
     try {
+        // Finding the matching tags
+        const tagsByIds: ITag[] = await TagsModel.find({ _id: { $in: req.body.tagIds } });
+
+        // Get access token from the front end and the key that serves to create and verify them
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
+
+        // Get the token's contents, verifying its validity in the process
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
+        for (const tag of tagsByIds) {
+            if (!checkOwnership(tag.creatorId, decryptedCookie.userId, decryptedCookie.status)) {
+                return res.status(403).json({
+                    message: '(403 Forbidden)-One of tags to be deleted does not belong to the user.',
+                    success: false
+                });
+            }
+        }
+
         await TagsModel.deleteMany({ _id: { $in: req.body.tagIds } });
 
-        res.status(204).json({
+        return res.status(204).json({
             message: '(204 No Content)-Tags successfully deleted',
             success: true
         });
 
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-One or several tags to be deleted were not found',
             success: false
         });

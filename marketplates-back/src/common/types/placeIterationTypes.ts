@@ -9,14 +9,14 @@ import { ITag } from "./tagTypes.js";
  * @interface IPlaceIteration
  * 
  * @member {Types.ObjectId | undefined} _id is used for calling upon the place iteration when needed
- * @member {string} associatedMapIds is a copy of the pre existing marker's address
+ * @member {string} associatedMapIds is the ids of maps the iteration is associated with
  * @member {Date | undefined} creationDate is not yet used but can serve to date edits
  * @member {Types.ObjectId} creatorId is used to identify the creator of the place iteration
- * @member {IGPSCoordinates} customName is a copy of the pre existing marker's gps coordinates
- * @member {string | undefined} customDescription is used to identify which user owns the iteration
- * @member {string} customTagIds is used to give a custom name to a pre exiting map marker
- * @member {Types.ObjectId[]} gpsCoordinates is used to gather tag IDs whether custom made or not
- * @member {ITag[]} placeId is used to retrieve tag data
+ * @member {string} customName is used to give a custom name to a pre exiting map marker
+ * @member {string} customDescription is used to give a custom description to a pre exiting map marker
+ * @member {Types.ObjectId[]} customTagIds is used to gather tag IDs whether custom made or not 
+ * @member {IGPSCoordinates} gpsCoordinates is a copy of the pre existing marker's gps coordinates 
+ * @member {Types.ObjectId} placeId is associate the place iteration with the place it originates from
  */
 
 export interface IPlaceIteration {

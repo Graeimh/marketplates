@@ -53,7 +53,7 @@ export async function fetchUsersByIds(userIds: string[]) {
    * @returns A JSON containing the success status as well as a message
 */
 export async function updateUserById(userId: string, formData: IUserData) {
-    const response = await userInstance.post('/users/update', {
+    const response = await userInstance.put('/users/update', {
         userId,
         formData
     });

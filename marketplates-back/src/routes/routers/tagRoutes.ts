@@ -24,7 +24,7 @@ tagRouter.get("/mapperTags/:ids", idChecker, getCommonMapperTags);
 tagRouter.post("/create", createTag);
 
 // Reserved for the owning user or an admin, serves to update a tag in the database
-tagRouter.post("/update", updateTagById);
+tagRouter.put("/update", updateTagById);
 
 // Reserved for the owning user or an admin, serves to delete a single tag from the database
 tagRouter.post("/delete", deleteTagById);

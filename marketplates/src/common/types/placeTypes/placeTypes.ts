@@ -91,6 +91,34 @@ export interface IPlaceIterationValues {
 }
 
 /**
+ * Defines the values necessary to create a place iteration in the database
+ *
+ * @interface IPlaceIteration
+ * 
+ * @member {string | undefined} _id is used for calling upon the place iteration when needed
+ * @member {string} associatedMapIds is the ids of maps the iteration is associated with
+ * @member {Date | undefined} creationDate is not yet used but can serve to date edits
+ * @member {string} creatorId is used to identify the creator of the place iteration
+ * @member {string} customName is used to give a custom name to a pre exiting map marker
+ * @member {string} customDescription is used to give a custom description to a pre exiting map marker
+ * @member {string[]} customTagIds is used to gather tag IDs whether custom made or not 
+ * @member {IGPSCoordinates} gpsCoordinates is a copy of the pre existing marker's gps coordinates 
+ * @member {string} placeId is used to retrieve tag data
+ */
+
+export interface IPlaceIteration {
+    _id?: string;
+    associatedMapIds: string[];
+    creationDate?: Date;
+    creatorId: string;
+    customName: string;
+    customDescription: string;
+    customTagIds: string[];
+    gpsCoordinates: IGPSCoordinates;
+    placeId: string;
+};
+
+/**
  * Contains the value for a filter for tag display, will be given more values to filter with in the future
  *
  * @interface ITagFilterQuery

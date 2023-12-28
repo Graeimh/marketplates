@@ -2,6 +2,7 @@ import { Router } from "express";
 import { createUser, deleteUserById, deleteUsersByIds, getAllUsers, getUsersById, updateUserById } from "../../controllers/UserController.js"
 import { checkAccessToken } from "../../middlewares/checkAccessToken.js";
 import { idChecker } from "../../middlewares/idChecker.js";
+import { checkIfAdmin } from "../../middlewares/checkIfAdmin.js";
 
 const usersRouter = Router();
 
@@ -15,12 +16,12 @@ usersRouter.post("/create", createUser);
 usersRouter.get("/byId/:ids", checkAccessToken, idChecker, getUsersById);
 
 // Updates a user's data
-usersRouter.post("/update", checkAccessToken, updateUserById);
+usersRouter.put("/update", checkAccessToken, updateUserById);
 
 // Reserved for the owning user or an admin, serves to delete a user from the database
 usersRouter.post("/delete", checkAccessToken, deleteUserById);
 
 // For admins only, allows admins to delete one or several users from the database
-usersRouter.post("/deleteMany", checkAccessToken, deleteUsersByIds);
+usersRouter.post("/deleteMany", checkAccessToken, checkIfAdmin, deleteUsersByIds);
 
 export default usersRouter;

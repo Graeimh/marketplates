@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IPlaceIteration } from '../types/placeIterationTypes.js';
+import { IPlaceIteration } from '../common/types/placeIterationTypes.js';
 
 // Defining a schema matching the interface IPlaceIteration
 const PlaceIterationsSchema = new mongoose.Schema<IPlaceIteration>(

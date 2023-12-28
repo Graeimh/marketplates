@@ -1,7 +1,8 @@
 import sanitizeHtml from "sanitize-html";
 import PlacesModel from "../models/Places.js";
 import jwt from "jsonwebtoken"
-import { IPlace } from "../types/placeTypes.js";
+import { IPlace } from "../common/types/placeTypes.js";
+import checkOwnership from "../common/functions/checkOwnership.js";
 
 /**
    * Creates a place
@@ -26,7 +27,7 @@ export async function createPlace(req, res) {
         const preExistingPlace = await PlacesModel.find({ name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }) });
 
         if (preExistingPlace.length > 0) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: '(400 Bad Request)-A place named like this already exists',
                 success: false
             });
@@ -48,12 +49,12 @@ export async function createPlace(req, res) {
         // Creating the place within the database
         await PlacesModel.create(place);
 
-        res.status(201).json({
+        return res.status(201).json({
             message: '(201 Created)-Place successfully created',
             success: true
         });
     } catch (err) {
-        res.status(403).json({
+        return res.status(403).json({
             message: '(403 Forbidden)-The data sent created a place-type conflict',
             success: false
         });
@@ -74,13 +75,13 @@ export async function createPlace(req, res) {
 export async function getAllPlaces(req, res) {
     try {
         const allPlaces = await PlacesModel.find();
-        res.status(200).json({
+        return res.status(200).json({
             data: allPlaces,
             message: '(200 OK)-Successfully fetched all places',
             success: true
         });
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-No place was found',
             success: false
         });
@@ -100,13 +101,13 @@ export async function getAllPlaces(req, res) {
 export async function getPlacesByIds(req, res) {
     try {
         const somePlaces = await PlacesModel.find({ _id: { $in: req.params.ids.split("&") } });
-        res.status(200).json({
+        return res.status(200).json({
             data: somePlaces,
             message: '(200 OK)-Successfully fetched all places by Ids',
             success: true
         });
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-No places were found',
             success: false
         });
@@ -133,13 +134,13 @@ export async function getPlacesForUser(req, res) {
         const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
 
         const somePlaces = await PlacesModel.find({ owner_id: { $in: decryptedCookie.userId } });
-        res.status(200).json({
+        return res.status(200).json({
             data: somePlaces,
             message: '(200 OK)-Successfully fetched all places for user',
             success: true
         });
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-No places were found belonging to this user',
             success: false
         });
@@ -165,31 +166,46 @@ export async function updatePlaceById(req, res) {
 
         // Checking if the matching place exists
         if (!placeById) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: '(404 Not Found)-The place to update was not found',
                 success: false
             });
         }
 
-        // Updating the matching place whilst following the IPlace interface and sanitizing any http text input given
-        await PlacesModel.updateOne({ _id: { $in: req.body.placeId } }, {
-            address: sanitizeHtml(req.body.formData.address, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.address, { allowedTags: [] }) : placeById.address,
-            description: sanitizeHtml(req.body.formData.description, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.description, { allowedTags: [] }) : placeById.description,
-            gpsCoordinates: {
-                longitude: req.body.formData.gpsCoordinates.longitude ? req.body.formData.gpsCoordinates.longitude : placeById.gpsCoordinates.longitude,
-                latitude: req.body.formData.gpsCoordinates.latitude ? req.body.formData.gpsCoordinates.latitude : placeById.gpsCoordinates.latitude,
-            },
-            name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.name, { allowedTags: [] }) : placeById.name,
-            tagsList: req.body.formData.tagList.map(tag => tag._id),
-        });
+        // Get access token from the front end and the key that serves to create and verify them
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
 
-        res.status(204).json({
-            message: '(204 No Content)-Place successfully updated',
-            success: true
-        });
+        // Get the token's contents, verifying its validity in the process
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
+        if (checkOwnership(placeById.owner_id, decryptedCookie.userId, decryptedCookie.status)) {
+
+            // Updating the matching place whilst following the IPlace interface and sanitizing any http text input given
+            await PlacesModel.updateOne({ _id: { $in: req.body.placeId } }, {
+                address: sanitizeHtml(req.body.formData.address, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.address, { allowedTags: [] }) : placeById.address,
+                description: sanitizeHtml(req.body.formData.description, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.description, { allowedTags: [] }) : placeById.description,
+                gpsCoordinates: {
+                    longitude: req.body.formData.gpsCoordinates.longitude ? req.body.formData.gpsCoordinates.longitude : placeById.gpsCoordinates.longitude,
+                    latitude: req.body.formData.gpsCoordinates.latitude ? req.body.formData.gpsCoordinates.latitude : placeById.gpsCoordinates.latitude,
+                },
+                name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.name, { allowedTags: [] }) : placeById.name,
+                tagsList: req.body.formData.tagList.map(tag => tag._id),
+            });
+
+            return res.status(204).json({
+                message: '(204 No Content)-Place successfully updated',
+                success: true
+            });
+        } else {
+            return res.status(403).json({
+                message: '(403 Forbidden)-The place to be updated does not belong to the user.',
+                success: false
+            });
+        }
 
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: '(500 Internal Server Error)-A server side error has occured.',
             success: false
         });
@@ -208,15 +224,32 @@ export async function updatePlaceById(req, res) {
 */
 export async function deletePlaceById(req, res) {
     try {
-        const placeToDelete = await PlacesModel.deleteOne({ _id: { $in: req.body.placeId } });
+        // Finding the matching place
+        const placeById: IPlace = await PlacesModel.findOne({ _id: { $in: req.body.placeId } });
 
-        res.status(204).json({
-            message: '(204 No Content)-Place successfully deleted',
-            success: true
-        });
+        // Get access token from the front end and the key that serves to create and verify them
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
 
+        // Get the token's contents, verifying its validity in the process
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
+        if (checkOwnership(placeById.owner_id, decryptedCookie.userId, decryptedCookie.status)) {
+
+            await PlacesModel.deleteOne({ _id: { $in: req.body.placeId } });
+
+            return res.status(204).json({
+                message: '(204 No Content)-Place successfully deleted',
+                success: true
+            });
+        } else {
+            return res.status(403).json({
+                message: '(403 Forbidden)-The place to be deleted does not belong to the user.',
+                success: false
+            });
+        }
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-Place to be deleted was not found',
             success: false
         });
@@ -235,15 +268,34 @@ export async function deletePlaceById(req, res) {
 */
 export async function deletePlacesByIds(req, res) {
     try {
+        // Finding the matching places
+        const placesById: IPlace[] = await PlacesModel.find({ _id: { $in: req.body.placeIds } });
+
+        // Get access token from the front end and the key that serves to create and verify them
+        const cookieValue = req.cookies.token;
+        const { LOG_TOKEN_KEY } = process.env;
+
+        // Get the token's contents, verifying its validity in the process
+        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
+        for (const place of placesById) {
+            if (!checkOwnership(place.owner_id, decryptedCookie.userId, decryptedCookie.status)) {
+                return res.status(403).json({
+                    message: '(403 Forbidden)-One of places to be deleted does not belong to the user.',
+                    success: false
+                });
+            }
+        }
+
         await PlacesModel.deleteMany({ _id: { $in: req.body.placeIds } });
 
-        res.status(204).json({
+        return res.status(204).json({
             message: '(204 No Content)-Places successfully deleted',
             success: true
         });
 
     } catch (err) {
-        res.status(404).json({
+        return res.status(404).json({
             message: '(404 Not found)-One or several places to be deleted were not found',
             success: false
         });
