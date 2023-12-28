@@ -1,64 +1,71 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as userService from "../../../services/userService.js";
 import styles from "./UserManipulationItem.module.scss";
-import { IUser } from "../../../common/types/userTypes/userTypes.js";
+import {
+  IUser,
+  IUserData,
+  UserType,
+} from "../../../common/types/userTypes/userTypes.js";
+import { checkPermission } from "../../../common/functions/checkPermission.js";
+import UserContext from "../../Contexts/UserContext/UserContext.js";
 
 function UserManipulationItem(props: {
   user: IUser;
   uponDeletion: (userId: string) => void;
   primeForDeletion: (userId: string) => void;
   IsSelected: boolean;
+  refetch: () => Promise<void>;
 }) {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState<IUserData>({
+    displayName: props.user.displayName,
+    email: props.user.email,
+    firstName: props.user.firstName,
+    lastName: props.user.lastName,
+    city: props.user.location.city,
+    country: props.user.location.city,
+    county: props.user.location.county,
+    streetAddress: props.user.location.streetAddress,
+  });
   const [error, setError] = useState(null);
   const [responseMessage, setResponseMessage] = useState(null);
   const [isPrimed, setIsPrimed] = useState(false);
   const [validForUpdating, setValidForUpdating] = useState(false);
 
-  const [displayName, setDisplayName] = useState(props.user.displayName);
-  const [email, setEmail] = useState(props.user.email);
-  const [firstName, setFirstName] = useState(props.user.firstName);
-  const [lastName, setLastName] = useState(props.user.lastName);
-  const [streetAddress, setStreetAddress] = useState(
-    props.user.location.streetAddress
-  );
-  const [county, setCounty] = useState(props.user.location.county);
-  const [city, setCity] = useState(props.user.location.city);
-  const [country, setCountry] = useState(props.user.location.country);
+  const value = useContext(UserContext);
 
   function decideUpdatability() {
     setValidForUpdating(
-      displayName.length > 1 &&
-        email.length > 1 &&
-        firstName.length > 1 &&
-        lastName.length > 1 &&
-        streetAddress.length > 1 &&
-        county.length > 1 &&
-        city.length > 1 &&
-        country.length > 1 &&
-        (displayName !== props.user.displayName ||
-          email !== props.user.email ||
-          firstName !== props.user.firstName ||
-          lastName !== props.user.lastName ||
-          streetAddress !== props.user.location.streetAddress ||
-          county !== props.user.location.county ||
-          city !== props.user.location.city ||
-          country !== props.user.location.country)
+      formData.displayName.length > 1 &&
+        formData.email.length > 1 &&
+        formData.firstName.length > 1 &&
+        formData.lastName.length > 1 &&
+        formData.streetAddress.length > 1 &&
+        formData.county.length > 1 &&
+        formData.city.length > 1 &&
+        formData.country.length > 1 &&
+        (formData.displayName !== props.user.displayName ||
+          formData.email !== props.user.email ||
+          formData.firstName !== props.user.firstName ||
+          formData.lastName !== props.user.lastName ||
+          formData.streetAddress !== props.user.location.streetAddress ||
+          formData.county !== props.user.location.county ||
+          formData.city !== props.user.location.city ||
+          formData.country !== props.user.location.country)
     );
   }
 
   useEffect(() => {
     decideUpdatability();
   }, [
-    displayName,
-    email,
-    firstName,
-    firstName,
-    lastName,
-    streetAddress,
-    county,
-    city,
-    country,
+    formData.displayName,
+    formData.email,
+    formData.firstName,
+    formData.firstName,
+    formData.lastName,
+    formData.streetAddress,
+    formData.county,
+    formData.city,
+    formData.country,
   ]);
 
   function handleDeletePrimer() {
@@ -70,18 +77,14 @@ function UserManipulationItem(props: {
     event.preventDefault();
 
     try {
-      const response = await userService.updateUserById(
-        props.user._id,
-        displayName,
-        email,
-        firstName,
-        lastName,
-        streetAddress,
-        county,
-        city,
-        country
-      );
-      setResponseMessage(response.message);
+      if (checkPermission(value.status, UserType.Admin)) {
+        const response = await userService.updateUserById(
+          props.user._id,
+          formData
+        );
+        setResponseMessage(response.message);
+        props.refetch();
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -120,9 +123,12 @@ function UserManipulationItem(props: {
                   type="text"
                   name="displayName"
                   onInput={() => {
-                    setDisplayName(event?.target.value);
+                    setFormData({
+                      ...formData,
+                      displayName: event?.target.value,
+                    });
                   }}
-                  value={displayName}
+                  value={formData.displayName}
                 />
               </p>
             </li>
@@ -133,9 +139,9 @@ function UserManipulationItem(props: {
                   type="email"
                   name="email"
                   onInput={() => {
-                    setEmail(event?.target.value);
+                    setFormData({ ...formData, email: event?.target.value });
                   }}
-                  value={email}
+                  value={formData.email}
                 />
               </p>
             </li>
@@ -146,9 +152,12 @@ function UserManipulationItem(props: {
                   type="text"
                   name="firstName"
                   onInput={() => {
-                    setFirstName(event?.target.value);
+                    setFormData({
+                      ...formData,
+                      firstName: event?.target.value,
+                    });
                   }}
-                  value={firstName}
+                  value={formData.firstName}
                 />
               </p>
             </li>
@@ -159,9 +168,9 @@ function UserManipulationItem(props: {
                   type="text"
                   name="lastName"
                   onInput={() => {
-                    setLastName(event?.target.value);
+                    setFormData({ ...formData, lastName: event?.target.value });
                   }}
-                  value={lastName}
+                  value={formData.lastName}
                 />
               </p>
             </li>
@@ -172,9 +181,12 @@ function UserManipulationItem(props: {
                   type="text"
                   name="streetAddress"
                   onInput={() => {
-                    setStreetAddress(event?.target.value);
+                    setFormData({
+                      ...formData,
+                      streetAddress: event?.target.value,
+                    });
                   }}
-                  value={streetAddress}
+                  value={formData.streetAddress}
                 />
               </p>
             </li>
@@ -185,9 +197,9 @@ function UserManipulationItem(props: {
                   type="text"
                   name="county"
                   onInput={() => {
-                    setCounty(event?.target.value);
+                    setFormData({ ...formData, county: event?.target.value });
                   }}
-                  value={county}
+                  value={formData.county}
                 />
               </p>
             </li>
@@ -198,9 +210,9 @@ function UserManipulationItem(props: {
                   type="text"
                   name="city"
                   onInput={() => {
-                    setCity(event?.target.value);
+                    setFormData({ ...formData, city: event?.target.value });
                   }}
-                  value={city}
+                  value={formData.city}
                 />
               </p>
             </li>
@@ -211,9 +223,9 @@ function UserManipulationItem(props: {
                   type="text"
                   name="country"
                   onInput={() => {
-                    setCountry(event?.target.value);
+                    setFormData({ ...formData, country: event?.target.value });
                   }}
-                  value={country}
+                  value={formData.country}
                 />
               </p>
             </li>

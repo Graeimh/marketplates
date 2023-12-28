@@ -29,7 +29,7 @@ function UserManipulation() {
 
   const value = useContext(UserContext);
 
-  async function getResults() {
+  async function getAllUsers() {
     try {
       if (checkPermission(value.status, UserType.Admin)) {
         // Fetching all existing users
@@ -42,7 +42,7 @@ function UserManipulation() {
   }
 
   useEffect(() => {
-    getResults();
+    getAllUsers();
   }, []);
 
   function manageDeletionList(id: string) {
@@ -86,7 +86,7 @@ function UserManipulation() {
         const response = await responseForDelete;
         setResponseMessage(response);
         setPrimedForDeletionList([]);
-        getResults();
+        getAllUsers();
       }
     } catch (err) {
       setError(err.message);
@@ -97,7 +97,7 @@ function UserManipulation() {
     try {
       if (checkPermission(value.status, UserType.Admin)) {
         const response = await userService.deleteUserById(id);
-        getResults();
+        getAllUsers();
         setResponseMessage(response.message);
       }
     } catch (err) {
@@ -146,6 +146,7 @@ function UserManipulation() {
             user={user}
             uponDeletion={sendDeleteUserCall}
             primeForDeletion={manageDeletionList}
+            refetch={getAllUsers}
             key={user._id}
             IsSelected={primedForDeletionList.indexOf(user._id) !== -1}
           />

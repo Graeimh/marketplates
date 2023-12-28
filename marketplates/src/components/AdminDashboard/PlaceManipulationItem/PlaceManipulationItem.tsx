@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as tagService from "../../../services/tagService.js";
 import styles from "./PlaceManipulationItem.module.scss";
 import Tag from "../../MapGenerationComponents/Tag/index.js";
 import { IPlace } from "../../../common/types/placeTypes/placeTypes.js";
 import { ITag } from "../../../common/types/tagTypes/tagTypes.js";
 import { useNavigate } from "react-router-dom";
+import UserContext from "../../Contexts/UserContext/UserContext.js";
+import { UserType } from "../../../common/types/userTypes/userTypes.js";
+import { checkPermission } from "../../../common/functions/checkPermission.js";
 
 function PlaceManipulationItem(props: {
   place: IPlace;
@@ -23,6 +26,8 @@ function PlaceManipulationItem(props: {
   const [placeTagsList, setSpecificPlaceTags] = useState<ITag[]>([]);
   const navigate = useNavigate();
 
+  const value = useContext(UserContext);
+
   function handleDeletePrimer() {
     props.primeForDeletion(props.place._id ? props.place._id : "");
     setIsPrimed(!isPrimed);
@@ -34,8 +39,10 @@ function PlaceManipulationItem(props: {
 
   async function getSpecificPlaceTags() {
     try {
-      const placeTags = await tagService.fetchTagsByIds(props.place.tagsList);
-      setSpecificPlaceTags(placeTags.data);
+      if (checkPermission(value.status, UserType.Admin)) {
+        const placeTags = await tagService.fetchTagsByIds(props.place.tagsList);
+        setSpecificPlaceTags(placeTags.data);
+      }
     } catch (err) {
       setError(err.message);
     }

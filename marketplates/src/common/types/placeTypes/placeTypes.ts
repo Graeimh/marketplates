@@ -74,6 +74,23 @@ export interface IPlaceFilterQuery {
 }
 
 /**
+ * Will contain the values necessary to update place iterations
+ *
+ * @interface IPlaceIterationValues
+ * 
+ * @member {string} customDescription is used to give a custom description to the map marker
+ * @member {string} customName is used to give a custom name to the map marker
+ * @member {string[]} customTagIds contains the tag data for the iteration
+ * 
+ */
+
+export interface IPlaceIterationValues {
+    customDescription: string;
+    customName: string;
+    customTagIds: string[];
+}
+
+/**
  * Contains the value for a filter for tag display, will be given more values to filter with in the future
  *
  * @interface ITagFilterQuery

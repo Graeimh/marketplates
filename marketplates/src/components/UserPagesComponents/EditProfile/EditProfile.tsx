@@ -58,17 +58,7 @@ function EditProfile(props: { userId: string }) {
     event.preventDefault();
     try {
       if (checkPermission(value.status, UserType.User)) {
-        await userService.updateUserById(
-          props.userId,
-          formData.displayName,
-          formData.email,
-          formData.firstName,
-          formData.lastName,
-          formData.streetAddress,
-          formData.county,
-          formData.city,
-          formData.city
-        );
+        await userService.updateUserById(props.userId, formData);
         navigate("/profile");
       }
     } catch (err) {

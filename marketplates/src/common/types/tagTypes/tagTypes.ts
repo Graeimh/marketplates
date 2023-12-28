@@ -51,3 +51,22 @@ export interface ITagStyle {
     color: string;
     backgroundColor: string;
 }
+
+/**
+ * Defines the values necessary to create a tag in the database
+ *
+ * @interface ITagValues
+ * 
+ * @member {boolean | undefined} isOfficial is used to separate custom tags created by users and official ones created by admins
+ * @member {string} tagName is the tag's name, often contains an emoji for the first character
+ * @member {string} tagNameColor is a hexadecimal color value for the tag's name color
+ * @member {string} tagBackgroundColor is a hexadecimal color value for the tag's background color
+ * 
+ */
+
+export interface ITagValues {
+    isOfficial?: boolean;
+    tagBackgroundColor: string;
+    tagName: string;
+    tagNameColor: string;
+}

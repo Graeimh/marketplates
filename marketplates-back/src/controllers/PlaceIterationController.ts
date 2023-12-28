@@ -187,9 +187,9 @@ export async function updatePlaceIterationById(req, res) {
 
         // Updating the place iteration's data following the IPlaceIteration interface
         await PlaceIterationsModel.updateOne({ _id: { $in: req.body.placeIterationId } }, {
-            customName: req.body.customName ? sanitizeHtml(req.body.customName, { allowedTags: [] }) : placeIterationById.customName,
-            customDescription: req.body.customDescription ? sanitizeHtml(req.body.customDescription, { allowedTags: [] }) : placeIterationById.customDescription,
-            customTagIds: req.body.customTagIds ? req.body.customTagIds : placeIterationById.customTagIds,
+            customName: req.body.formData.customName ? sanitizeHtml(req.body.formData.customName, { allowedTags: [] }) : placeIterationById.customName,
+            customDescription: req.body.formData.customDescription ? sanitizeHtml(req.body.formData.customDescription, { allowedTags: [] }) : placeIterationById.customDescription,
+            customTagIds: req.body.formData.customTagIds ? req.body.formData.customTagIds : placeIterationById.customTagIds,
 
         })
 

@@ -1,4 +1,5 @@
 import generateApiInstance from "../common/functions/generateApiInstance";
+import { ITagValues } from "../common/types/tagTypes/tagTypes";
 
 // Generating a tag-specific axios instance
 const tagInstance = generateApiInstance();
@@ -8,14 +9,13 @@ const tagInstance = generateApiInstance();
    *
    *
    * @param {ITagValues} formData - Contains the required values to create a tag
+   * @param {string} userId - Contains the user's Id to attribute ownership
    * 
    * @returns A JSON containing the success status as well as a message
 */
-export async function generateTag(tagName: string, tagNameColor: string, tagBackgroundColor: string, userId: string) {
+export async function generateTag(formData: ITagValues, userId: string) {
     const response = await tagInstance.post('/tags/create', {
-        tagName,
-        tagNameColor,
-        tagBackgroundColor,
+        formData,
         userId,
     });
     return response.data;
@@ -92,13 +92,11 @@ export async function fetchMapperTagsByIds(userIds: string[]) {
    * 
    * @returns A JSON containing the success status as well as a message
 */
-export async function updateTagById(tagId: string, backgroundColor?: string, name?: string, nameColor?: string) {
+export async function updateTagById(tagId: string, formData: ITagValues) {
 
     const response = await tagInstance.post('/tags/update', {
         tagId,
-        backgroundColor,
-        name,
-        nameColor,
+        formData
 
     });
     return response.data;

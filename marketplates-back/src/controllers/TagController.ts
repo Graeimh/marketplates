@@ -19,11 +19,11 @@ export async function createTag(req, res) {
     try {
         // Creating the tag according to the ITag interface, sanitizing every text input given using sanitizeHtml
         const tag: ITag = {
-            backgroundColor: sanitizeHtml(req.body.tagBackgroundColor, { allowedTags: [] }),
+            backgroundColor: sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }),
             creatorId: req.body.userId,
-            name: sanitizeHtml(req.body.tagName, { allowedTags: [] }),
-            nameColor: sanitizeHtml(req.body.tagNameColor, { allowedTags: [] }),
-            isOfficial: true,
+            name: sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }),
+            nameColor: sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }),
+            isOfficial: req.body.formData.isOfficial ? req.body.formData.isOfficial : false,
         };
         await TagsModel.create(tag);
 
@@ -194,9 +194,9 @@ export async function updateTagById(req, res) {
 
         // Updating the tag according to the ITag interface, sanitizing every text input given using sanitizeHtml, keeping the old values if no new one is given
         await TagsModel.updateOne({ _id: { $in: req.body.tagId } }, {
-            backgroundColor: sanitizeHtml(req.body.backgroundColor, { allowedTags: [] }) ? sanitizeHtml(req.body.backgroundColor, { allowedTags: [] }) : tagById.backgroundColor,
-            name: sanitizeHtml(req.body.name, { allowedTags: [] }) ? sanitizeHtml(req.body.name, { allowedTags: [] }) : tagById.name,
-            nameColor: sanitizeHtml(req.body.nameColor, { allowedTags: [] }) ? sanitizeHtml(req.body.nameColor, { allowedTags: [] }) : tagById.nameColor,
+            backgroundColor: sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }) : tagById.backgroundColor,
+            name: sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }) : tagById.name,
+            nameColor: sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }) : tagById.nameColor,
         }
         );
 

@@ -1,5 +1,5 @@
 import generateApiInstance from "../common/functions/generateApiInstance";
-import { IPlaceUpdated } from "../common/types/placeTypes/placeTypes";
+import { IPlaceIterationValues, IPlaceUpdated } from "../common/types/placeTypes/placeTypes";
 
 // Generating a place iteration-specific axios instance
 const placeIterationInstance = generateApiInstance();
@@ -27,7 +27,7 @@ export async function createPlaceIterationById(formData: IPlaceUpdated) {
    * 
    * @returns A JSON containing the success status as well as a message,
 */
-export async function updatePlaceIterationById(formData: IIterationUpdated) {
+export async function updatePlaceIterationById(formData: IPlaceIterationValues) {
     const response = await placeIterationInstance.post('/placeIterations/update', {
         formData
     });

@@ -125,24 +125,24 @@ export async function updateUserById(req, res) {
 
   try {
     // Find the user to update
-    const userById: IUser = await UserModel.findOne({ _id: { $in: req.body.userId } });
+    const userById: IUser = await UserModel.findOne({ _id: req.body.userId });
 
     // Updating the user according to the IUser interface, sanitizing every text input given using sanitizeHtml, keeping the old values if no new one is given
-    await UserModel.updateOne({ _id: { $in: req.body.userId } }, {
-      displayName: req.body.displayName ? sanitizeHtml(req.body.displayName, { allowedTags: [] }) : userById.displayName,
-      email: req.body.email ? sanitizeHtml(req.body.email, { allowedTags: [] }) : userById.email,
-      firstName: req.body.firstName ? sanitizeHtml(req.body.firstName, { allowedTags: [] }) : userById.firstName,
-      lastName: req.body.lastName ? sanitizeHtml(req.body.lastName, { allowedTags: [] }) : userById.lastName,
+    await UserModel.updateOne({ _id: req.body.userId }, {
+      displayName: req.body.formData.displayName ? sanitizeHtml(req.body.formData.displayName, { allowedTags: [] }) : userById.displayName,
+      email: req.body.formData.email ? sanitizeHtml(req.body.formData.email, { allowedTags: [] }) : userById.email,
+      firstName: req.body.formData.firstName ? sanitizeHtml(req.body.formData.firstName, { allowedTags: [] }) : userById.firstName,
+      lastName: req.body.formData.lastName ? sanitizeHtml(req.body.formData.lastName, { allowedTags: [] }) : userById.lastName,
       location: {
-        streetAddress: req.body.streetAddress ? sanitizeHtml(req.body.streetAddress, { allowedTags: [] }) : userById.location.streetAddress,
-        county: req.body.county ? sanitizeHtml(req.body.county, { allowedTags: [] }) : userById.location.county,
-        city: req.body.city ? sanitizeHtml(req.body.city, { allowedTags: [] }) : userById.location.city,
-        country: req.body.country ? sanitizeHtml(req.body.country, { allowedTags: [] }) : userById.location.country,
+        streetAddress: req.body.formData.streetAddress ? sanitizeHtml(req.body.formData.streetAddress, { allowedTags: [] }) : userById.location.streetAddress,
+        county: req.body.formData.county ? sanitizeHtml(req.body.formData.county, { allowedTags: [] }) : userById.location.county,
+        city: req.body.formData.city ? sanitizeHtml(req.body.formData.city, { allowedTags: [] }) : userById.location.city,
+        country: req.body.formData.country ? sanitizeHtml(req.body.formData.country, { allowedTags: [] }) : userById.location.country,
       },
     }
     );
 
-    res.status(204).json({
+    return res.status(204).json({
       message: '(204 No Content)-User data successfully updated',
       success: true
     });

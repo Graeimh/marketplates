@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import * as tagService from "../../../services/tagService.js";
 import styles from "./TagManipulation.module.scss";
 import TagManipulationItem from "../TagManipulationItem/TagManipulationItem.js";
-import { ITag } from "../../../common/types/tagTypes/tagTypes.js";
+import { ITag, ITagValues } from "../../../common/types/tagTypes/tagTypes.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { HexColorPicker } from "react-colorful";
 import { hexifyColors } from "../../../common/functions/hexifyColors.js";
@@ -26,14 +26,17 @@ function TagManipulation() {
     []
   );
 
-  const [tagNameColor, setTagNameColor] = useState("#000000");
-  const [tagBackgroundColor, setTagBackgroundColor] = useState("#FFFFFF");
-  const [tagName, setTagName] = useState("");
+  const [formData, setFormData] = useState<ITagValues>({
+    isOfficial: true,
+    tagBackgroundColor: "#FFFFFF",
+    tagName: "Tag name",
+    tagNameColor: "#000000",
+  });
   const [validForUpdating, setValidForUpdating] = useState(false);
-
-  const value = useContext(UserContext);
   const [isAllSelected, setIsAllSelected] = useState(false);
   const [tagQuery, setTagQuery] = useState("");
+
+  const value = useContext(UserContext);
 
   async function getAllTags() {
     try {
@@ -52,14 +55,14 @@ function TagManipulation() {
 
   function decideUpdatability() {
     setValidForUpdating(
-      tagName.length > 3 &&
-        tagNameColor.length === 7 &&
-        tagBackgroundColor.length === 7
+      formData.tagName.length > 3 &&
+        formData.tagNameColor.length === 7 &&
+        formData.tagBackgroundColor.length === 7
     );
   }
   useEffect(() => {
     decideUpdatability();
-  }, [tagName, tagNameColor, tagBackgroundColor]);
+  }, [formData]);
 
   function manageDeletionList(id: string) {
     const foundIndex = primedForDeletionList.indexOf(id);
@@ -97,19 +100,20 @@ function TagManipulation() {
   async function sendForm(event) {
     event.preventDefault();
     if (checkPermission(value.status, UserType.Admin)) {
-      if (tagName.length > 2) {
+      if (formData.tagName.length > 2) {
         try {
-          const response = await tagService.generateTag(
-            tagName,
-            tagNameColor,
-            tagBackgroundColor,
-            value.userId
-          );
+          const response = await tagService.generateTag(formData, value.userId);
           setResponseMessage(response.message);
           getAllTags();
         } catch (err) {
           setError(err.message);
         }
+        setFormData({
+          isOfficial: true,
+          tagBackgroundColor: "#FFFFFF",
+          tagName: "Tag name",
+          tagNameColor: "#000000",
+        });
       }
     } else {
       setResponseMessage("The tag's name cannot be under 3 characters!");
@@ -165,14 +169,25 @@ function TagManipulation() {
                 <input
                   type="text"
                   name="name"
-                  onInput={() => setTagName(event.target.value)}
+                  onInput={(e) =>
+                    setFormData({
+                      ...formData,
+                      tagName: e.target.value,
+                    })
+                  }
+                  value={formData.tagName}
                 />
               </p>
             </li>
             <li>
               <HexColorPicker
-                color={tagBackgroundColor}
-                onChange={setTagBackgroundColor}
+                color={formData.tagBackgroundColor}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    tagBackgroundColor: hexifyColors(e.toString()),
+                  })
+                }
               />
               <p>
                 <label>Background color : </label>
@@ -180,37 +195,55 @@ function TagManipulation() {
                 <input
                   type="text"
                   name="backgroundColor"
-                  onInput={() => setTagBackgroundColor(event.target.value)}
-                  value={hexifyColors(tagBackgroundColor)}
+                  onInput={(e) =>
+                    setFormData({
+                      ...formData,
+                      tagBackgroundColor: hexifyColors(
+                        e.target.value.toString()
+                      ),
+                    })
+                  }
+                  value={formData.tagBackgroundColor}
                 />
               </p>
             </li>
             <li>
-              <HexColorPicker color={tagNameColor} onChange={setTagNameColor} />
+              <HexColorPicker
+                color={formData.tagNameColor}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    tagNameColor: hexifyColors(e.toString()),
+                  })
+                }
+              />
               <p>
                 <label>Name color : </label>
 
                 <input
                   type="text"
                   name="nameColor"
-                  onInput={() => setTagNameColor(event.target.value)}
-                  value={hexifyColors(tagNameColor)}
+                  onInput={(e) =>
+                    setFormData({
+                      ...formData,
+                      tagNameColor: hexifyColors(e.target.value.toString()),
+                    })
+                  }
+                  value={formData.tagNameColor}
                 />
               </p>
             </li>
-            {tagName && (
+            {formData.tagName && (
               <li>
                 Display
-                <p>
-                  <Tag
-                    customStyle={{
-                      color: tagNameColor,
-                      backgroundColor: tagBackgroundColor,
-                    }}
-                    tagName={tagName}
-                    isTiny={false}
-                  />
-                </p>
+                <Tag
+                  customStyle={{
+                    color: formData.tagNameColor,
+                    backgroundColor: formData.tagBackgroundColor,
+                  }}
+                  tagName={formData.tagName}
+                  isTiny={false}
+                />
               </li>
             )}
           </ul>
@@ -262,6 +295,7 @@ function TagManipulation() {
             tag={tag}
             primeForDeletion={manageDeletionList}
             uponDeletion={sendDeleteTagCall}
+            refetch={getAllTags}
             key={tag._id}
             IsSelected={primedForDeletionList.indexOf(tag._id) !== -1}
           />

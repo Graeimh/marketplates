@@ -1,5 +1,5 @@
 import generateApiInstance from "../common/functions/generateApiInstance";
-import { IRegisterValues } from "../common/types/userTypes/userTypes";
+import { IRegisterValues, IUserData } from "../common/types/userTypes/userTypes";
 
 // Generating a user-specific axios instance
 const userInstance = generateApiInstance();
@@ -52,17 +52,10 @@ export async function fetchUsersByIds(userIds: string[]) {
    * 
    * @returns A JSON containing the success status as well as a message
 */
-export async function updateUserById(userId: string, displayName?: string, email?: string, firstName?: string, lastName?: string, streetAddress?: string, county?: string, city?: string, country?: string) {
+export async function updateUserById(userId: string, formData: IUserData) {
     const response = await userInstance.post('/users/update', {
         userId,
-        displayName,
-        email,
-        firstName,
-        lastName,
-        streetAddress,
-        county,
-        city,
-        country,
+        formData
     });
     return response.data;
 }
