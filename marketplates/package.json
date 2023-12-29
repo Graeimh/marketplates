@@ -10,6 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
+    "@fortawesome/free-brands-svg-icons": "^6.5.1",
+    "@fortawesome/free-regular-svg-icons": "^6.5.1",
+    "@fortawesome/free-solid-svg-icons": "^6.5.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "axios": "^1.6.1",
     "jose": "^5.1.1",
     "leaflet": "^1.9.4",
@@ -21,7 +26,8 @@
     "react-dom": "^18.2.0",
     "react-google-recaptcha": "^3.1.0",
     "react-leaflet": "^4.2.1",
-    "react-router-dom": "^6.18.0"
+    "react-router-dom": "^6.18.0",
+    "vite-plugin-babel-macros": "^1.0.6"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.8",
@@ -38,5 +44,10 @@
     "sass": "^1.69.5",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
+  },
+  "babelMacros" : {
+    "fontawesome-svg-core" : {
+      "license": "free"
+    }
   }
 }
