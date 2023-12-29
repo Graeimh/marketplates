@@ -112,9 +112,7 @@ export async function updateTagById(tagId: string, formData: ITagValues) {
 */
 export async function deleteTagById(tagId: string) {
 
-    const response = await tagInstance.post('/tags/delete', {
-        tagId,
-    });
+    const response = await tagInstance.delete(`/tags/delete/${tagId}`);
     return response.data;
 }
 
@@ -127,9 +125,8 @@ export async function deleteTagById(tagId: string) {
    * @returns A JSON containing the success status as well as a message.
 */
 export async function deleteTagsByIds(tagIds: string[]) {
+    const tagIdsParameter = tagIds.join('&');
 
-    const response = await tagInstance.post('/tags/deleteMany', {
-        tagIds,
-    });
+    const response = await tagInstance.delete(`/tags/deleteMany/${tagIdsParameter}`);
     return response.data;
 }

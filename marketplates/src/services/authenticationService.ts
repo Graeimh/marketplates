@@ -46,3 +46,11 @@ export async function getSessionData() {
     const response = await authenticationInstance.get('/auth/checkSession');
     return response.data;
 }
+
+/**
+   * Fetches a new token access token for the user
+   * 
+*/
+export async function generateAccessToken() {
+    await authenticationInstance.post("/auth/accessToken/", { refreshToken: sessionStorage.getItem("refreshToken") });
+}

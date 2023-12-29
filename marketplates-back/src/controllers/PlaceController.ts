@@ -225,7 +225,7 @@ export async function updatePlaceById(req, res) {
 export async function deletePlaceById(req, res) {
     try {
         // Finding the matching place
-        const placeById: IPlace = await PlacesModel.findOne({ _id: { $in: req.body.placeId } });
+        const placeById: IPlace = await PlacesModel.findOne({ _id: { $in: req.params.ids } });
 
         // Get access token from the front end and the key that serves to create and verify them
         const cookieValue = req.cookies.token;
@@ -236,7 +236,7 @@ export async function deletePlaceById(req, res) {
 
         if (checkOwnership(placeById.owner_id, decryptedCookie.userId, decryptedCookie.status)) {
 
-            await PlacesModel.deleteOne({ _id: { $in: req.body.placeId } });
+            await PlacesModel.deleteOne({ _id: { $in: req.params.ids } });
 
             return res.status(204).json({
                 message: '(204 No Content)-Place successfully deleted',
@@ -269,7 +269,7 @@ export async function deletePlaceById(req, res) {
 export async function deletePlacesByIds(req, res) {
     try {
         // Finding the matching places
-        const placesById: IPlace[] = await PlacesModel.find({ _id: { $in: req.body.placeIds } });
+        const placesById: IPlace[] = await PlacesModel.find({ _id: { $in: req.params.ids.split("&") } });
 
         // Get access token from the front end and the key that serves to create and verify them
         const cookieValue = req.cookies.token;
@@ -287,7 +287,7 @@ export async function deletePlacesByIds(req, res) {
             }
         }
 
-        await PlacesModel.deleteMany({ _id: { $in: req.body.placeIds } });
+        await PlacesModel.deleteMany({ _id: { $in: req.params.ids.split("&") } });
 
         return res.status(204).json({
             message: '(204 No Content)-Places successfully deleted',

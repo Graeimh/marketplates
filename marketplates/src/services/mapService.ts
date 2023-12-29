@@ -104,9 +104,8 @@ export async function updateMapById(mapId: string, formData: IMapValues) {
 */
 export async function deleteMapById(mapId: string) {
 
-    const response = await mapInstance.post('/maps/delete', {
-        mapId,
-    });
+    const response = await mapInstance.delete(`/maps/delete/${mapId}`);
+
     return response.data;
 }
 
@@ -119,9 +118,8 @@ export async function deleteMapById(mapId: string) {
    * @returns A JSON containing the success status as well as a message.
 */
 export async function deleteMapsByIds(mapIds: string[]) {
+    const mapIdsParameter = mapIds.join('&');
 
-    const response = await mapInstance.post('/maps/deleteMany', {
-        mapIds,
-    });
+    const response = await mapInstance.delete(`/maps/deleteMany/${mapIdsParameter}`);
     return response.data;
 }

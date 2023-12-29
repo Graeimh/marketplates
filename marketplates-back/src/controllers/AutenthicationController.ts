@@ -52,11 +52,11 @@ export async function login(req, res) {
             // Creating the refresh token
             const refreshToken = createToken(matchingUser, REFRESH_TOKEN_KEY, "1y");
 
-            // Setting a cookie in the front end with a validity of 10 seconds
+            // Setting a cookie in the front end with a validity of 10 minutes
             res.cookie(
                 "token", accessToken, {
                 httpOnly: true,
-                maxAge: 10 * 1000,
+                maxAge: 10 * 60 * 1000,
             }
             );
 
@@ -102,7 +102,7 @@ function createToken(user: IUser, tokenKey: string, expirationDate?: string): st
             email: user.email,
             displayName: user.displayName,
             userId: user._id.toString(),
-            status: user.type.join('&')
+            status: user.type.join('&'),
         }, tokenKey);
 };
 
@@ -149,7 +149,7 @@ export async function produceNewAccessToken(req, res) {
             const newAccessToken = createToken(matchingUser, LOG_TOKEN_KEY);
 
             //Provide the browser cookies with the new user-nased access token 
-            res.cookie(
+            return res.cookie(
                 "token", newAccessToken, {
                 httpOnly: true,
                 maxAge: 10 * 60 * 1000,

@@ -352,11 +352,11 @@ export async function deleteMapById(req, res) {
         const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
 
         // Find the matching map
-        const mapById: IMaps = await MapsModel.findOne({ _id: { $in: req.body.mapId } });
+        const mapById: IMaps = await MapsModel.findOne({ _id: { $in: req.params.ids } });
 
 
         if (checkOwnership(mapById.ownerId, decryptedCookie.userId, decryptedCookie.status)) {
-            await MapsModel.deleteOne({ _id: { $in: req.body.mapId } });
+            await MapsModel.deleteOne({ _id: { $in: req.params.ids } });
 
             return res.status(204).json({
                 message: '(204 No Content)-Map successfully deleted',
@@ -389,7 +389,7 @@ export async function deleteMapById(req, res) {
 export async function deleteMapsByIds(req, res) {
     try {
         // Finding the matching maps
-        const mapsByIds: IMaps[] = await MapsModel.find({ _id: { $in: req.body.mapIds } });
+        const mapsByIds: IMaps[] = await MapsModel.find({ _id: { $in: req.params.ids.split("&") } });
 
         // Get access token from the front end and the key that serves to create and verify them
         const cookieValue = req.cookies.token;
@@ -407,7 +407,7 @@ export async function deleteMapsByIds(req, res) {
             }
         }
 
-        await MapsModel.deleteMany({ _id: { $in: req.body.mapIds } });
+        await MapsModel.deleteMany({ _id: { $in: req.params.ids.split("&") } });
 
         return res.status(204).json({
             message: '(204 No Content)-Maps successfully deleted',

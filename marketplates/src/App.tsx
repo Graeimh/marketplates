@@ -55,6 +55,14 @@ function App() {
       }
     }
     getResponse();
+    // Setting the access token anew every 9 minute and 50 seconds whenever the user is logged in to avoid having windows where the user does not have an access token
+    if (sessionStorage.getItem("refreshToken")) {
+      const refreshAccessTokenInterval = setInterval(async () => {
+        await authenticationService.generateAccessToken();
+      }, 590000);
+
+      return () => clearInterval(refreshAccessTokenInterval);
+    }
   }, []);
 
   return (

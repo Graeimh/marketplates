@@ -241,7 +241,7 @@ export async function updateTagById(req, res) {
 export async function deleteTagById(req, res) {
     try {
         // Find the tag to update
-        const tagById: ITag = await TagsModel.findOne({ _id: { $in: req.body.tagId } });
+        const tagById: ITag = await TagsModel.findOne({ _id: { $in: req.params.ids } });
 
         // Get access token from the front end and the key that serves to create and verify them
         const cookieValue = req.cookies.token;
@@ -252,10 +252,10 @@ export async function deleteTagById(req, res) {
 
         if (checkOwnership(tagById.creatorId, decryptedCookie.userId, decryptedCookie.status)) {
 
-            await TagsModel.deleteOne({ _id: { $in: req.body.tagId } });
+            await TagsModel.deleteOne({ _id: { $in: req.params.ids } });
 
             return res.status(204).json({
-                message: '(204 No Content)-Appliance successfully deleted',
+                message: '(204 No Content)-Tag successfully deleted',
                 success: true
             });
         } else {
@@ -267,7 +267,7 @@ export async function deleteTagById(req, res) {
 
     } catch (err) {
         return res.status(404).json({
-            message: '(404 Not found)-Appliance to be deleted was not found',
+            message: '(404 Not found)-Tag to be deleted was not found',
             success: false
         });
     }
@@ -286,7 +286,7 @@ export async function deleteTagById(req, res) {
 export async function deleteTagsByIds(req, res) {
     try {
         // Finding the matching tags
-        const tagsByIds: ITag[] = await TagsModel.find({ _id: { $in: req.body.tagIds } });
+        const tagsByIds: ITag[] = await TagsModel.find({ _id: { $in: req.params.ids.split("&") } });
 
         // Get access token from the front end and the key that serves to create and verify them
         const cookieValue = req.cookies.token;
@@ -304,7 +304,7 @@ export async function deleteTagsByIds(req, res) {
             }
         }
 
-        await TagsModel.deleteMany({ _id: { $in: req.body.tagIds } });
+        await TagsModel.deleteMany({ _id: { $in: req.params.ids.split("&") } });
 
         return res.status(204).json({
             message: '(204 No Content)-Tags successfully deleted',

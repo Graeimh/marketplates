@@ -134,6 +134,7 @@ function TagManipulation() {
         ]).then((values) => values.join(" "));
         setResponseMessage(combinedResponse);
         setPrimedForDeletionList([]);
+        getAllTags();
       }
     } catch (err) {
       setError(err.message);

@@ -338,13 +338,22 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
 
           <MapContainer
             style={{ height: "30rem", width: "100%" }}
-            center={[48.85, 2.34]}
-            zoom={5}
+            center={{ lat: 50.633333, lng: 3.066667 }}
+            zoom={13}
             maxZoom={18}
           >
             <MapValuesManager
-              latitude={formData.gpsCoordinates.latitude}
-              longitude={formData.gpsCoordinates.longitude}
+              latitude={
+                formData.gpsCoordinates.latitude !== null
+                  ? formData.gpsCoordinates.latitude
+                  : 50.633333
+              }
+              longitude={
+                formData.gpsCoordinates.longitude !== null
+                  ? formData.gpsCoordinates.longitude
+                  : 3.066667
+              }
+              startingZoom={13}
               doubleClickEvent={doubleClickMaphandler}
             />
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />

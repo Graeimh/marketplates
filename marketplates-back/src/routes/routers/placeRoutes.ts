@@ -20,9 +20,9 @@ placesRouter.post("/create", createPlace);
 placesRouter.put("/update", updatePlaceById);
 
 // Reserved for the owning user or an admin, serves to delete a single place from the database
-placesRouter.post("/delete", deletePlaceById);
+placesRouter.delete("/delete/:ids", deletePlaceById);
 
 // For admins only, serves to delete one or several places from the database
-placesRouter.post("/deleteMany", deletePlacesByIds);
+placesRouter.delete("/deleteMany/:ids", deletePlacesByIds);
 
 export default placesRouter;

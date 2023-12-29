@@ -95,9 +95,7 @@ export async function fetchPlaceIterationForUser() {
 */
 export async function deletePlaceIterationById(iterationId: string) {
 
-    const response = await placeIterationInstance.post('/placeIterations/delete', {
-        iterationId,
-    });
+    const response = await placeIterationInstance.delete(`/placeIterations/delete/${iterationId}`);
     return response.data;
 }
 
@@ -110,9 +108,8 @@ export async function deletePlaceIterationById(iterationId: string) {
    * @returns A JSON containing the success status as well as a message
 */
 export async function deletePlaceIterationsByIds(iterationIds: string[]) {
+    const placeIterationsIdsParameter = iterationIds.join('&');
 
-    const response = await placeIterationInstance.post('/placeIterations/deleteMany', {
-        iterationIds,
-    });
+    const response = await placeIterationInstance.delete(`/placeIterations/deleteMany/${placeIterationsIdsParameter}`);
     return response.data;
 }

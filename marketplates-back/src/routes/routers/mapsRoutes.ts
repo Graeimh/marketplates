@@ -26,9 +26,9 @@ mapRouter.post("/create", createMap);
 mapRouter.put("/update", updateMapById);
 
 // Reserved for the owning user or an admin, serves to delete a map's data from the database
-mapRouter.post("/delete", deleteMapById);
+mapRouter.delete("/delete/:ids", idChecker, deleteMapById);
 
 // For admins only, will serve to delete one or several maps from the database
-mapRouter.post("/deleteMany", deleteMapsByIds);
+mapRouter.delete("/deleteMany/:ids", idChecker, deleteMapsByIds);
 
 export default mapRouter;

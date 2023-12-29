@@ -23,9 +23,9 @@ placeIterationsRouter.get("/places/:ids", idChecker, getAllPlaceIterationsFromPl
 placeIterationsRouter.put("/update", updatePlaceIterationById);
 
 // Reserved for the owning user or an admin, removes a place iteration's data from the database
-placeIterationsRouter.post("/delete", deletePlaceIterationById);
+placeIterationsRouter.delete("/delete/:ids", idChecker, deletePlaceIterationById);
 
 // For admins only, removes one or several place iterations' data from the database
-placeIterationsRouter.post("/deleteMany", deletePlaceIterationsByIds);
+placeIterationsRouter.delete("/deleteMany/:ids", idChecker, deletePlaceIterationsByIds);
 
 export default placeIterationsRouter;

@@ -70,9 +70,7 @@ export async function updateUserById(userId: string, formData: IUserData) {
 */
 export async function deleteUserById(userId: string) {
 
-    const response = await userInstance.post('/users/delete', {
-        userId,
-    });
+    const response = await userInstance.delete(`/users/delete/${userId}`);
     return response.data;
 }
 
@@ -85,9 +83,8 @@ export async function deleteUserById(userId: string) {
    * @returns A JSON containing the success status as well as a message.
 */
 export async function deleteUsersByIds(userIds: string[]) {
+    const userIdsParameter = userIds.join('&');
 
-    const response = await userInstance.post('/users/deleteMany', {
-        userIds,
-    });
+    const response = await userInstance.delete(`/users/deleteMany/${userIdsParameter}`);
     return response.data;
 }

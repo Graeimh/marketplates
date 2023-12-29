@@ -184,7 +184,7 @@ export async function updateUserById(req, res) {
 */
 export async function deleteUserById(req, res) {
   try {
-    const userById: IUser = await UserModel.findOne({ _id: req.body.userId });
+    const userById: IUser = await UserModel.findOne({ _id: req.params.ids });
 
     // Get access token from the front end and the key that serves to create and verify them
     const cookieValue = req.cookies.token;
@@ -194,7 +194,7 @@ export async function deleteUserById(req, res) {
     const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
 
     if (checkOwnership(userById._id, decryptedCookie.userId, decryptedCookie.status)) {
-      await UserModel.deleteOne({ _id: { $in: req.body.userId } });
+      await UserModel.deleteOne({ _id: { $in: req.params.ids } });
 
       return res.status(204).json({
         message: '(204 No Content)-User successfully deleted',
@@ -226,7 +226,7 @@ export async function deleteUserById(req, res) {
 */
 export async function deleteUsersByIds(req, res) {
   try {
-    await UserModel.deleteMany({ _id: { $in: req.body.userIds } });
+    await UserModel.deleteMany({ _id: { $in: req.params.ids.split("&") } });
 
     return res.status(204).json({
       message: '(204 No Content)-Users successfully deleted',

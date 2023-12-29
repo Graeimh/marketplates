@@ -27,9 +27,9 @@ tagRouter.post("/create", createTag);
 tagRouter.put("/update", updateTagById);
 
 // Reserved for the owning user or an admin, serves to delete a single tag from the database
-tagRouter.post("/delete", deleteTagById);
+tagRouter.delete("/delete/:ids", idChecker, deleteTagById);
 
 // For admins only, serves to delete one or several tags from the database
-tagRouter.post("/deleteMany", deleteTagsByIds);
+tagRouter.delete("/deleteMany/:ids", idChecker, deleteTagsByIds);
 
 export default tagRouter;

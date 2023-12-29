@@ -236,7 +236,7 @@ export async function updatePlaceIterationById(req, res) {
 export async function deletePlaceIterationById(req, res) {
     try {
         // Find the matching place iteration
-        const placeIterationById: IPlaceIteration = await PlaceIterationsModel.findOne({ _id: { $in: req.body.iterationId } });
+        const placeIterationById: IPlaceIteration = await PlaceIterationsModel.findOne({ _id: { $in: req.params.ids } });
 
         // Get access token from the front end and the key that serves to create and verify them
         const cookieValue = req.cookies.token;
@@ -246,7 +246,7 @@ export async function deletePlaceIterationById(req, res) {
         const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
 
         if (checkOwnership(placeIterationById.creatorId, decryptedCookie.userId, decryptedCookie.status)) {
-            await PlaceIterationsModel.deleteMany({ _id: { $in: req.body.iterationId } });
+            await PlaceIterationsModel.deleteMany({ _id: { $in: req.params.ids } });
 
             return res.status(204).json({
                 message: '(204 No Content)-Iteration successfully deleted',
@@ -279,7 +279,7 @@ export async function deletePlaceIterationById(req, res) {
 export async function deletePlaceIterationsByIds(req, res) {
     try {
         // Finding the matching place iterations
-        const placeIterationsByIds: IPlaceIteration[] = await PlaceIterationsModel.find({ _id: { $in: req.body.mapIds } });
+        const placeIterationsByIds: IPlaceIteration[] = await PlaceIterationsModel.find({ _id: { $in: req.params.ids.split("&") } });
 
         // Get access token from the front end and the key that serves to create and verify them
         const cookieValue = req.cookies.token;
@@ -297,7 +297,7 @@ export async function deletePlaceIterationsByIds(req, res) {
             }
         }
 
-        await PlaceIterationsModel.deleteMany({ _id: { $in: req.body.iterationIds } });
+        await PlaceIterationsModel.deleteMany({ _id: { $in: req.params.ids.split("&") } });
 
         return res.status(204).json({
             message: '(204 No Content)-Place iterations successfully deleted',

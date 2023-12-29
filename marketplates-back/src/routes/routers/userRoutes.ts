@@ -19,9 +19,9 @@ usersRouter.get("/byId/:ids", checkAccessToken, idChecker, getUsersById);
 usersRouter.put("/update", checkAccessToken, updateUserById);
 
 // Reserved for the owning user or an admin, serves to delete a user from the database
-usersRouter.post("/delete", checkAccessToken, deleteUserById);
+usersRouter.delete("/delete/:ids", checkAccessToken, deleteUserById);
 
 // For admins only, allows admins to delete one or several users from the database
-usersRouter.post("/deleteMany", checkAccessToken, checkIfAdmin, deleteUsersByIds);
+usersRouter.delete("/deleteMany/:ids", checkAccessToken, checkIfAdmin, deleteUsersByIds);
 
 export default usersRouter;

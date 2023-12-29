@@ -82,9 +82,7 @@ export async function updatePlaceById(formData: IPlaceRegisterValues, placeId: s
 */
 export async function deletePlaceById(placeId: string) {
 
-    const response = await placeInstance.post('/places/delete', {
-        placeId,
-    });
+    const response = await placeInstance.delete(`/places/delete/${placeId}`);
     return response.data;
 }
 
@@ -97,9 +95,8 @@ export async function deletePlaceById(placeId: string) {
    * @returns A JSON containing the success status as well as a message
 */
 export async function deletePlacesByIds(placeIds: string[]) {
+    const placeIdsParameter = placeIds.join('&');
 
-    const response = await placeInstance.post('/places/deleteMany', {
-        placeIds,
-    });
+    const response = await placeInstance.delete(`/places/deleteMany/${placeIdsParameter}`);
     return response.data;
 }

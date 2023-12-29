@@ -34,8 +34,8 @@ function MapEditor(props: { editedMap: string | undefined }) {
   // Setting states
   // Contains the data needed to create a map
   const [formData, setFormData] = useState<IMapValues>({
-    name: "",
-    description: "",
+    name: "MyMap",
+    description: "My map's description",
     privacyStatus: PrivacyStatus.Public,
     participants: [],
     placeIterations: [],
@@ -53,8 +53,8 @@ function MapEditor(props: { editedMap: string | undefined }) {
   //
   const [newResults, setNewResults] = useState<SearchResult<RawResult>[]>([]);
   const [coordinates, setCoordinates] = useState<IGPSCoordinates>({
-    longitude: null,
-    latitude: null,
+    longitude: 3.066667,
+    latitude: 50.633333,
   });
 
   // Error message display
@@ -143,23 +143,35 @@ function MapEditor(props: { editedMap: string | undefined }) {
 
             const mapIterationsData: IPlaceIteration[] = mapIterations.data;
 
-            const lol: IPlaceUpdated[] = mapIterationsData.map((iteration) => ({
-              address: "",
-              description: iteration.customDescription,
-              gpsCoordinates: {
-                longitude: iteration.gpsCoordinates.longitude,
-                latitude: iteration.gpsCoordinates.latitude,
-              },
-              _id: iteration._id,
-              name: iteration.customName,
-              place_id: iteration.placeId,
-              tagsIdList: iteration.customTagIds,
-              tagsList: allTagsData.filter((tag) =>
-                iteration.customTagIds.some(
-                  (iterationTag) => tag._id === iterationTag
-                )
-              ),
-            }));
+            const adressData: string[] = mapIterationsData
+              .map(
+                (iteration) =>
+                  allPlacesData.find((place) => place._id === iteration.placeId)
+                    ?.address
+              )
+              .map((iterationAdress) =>
+                iterationAdress !== undefined ? iterationAdress : ""
+              );
+
+            const lol: IPlaceUpdated[] = mapIterationsData.map(
+              (iteration, index) => ({
+                address: adressData[index],
+                description: iteration.customDescription,
+                gpsCoordinates: {
+                  longitude: iteration.gpsCoordinates.longitude,
+                  latitude: iteration.gpsCoordinates.latitude,
+                },
+                _id: iteration._id,
+                name: iteration.customName,
+                place_id: iteration.placeId,
+                tagsIdList: iteration.customTagIds,
+                tagsList: allTagsData.filter((tag) =>
+                  iteration.customTagIds.some(
+                    (iterationTag) => tag._id === iterationTag
+                  )
+                ),
+              })
+            );
 
             mapToEditIterations = [...mapToEditIterations, ...lol];
           }
@@ -181,6 +193,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
   }
   useEffect(() => {
     getMapEditorTools();
+    decideMapValidity();
   }, []);
 
   function decideMapValidity() {
@@ -341,14 +354,15 @@ function MapEditor(props: { editedMap: string | undefined }) {
       {/* Here we give the map's basic values according to screen size, for now the placement is arbitrary, but later we could center the map on the user's location in the database */}
       <MapContainer
         style={{ height: "30rem", width: "100%" }}
-        center={[48.85, 2.34]}
-        zoom={5}
+        center={{ lat: 50.633333, lng: 3.066667 }}
+        zoom={13}
         maxZoom={18}
       >
         <MapValuesManager
           latitude={coordinates.latitude}
           longitude={coordinates.longitude}
           doubleClickEvent={doubleClickMaphandler}
+          startingZoom={13}
         />
         {/* Defines the style of the map */}
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
