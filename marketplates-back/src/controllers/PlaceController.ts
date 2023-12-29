@@ -11,48 +11,61 @@ import checkOwnership from "../common/functions/checkOwnership.js";
    * @param req - The request object associated with the route parameters, specifically the formData held within the body
    * @param res - The response object associated with the route
    * 
-   * @catches - If a place has the same name (400), if the place could not be created due to a problem with data (403)
+   * @catches - If a place has the same name (400), if the place could not be created due to a problem with data (403) or if the user gives invalid data (400)
    * @responds - By informing the user the place has been created (201)
 */
 export async function createPlace(req, res) {
     try {
-        // Get access token from the front end and the key that serves to create and verify them
-        const cookieValue = req.cookies.token;
-        const { LOG_TOKEN_KEY } = process.env;
+        // Verifying if the data given by the user matches the front end requirements
+        if (sanitizeHtml(req.body.formData.address, { allowedTags: [] }).length > 1 &&
+            sanitizeHtml(req.body.formData.description, { allowedTags: [] }).length > 1 &&
+            sanitizeHtml(req.body.formData.name, { allowedTags: [] }).length > 1 &&
+            req.body.formData.gpsCoordinates.longitude !== null &&
+            req.body.formData.gpsCoordinates.latitude !== null) {
 
-        // Get the token's contents, verifying its validity in the process
-        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+            // Get access token from the front end and the key that serves to create and verify them
+            const cookieValue = req.cookies.token;
+            const { LOG_TOKEN_KEY } = process.env;
 
-        // Check if a place with the same name doesn't already exist
-        const preExistingPlace = await PlacesModel.find({ name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }) });
+            // Get the token's contents, verifying its validity in the process
+            const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
 
-        if (preExistingPlace.length > 0) {
+            // Check if a place with the same name doesn't already exist
+            const preExistingPlace = await PlacesModel.find({ name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }) });
+
+            if (preExistingPlace.length > 0) {
+                return res.status(400).json({
+                    message: '(400 Bad Request)-A place named like this already exists',
+                    success: false
+                });
+            }
+
+            // Creating a place variable according to the IPlace interface
+            const place: IPlace = {
+                address: sanitizeHtml(req.body.formData.address, { allowedTags: [] }),
+                description: sanitizeHtml(req.body.formData.description, { allowedTags: [] }),
+                gpsCoordinates: {
+                    longitude: req.body.formData.gpsCoordinates.longitude,
+                    latitude: req.body.formData.gpsCoordinates.latitude,
+                },
+                name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }),
+                owner_id: decryptedCookie.userId,
+                tagsList: req.body.formData.tagList.map(tag => tag._id),
+            };
+
+            // Creating the place within the database
+            await PlacesModel.create(place);
+
+            return res.status(201).json({
+                message: '(201 Created)-Place successfully created',
+                success: true
+            });
+        } else {
             return res.status(400).json({
-                message: '(400 Bad Request)-A place named like this already exists',
+                message: '(400 Bad Request)-The data given does not match what is needed to create a place',
                 success: false
             });
         }
-
-        // Creating a place variable according to the IPlace interface
-        const place: IPlace = {
-            address: sanitizeHtml(req.body.formData.address, { allowedTags: [] }),
-            description: sanitizeHtml(req.body.formData.description, { allowedTags: [] }),
-            gpsCoordinates: {
-                longitude: req.body.formData.gpsCoordinates.longitude,
-                latitude: req.body.formData.gpsCoordinates.latitude,
-            },
-            name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }),
-            owner_id: decryptedCookie.userId,
-            tagsList: req.body.formData.tagList.map(tag => tag._id),
-        };
-
-        // Creating the place within the database
-        await PlacesModel.create(place);
-
-        return res.status(201).json({
-            message: '(201 Created)-Place successfully created',
-            success: true
-        });
     } catch (err) {
         return res.status(403).json({
             message: '(403 Forbidden)-The data sent created a place-type conflict',
@@ -156,54 +169,66 @@ export async function getPlacesForUser(req, res) {
    * @param req - The request object associated with the route parameters, specifically the formData in the body property
    * @param res - The response object associated with the route
    * 
-   * @catches - If no place was found (404) or if the route was not found or the place could not be updated (500)
+   * @catches - If no place was found (404) or if the route was not found or the place could not be updated (500) or if the user gives invalid data (400)
    * @responds -  With an array of all the places whose Id matches one of those given (200)
 */
 export async function updatePlaceById(req, res) {
     try {
-        // Finding the matching place
-        const placeById: IPlace = await PlacesModel.findOne({ _id: { $in: req.body.placeId } });
+        // Verifying if the data given by the user matches the front end requirements
+        if (sanitizeHtml(req.body.formData.address, { allowedTags: [] }).length > 1 &&
+            sanitizeHtml(req.body.formData.description, { allowedTags: [] }).length > 1 &&
+            sanitizeHtml(req.body.formData.name, { allowedTags: [] }).length > 1 &&
+            req.body.formData.gpsCoordinates.longitude !== null &&
+            req.body.formData.gpsCoordinates.latitude !== null) {
 
-        // Checking if the matching place exists
-        if (!placeById) {
-            return res.status(400).json({
-                message: '(404 Not Found)-The place to update was not found',
-                success: false
-            });
-        }
+            // Finding the matching place
+            const placeById: IPlace = await PlacesModel.findOne({ _id: { $in: req.body.placeId } });
 
-        // Get access token from the front end and the key that serves to create and verify them
-        const cookieValue = req.cookies.token;
-        const { LOG_TOKEN_KEY } = process.env;
+            // Checking if the matching place exists
+            if (!placeById) {
+                return res.status(400).json({
+                    message: '(404 Not Found)-The place to update was not found',
+                    success: false
+                });
+            }
 
-        // Get the token's contents, verifying its validity in the process
-        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+            // Get access token from the front end and the key that serves to create and verify them
+            const cookieValue = req.cookies.token;
+            const { LOG_TOKEN_KEY } = process.env;
 
-        if (checkOwnership(placeById.owner_id, decryptedCookie.userId, decryptedCookie.status)) {
+            // Get the token's contents, verifying its validity in the process
+            const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
 
-            // Updating the matching place whilst following the IPlace interface and sanitizing any http text input given
-            await PlacesModel.updateOne({ _id: { $in: req.body.placeId } }, {
-                address: sanitizeHtml(req.body.formData.address, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.address, { allowedTags: [] }) : placeById.address,
-                description: sanitizeHtml(req.body.formData.description, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.description, { allowedTags: [] }) : placeById.description,
-                gpsCoordinates: {
-                    longitude: req.body.formData.gpsCoordinates.longitude ? req.body.formData.gpsCoordinates.longitude : placeById.gpsCoordinates.longitude,
-                    latitude: req.body.formData.gpsCoordinates.latitude ? req.body.formData.gpsCoordinates.latitude : placeById.gpsCoordinates.latitude,
-                },
-                name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.name, { allowedTags: [] }) : placeById.name,
-                tagsList: req.body.formData.tagList.map(tag => tag._id),
-            });
+            if (checkOwnership(placeById.owner_id, decryptedCookie.userId, decryptedCookie.status)) {
 
-            return res.status(204).json({
-                message: '(204 No Content)-Place successfully updated',
-                success: true
-            });
+                // Updating the matching place whilst following the IPlace interface and sanitizing any http text input given
+                await PlacesModel.updateOne({ _id: { $in: req.body.placeId } }, {
+                    address: sanitizeHtml(req.body.formData.address, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.address, { allowedTags: [] }) : placeById.address,
+                    description: sanitizeHtml(req.body.formData.description, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.description, { allowedTags: [] }) : placeById.description,
+                    gpsCoordinates: {
+                        longitude: req.body.formData.gpsCoordinates.longitude ? req.body.formData.gpsCoordinates.longitude : placeById.gpsCoordinates.longitude,
+                        latitude: req.body.formData.gpsCoordinates.latitude ? req.body.formData.gpsCoordinates.latitude : placeById.gpsCoordinates.latitude,
+                    },
+                    name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.name, { allowedTags: [] }) : placeById.name,
+                    tagsList: req.body.formData.tagList.map(tag => tag._id),
+                });
+
+                return res.status(204).json({
+                    message: '(204 No Content)-Place successfully updated',
+                    success: true
+                });
+            } else {
+                return res.status(403).json({
+                    message: '(403 Forbidden)-The place to be updated does not belong to the user.',
+                    success: false
+                });
+            }
         } else {
-            return res.status(403).json({
-                message: '(403 Forbidden)-The place to be updated does not belong to the user.',
+            return res.status(400).json({
+                message: '(400 Bad Request)-The data given does not match what is needed to update a place',
                 success: false
             });
         }
-
     } catch (err) {
         return res.status(500).json({
             message: '(500 Internal Server Error)-A server side error has occured.',

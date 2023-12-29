@@ -14,68 +14,85 @@ import checkOwnership from "../common/functions/checkOwnership.js";
    * @param req - The request object associated with the route parameters, specifically the formData held within the body
    * @param res - The response object associated with the route
    * 
-   * @catches - If the data provided causes an error in the creation of the map or place iterations or if the token isn't verified (403)
+   * @catches - If the data provided causes an error in the creation of the map or place iterations or if the token isn't verified (403), or if the user gives invalid data (400)
    * @responds - By informing the user the map and iterations have been created (201)
 */
 export async function createMap(req, res) {
     try {
-        // Get access token from the front end and the key that serves to create and verify them
-        const cookieValue = req.cookies.token;
-        const { LOG_TOKEN_KEY } = process.env;
+        // Verifying if the data given by the user matches the front end requirements
+        if (sanitizeHtml(req.body.formData.name, { allowedTags: [] }).length > 1 && sanitizeHtml(req.body.formData.description, { allowedTags: [] }).length > 1) {
 
-        // Get the token's contents, verifying its validity in the process
-        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+            // Get access token from the front end and the key that serves to create and verify them
+            const cookieValue = req.cookies.token;
+            const { LOG_TOKEN_KEY } = process.env;
 
-        // Create a map Id for place iterations to be assigned to the map
-        const mapId = new mongoose.Types.ObjectId();
+            // Get the token's contents, verifying its validity in the process
+            const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
 
-        const iterations: IPlaceUpdated[] = req.body.formData.placeIterations;
+            // Create a map Id for place iterations to be assigned to the map
+            const mapId = new mongoose.Types.ObjectId();
 
-        // Prepare an empty list to collect the future iterations' Ids
-        const listOfIterationIds: Types.ObjectId[] = [];
+            const iterations: IPlaceUpdated[] = req.body.formData.placeIterations;
 
-        for (const iteration of iterations) {
-            // Creating iterations according to the IPlaceIteration interface
-            const newId = new mongoose.Types.ObjectId();
-            const iterationToCreate: IPlaceIteration = {
-                _id: newId,
-                associatedMapIds: [mapId],
-                creatorId: decryptedCookie.userId,
-                customName: iteration.name,
-                customDescription: iteration.description,
-                customTagIds: iteration.tagsList.map(tag => tag._id),
-                gpsCoordinates: {
-                    longitude: iteration.gpsCoordinates.longitude,
-                    latitude: iteration.gpsCoordinates.latitude,
-                },
-                placeId: iteration._id,
+            // Prepare an empty list to collect the future iterations' Ids
+            const listOfIterationIds: Types.ObjectId[] = [];
 
+            for (const iteration of iterations) {
+                // Verifying if the data given by the user matches the front end requirements
+                if (sanitizeHtml(iteration.name, { allowedTags: [] }).length === 0 || (sanitizeHtml(iteration.description, { allowedTags: [] }).length === 0)) {
+                    return res.status(400).json({
+                        message: '(400 Bad Request)-The data given does not match what is needed to create an iteration',
+                        success: false
+                    });
+                }
+
+                // Creating iterations according to the IPlaceIteration interface
+                const newId = new mongoose.Types.ObjectId();
+                const iterationToCreate: IPlaceIteration = {
+                    _id: newId,
+                    associatedMapIds: [mapId],
+                    creatorId: decryptedCookie.userId,
+                    customName: sanitizeHtml(iteration.name, { allowedTags: [] }),
+                    customDescription: sanitizeHtml(iteration.description, { allowedTags: [] }),
+                    customTagIds: iteration.tagsList.map(tag => tag._id),
+                    gpsCoordinates: {
+                        longitude: iteration.gpsCoordinates.longitude,
+                        latitude: iteration.gpsCoordinates.latitude,
+                    },
+                    placeId: iteration._id,
+
+                }
+                listOfIterationIds.push(newId);
+
+                await PlaceIterationsModel.create(iterationToCreate);
             }
-            listOfIterationIds.push(newId);
 
-            await PlaceIterationsModel.create(iterationToCreate);
+            // Creating the map according to the IMaps interface, sanitizing every text input given using sanitizeHtml
+            const map: IMaps = {
+                _id: mapId,
+                description: sanitizeHtml(req.body.formData.description, { allowedTags: [] }),
+                ownerId: decryptedCookie.userId,
+                name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }),
+                participants: [...req.body.formData.participants, {
+                    userId: decryptedCookie.userId,
+                    userPrivileges: [UserPrivileges.Owner],
+                }],
+                placeIterationIds: listOfIterationIds,
+                privacyStatus: req.body.formData.privacyStatus
+            };
+
+            await MapsModel.create(map);
+
+            return res.status(201).json({
+                message: '(201 Created)-Map successfully created',
+                success: true
+            });
+        } else {
+            return res.status(400).json({
+                message: '(400 Bad Request)-The data given does not match what is needed to create a map',
+                success: false
+            });
         }
-
-        // Creating the map according to the IMaps interface, sanitizing every text input given using sanitizeHtml
-        const map: IMaps = {
-            _id: mapId,
-            description: sanitizeHtml(req.body.formData.description, { allowedTags: [] }),
-            ownerId: decryptedCookie.userId,
-            name: sanitizeHtml(req.body.formData.name, { allowedTags: [] }),
-            participants: [...req.body.formData.participants, {
-                userId: decryptedCookie.userId,
-                userPrivileges: [UserPrivileges.Owner],
-            }],
-            placeIterationIds: listOfIterationIds,
-            privacyStatus: req.body.formData.privacyStatus
-        };
-
-        await MapsModel.create(map);
-
-        return res.status(201).json({
-            message: '(201 Created)-Map successfully created',
-            success: true
-        });
     } catch (err) {
         return res.status(403).json({
             message: '(403 Forbidden)-The data sent created a map-type conflict',
@@ -228,99 +245,116 @@ export async function getMapsByIds(req, res) {
    * @param req - The request object associated with the route parameters, specifically the  cookies and the body
    * @param res - The response object associated with the route
    * 
-   * @catches - If no map is found (404) or the map/iterations could not be updated (500)
+   * @catches - If no map is found (404) or the map/iterations could not be updated (500) or if the user gives invalid data (400)
    * @responds - With a message informing the user the update is done (204)
 */
 export async function updateMapById(req, res) {
     try {
-        // Get access token from the front end and the key that serves to create and verify them
-        const cookieValue = req.cookies.token;
-        const { LOG_TOKEN_KEY } = process.env;
+        // Verifying if the data given by the user matches the front end requirements
+        if (sanitizeHtml(req.body.formData.name, { allowedTags: [] }).length > 1 && sanitizeHtml(req.body.formData.description, { allowedTags: [] }).length > 1) {
 
-        // Get the token's contents, verifying its validity in the process
-        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+            // Get access token from the front end and the key that serves to create and verify them
+            const cookieValue = req.cookies.token;
+            const { LOG_TOKEN_KEY } = process.env;
 
-        // Find the matching map
-        const mapById: IMaps = await MapsModel.findOne({ _id: { $in: req.body.mapId } });
+            // Get the token's contents, verifying its validity in the process
+            const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
 
-        if (!mapById) {
-            return res.status(400).json({
-                message: '(404 Not Found)-The map to update was not found',
-                success: false
-            });
-        }
+            // Find the matching map
+            const mapById: IMaps = await MapsModel.findOne({ _id: { $in: req.body.mapId } });
 
-        if (checkOwnership(mapById.ownerId, decryptedCookie.userId, decryptedCookie.status)) {
-
-            const iterations: IPlaceUpdated[] = req.body.formData.placeIterations;
-            const listOfIterationIds: Types.ObjectId[] = [];
-
-            for (const iteration of iterations) {
-                // Check if the place iteration already exists
-                const foundPreexistingIteration = await PlaceIterationsModel.find({ _id: { $in: [iteration._id] } })
-
-                // If it does, we edit it with the new given values
-                if (foundPreexistingIteration) {
-                    try {
-                        await PlaceIterationsModel.updateOne({ _id: { $in: foundPreexistingIteration[0]._id } }, {
-                            customName: iteration.name,
-                            customDescription: iteration.description,
-                            customTagIds: iteration.tagsList.map(tag => tag._id),
-                        })
-                        listOfIterationIds.push(foundPreexistingIteration[0]._id);
-                    } catch {
-                        return res.status(500).json({
-                            message: '(500 Internal Server Error)-A server side error has occured.',
-                            success: false
-                        });
-                    }
-                    // If it doesn't, we create it instead
-                } else {
-                    try {
-                        const newId = new mongoose.Types.ObjectId();
-                        const iterationToCreate: IPlaceIteration = {
-                            _id: newId,
-                            associatedMapIds: [req.body.mapId],
-                            creatorId: decryptedCookie.userId,
-                            customName: iteration.name,
-                            customDescription: iteration.description,
-                            customTagIds: iteration.tagsList.map(tag => tag._id),
-                            gpsCoordinates: {
-                                longitude: iteration.gpsCoordinates.longitude,
-                                latitude: iteration.gpsCoordinates.latitude,
-                            },
-                            placeId: iteration._id,
-
-                        }
-                        listOfIterationIds.push(newId);
-
-                        await PlaceIterationsModel.create(iterationToCreate);
-                    } catch {
-                        return res.status(500).json({
-                            message: '(500 Internal Server Error)-A server side error has occured.',
-                            success: false
-                        });
-                    }
-                }
+            if (!mapById) {
+                return res.status(400).json({
+                    message: '(404 Not Found)-The map to update was not found',
+                    success: false
+                });
             }
 
-            // Updating the map's data as well when changes are provided
-            await MapsModel.updateOne({ _id: { $in: req.body.mapId } }, {
-                description: req.body.formData.description ? sanitizeHtml(req.body.formData.description, { allowedTags: [] }) : mapById.description,
-                name: req.body.formData.name ? sanitizeHtml(req.body.formData.name, { allowedTags: [] }) : mapById.name,
-                participants: req.body.formData.participants,
-                privacyStatus: req.body.formData.privacyStatus,
-                placeIterationIds: listOfIterationIds,
+            if (checkOwnership(mapById.ownerId, decryptedCookie.userId, decryptedCookie.status)) {
 
-            })
+                const iterations: IPlaceUpdated[] = req.body.formData.placeIterations;
+                const listOfIterationIds: Types.ObjectId[] = [];
 
-            return res.status(204).json({
-                message: '(204 No Content)-Map successfully updated',
-                success: true
-            });
+                for (const iteration of iterations) {
+                    // Verifying if the data given by the user matches the front end requirements
+                    if (sanitizeHtml(iteration.name, { allowedTags: [] }).length === 0 || (sanitizeHtml(iteration.description, { allowedTags: [] }).length === 0)) {
+                        return res.status(400).json({
+                            message: '(400 Bad Request)-The data given does not match what is needed to update an iteration',
+                            success: false
+                        });
+                    }
+
+                    // Check if the place iteration already exists
+                    const foundPreexistingIteration = await PlaceIterationsModel.find({ _id: { $in: [iteration._id] } })
+
+                    // If it does, we edit it with the new given values
+                    if (foundPreexistingIteration) {
+                        try {
+                            await PlaceIterationsModel.updateOne({ _id: { $in: foundPreexistingIteration[0]._id } }, {
+                                customName: sanitizeHtml(iteration.name, { allowedTags: [] }),
+                                customDescription: sanitizeHtml(iteration.description, { allowedTags: [] }),
+                                customTagIds: iteration.tagsList.map(tag => tag._id),
+                            })
+                            listOfIterationIds.push(foundPreexistingIteration[0]._id);
+                        } catch {
+                            return res.status(500).json({
+                                message: '(500 Internal Server Error)-A server side error has occured.',
+                                success: false
+                            });
+                        }
+                        // If it doesn't, we create it instead
+                    } else {
+                        try {
+                            const newId = new mongoose.Types.ObjectId();
+                            const iterationToCreate: IPlaceIteration = {
+                                _id: newId,
+                                associatedMapIds: [req.body.mapId],
+                                creatorId: decryptedCookie.userId,
+                                customName: sanitizeHtml(iteration.name, { allowedTags: [] }),
+                                customDescription: sanitizeHtml(iteration.description, { allowedTags: [] }),
+                                customTagIds: iteration.tagsList.map(tag => tag._id),
+                                gpsCoordinates: {
+                                    longitude: iteration.gpsCoordinates.longitude,
+                                    latitude: iteration.gpsCoordinates.latitude,
+                                },
+                                placeId: iteration._id,
+
+                            }
+                            listOfIterationIds.push(newId);
+
+                            await PlaceIterationsModel.create(iterationToCreate);
+                        } catch {
+                            return res.status(500).json({
+                                message: '(500 Internal Server Error)-A server side error has occured.',
+                                success: false
+                            });
+                        }
+                    }
+                }
+
+                // Updating the map's data as well when changes are provided
+                await MapsModel.updateOne({ _id: { $in: req.body.mapId } }, {
+                    description: req.body.formData.description ? sanitizeHtml(req.body.formData.description, { allowedTags: [] }) : mapById.description,
+                    name: req.body.formData.name ? sanitizeHtml(req.body.formData.name, { allowedTags: [] }) : mapById.name,
+                    participants: req.body.formData.participants,
+                    privacyStatus: req.body.formData.privacyStatus,
+                    placeIterationIds: listOfIterationIds,
+
+                })
+
+                return res.status(204).json({
+                    message: '(204 No Content)-Map successfully updated',
+                    success: true
+                });
+            } else {
+                return res.status(403).json({
+                    message: '(403 Forbidden)-The user is not the owner of the map, or an admin and thus cannot update its data',
+                    success: false
+                });
+            }
         } else {
-            return res.status(403).json({
-                message: '(403 Forbidden)-The user is not the owner of the map, or an admin and thus cannot update its data',
+            return res.status(400).json({
+                message: '(400 Bad Request)-The data given does not match what is needed to update a map',
                 success: false
             });
         }

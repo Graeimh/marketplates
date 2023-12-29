@@ -93,7 +93,9 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
   ].filter((tag) => new RegExp(tagQuery).test(tag.name));
 
   const tagListToDisplay: ITag[] =
-    tagQuery.length > 0 ? tagListWithoutSelectedAndFiltered : tagSelection;
+    formData.tagList.length > 0
+      ? tagListWithoutSelectedAndFiltered.slice(0, 10)
+      : tagSelection;
 
   async function handleAdressButton(): Promise<void> {
     const results = await provider.search({ query: formData.address });
@@ -138,6 +140,11 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
           },
           tagList: placeTags.data,
         });
+
+        setTemporaryCoordinates({
+          latitude: currentPlaceData.gpsCoordinates.latitude,
+          longitude: currentPlaceData.gpsCoordinates.longitude,
+        });
       }
     } catch (err) {
       setError(err.message);
@@ -155,18 +162,15 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
     setIsValidForSending(
       formData.name.length > 1 &&
         formData.description.length > 1 &&
-        formData.address.length > 1
+        formData.address.length > 1 &&
+        formData.gpsCoordinates.longitude !== null &&
+        formData.gpsCoordinates.latitude !== null
     );
   }
 
   useEffect(() => {
     decideRegistration();
-  }, [
-    formData.name,
-    formData.description,
-    formData.address,
-    formData.gpsCoordinates,
-  ]);
+  }, [formData]);
 
   function updateField(event) {
     setFormData({
@@ -280,6 +284,10 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
                               latitude: result.y,
                             },
                           });
+                          setTemporaryCoordinates({
+                            longitude: result.x,
+                            latitude: result.y,
+                          });
                           setNewResults([]);
                         }}
                       >
@@ -305,11 +313,7 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
                       latitude: Number(e.target.value),
                     });
                   }}
-                  placeholder={
-                    formData.gpsCoordinates.latitude !== null
-                      ? formData.gpsCoordinates.latitude.toString()
-                      : "0"
-                  }
+                  value={temporaryCoordinates.latitude?.toString()}
                 />
                 <label>Longitude : </label>
                 <input
@@ -323,11 +327,7 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
                       longitude: Number(e.target.value),
                     })
                   }
-                  placeholder={
-                    formData.gpsCoordinates.longitude !== null
-                      ? formData.gpsCoordinates.longitude.toString()
-                      : "0"
-                  }
+                  value={temporaryCoordinates.longitude?.toString()}
                 />
                 <button type="button" onClick={handleManualCoordinates}>
                   Use coordinates instead!

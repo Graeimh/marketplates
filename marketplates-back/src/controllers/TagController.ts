@@ -11,27 +11,37 @@ import checkOwnership from "../common/functions/checkOwnership.js";
    * @param req - The request object associated with the route parameters, specifically the formData held within the body
    * @param res - The response object associated with the route
    * 
-   * @catches - If the data provided causes an error in the creation of the tag (403)
+   * @catches - If the data provided causes an error in the creation of the tag (403) or if the user gives invalid data (400)
    * @responds - By informing the user the tag has been created (201)
 */
 
 export async function createTag(req, res) {
-
     try {
-        // Creating the tag according to the ITag interface, sanitizing every text input given using sanitizeHtml
-        const tag: ITag = {
-            backgroundColor: sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }),
-            creatorId: req.body.userId,
-            name: sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }),
-            nameColor: sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }),
-            isOfficial: req.body.formData.isOfficial ? req.body.formData.isOfficial : false,
-        };
-        await TagsModel.create(tag);
+        // Verifying if the data given by the user matches the front end requirements
+        if (sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }).length === 7 &&
+            sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }).length === 7 &&
+            sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }).length > 3) {
 
-        return res.status(201).json({
-            message: '(201 Created)-Tag successfully created',
-            success: true
-        });
+            // Creating the tag according to the ITag interface, sanitizing every text input given using sanitizeHtml
+            const tag: ITag = {
+                backgroundColor: sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }),
+                creatorId: req.body.userId,
+                name: sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }),
+                nameColor: sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }),
+                isOfficial: req.body.formData.isOfficial ? req.body.formData.isOfficial : false,
+            };
+            await TagsModel.create(tag);
+
+            return res.status(201).json({
+                message: '(201 Created)-Tag successfully created',
+                success: true
+            });
+        } else {
+            return res.status(400).json({
+                message: '(400 Bad Request)-The data given does not match what is needed to create a tag',
+                success: false
+            });
+        }
     } catch (err) {
         return res.status(403).json({
             message: '(403 Forbidden)-The data sent created a tag-type conflict',
@@ -190,36 +200,46 @@ export async function getTagsByIds(req, res) {
 */
 export async function updateTagById(req, res) {
     try {
-        // Find the tag to update
-        const tagById: ITag = await TagsModel.findOne({ _id: { $in: req.body.tagId } });
+        // Verifying if the data given by the user matches the front end requirements
+        if (sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }).length === 7 &&
+            sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }).length === 7 &&
+            sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }).length > 3) {
 
-        // Get access token from the front end and the key that serves to create and verify them
-        const cookieValue = req.cookies.token;
-        const { LOG_TOKEN_KEY } = process.env;
+            // Find the tag to update
+            const tagById: ITag = await TagsModel.findOne({ _id: { $in: req.body.tagId } });
 
-        // Get the token's contents, verifying its validity in the process
-        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+            // Get access token from the front end and the key that serves to create and verify them
+            const cookieValue = req.cookies.token;
+            const { LOG_TOKEN_KEY } = process.env;
 
-        if (checkOwnership(tagById.creatorId, decryptedCookie.userId, decryptedCookie.status)) {
-            // Updating the tag according to the ITag interface, sanitizing every text input given using sanitizeHtml, keeping the old values if no new one is given
-            await TagsModel.updateOne({ _id: { $in: req.body.tagId } }, {
-                backgroundColor: sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }) : tagById.backgroundColor,
-                name: sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }) : tagById.name,
-                nameColor: sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }) : tagById.nameColor,
+            // Get the token's contents, verifying its validity in the process
+            const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
+            if (checkOwnership(tagById.creatorId, decryptedCookie.userId, decryptedCookie.status)) {
+                // Updating the tag according to the ITag interface, sanitizing every text input given using sanitizeHtml, keeping the old values if no new one is given
+                await TagsModel.updateOne({ _id: { $in: req.body.tagId } }, {
+                    backgroundColor: sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }) : tagById.backgroundColor,
+                    name: sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }) : tagById.name,
+                    nameColor: sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }) : tagById.nameColor,
+                }
+                );
+
+                return res.status(204).json({
+                    message: '(204 No Content)-Tag successfully updated',
+                    success: true
+                });
+            } else {
+                return res.status(403).json({
+                    message: '(403 Forbidden)-The tag does not belong to the user and will not be updated',
+                    success: false
+                });
             }
-            );
-
-            return res.status(204).json({
-                message: '(204 No Content)-Tag successfully updated',
-                success: true
-            });
         } else {
-            return res.status(403).json({
-                message: '(403 Forbidden)-The tag does not belong to the user and will not be updated',
+            return res.status(400).json({
+                message: '(400 Bad Request)-The data given does not match what is needed to update a tag',
                 success: false
             });
         }
-
     } catch (err) {
         return res.status(404).json({
             message: '(404 Not found)-Tag to be updated was not found',

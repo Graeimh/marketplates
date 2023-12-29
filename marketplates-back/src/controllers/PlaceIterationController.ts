@@ -12,38 +12,47 @@ import checkOwnership from "../common/functions/checkOwnership.js";
    * @param req - The request object associated with the route parameters, specifically the formData held within the body
    * @param res - The response object associated with the route
    * 
-   * @catches - If the place the iteration is created for couldn't be found (404), if the place could not be created due to a problem with data (500)
+   * @catches - If the place the iteration is created for couldn't be found (404), if the place could not be created due to a problem with data (500) or if the user gives invalid data (400)
    * @responds - By informing the user the place iteration has been created (201)
 */
 export async function createPlaceIterationById(req, res) {
     try {
-        // Find the matching place
-        const placeToIterateUpon = await PlacesModel.findOne({ _id: req.body.originalPlaceId });
+        // Verifying if the data given by the user matches the front end requirements
+        if (sanitizeHtml(req.body.formData.customName, { allowedTags: [] }).length > 1 && sanitizeHtml(req.body.formData.customDescription, { allowedTags: [] }).length > 1) {
 
-        if (!placeToIterateUpon) {
-            res.status(400).json({
-                message: '(404 Not Found)-The place to iterate upon was not found',
+            // Find the matching place
+            const placeToIterateUpon = await PlacesModel.findOne({ _id: req.body.originalPlaceId });
+
+            if (!placeToIterateUpon) {
+                res.status(400).json({
+                    message: '(404 Not Found)-The place to iterate upon was not found',
+                    success: false
+                });
+            }
+
+            // Creating the place iteration according to the IPlaceIteration interface, sanitizing every text input given using sanitizeHtml
+            const iteration: IPlaceIteration = {
+                associatedMapIds: [],
+                creatorId: req.body.formData.userId,
+                customName: sanitizeHtml(req.body.formData.customName, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.customName, { allowedTags: [] }) : placeToIterateUpon.name,
+                customDescription: sanitizeHtml(req.body.formData.customDescription, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.customDescription, { allowedTags: [] }) : placeToIterateUpon.description,
+                customTagIds: placeToIterateUpon.tagsList,
+                gpsCoordinates: { longitude: req.body.formData.longitude, latitude: req.body.formData.latitude },
+                placeId: placeToIterateUpon._id,
+            }
+
+            await PlaceIterationsModel.create(iteration);
+
+            return res.status(201).json({
+                message: '(201 Created)-Place iteration successfully created',
+                success: true
+            });
+        } else {
+            return res.status(400).json({
+                message: '(400 Bad Request)-The data given does not match what is needed to create a place iteration',
                 success: false
             });
         }
-
-        // Creating the place iteration according to the IPlaceIteration interface, sanitizing every text input given using sanitizeHtml
-        const iteration: IPlaceIteration = {
-            associatedMapIds: [],
-            creatorId: req.body.formData.userId,
-            customName: req.body.formData.customName ? sanitizeHtml(req.body.formData.customName, { allowedTags: [] }) : placeToIterateUpon.name,
-            customDescription: req.body.formData.customDescription ? sanitizeHtml(req.body.formData.customDescription, { allowedTags: [] }) : placeToIterateUpon.description,
-            customTagIds: placeToIterateUpon.tagsList,
-            gpsCoordinates: { longitude: req.body.formData.longitude, latitude: req.body.formData.latitude },
-            placeId: placeToIterateUpon._id,
-        }
-
-        await PlaceIterationsModel.create(iteration);
-
-        return res.status(201).json({
-            message: '(201 Created)-Place iteration successfully created',
-            success: true
-        });
     } catch (err) {
         return res.status(500).json({
             message: '(500 Internal Server Error)-A server side error has occured.',
@@ -171,48 +180,56 @@ export async function getPlaceIterationForUser(req, res) {
    * @param req - The request object associated with the route parameters, specifically the formData within the body property
    * @param res - The response object associated with the route
    * 
-   * @catches - If no place iteration is found (404) or the iteration could not be updated (500)
+   * @catches - If no place iteration is found (404) or the iteration could not be updated (500) or if the user gives invalid data (400)
    * @responds - With a message informing the user the update is done (204)
 */
 export async function updatePlaceIterationById(req, res) {
     try {
-        // Find the matching place iteration
-        const placeIterationById: IPlaceIteration = await PlaceIterationsModel.findOne({ _id: { $in: req.body.placeIterationId } });
+        // Verifying if the data given by the user matches the front end requirements
+        if (sanitizeHtml(req.body.formData.customName, { allowedTags: [] }).length > 1 && sanitizeHtml(req.body.formData.customDescription, { allowedTags: [] }).length > 1) {
 
-        // Get access token from the front end and the key that serves to create and verify them
-        const cookieValue = req.cookies.token;
-        const { LOG_TOKEN_KEY } = process.env;
+            // Find the matching place iteration
+            const placeIterationById: IPlaceIteration = await PlaceIterationsModel.findOne({ _id: { $in: req.body.placeIterationId } });
 
-        // Get the token's contents, verifying its validity in the process
-        const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+            // Get access token from the front end and the key that serves to create and verify them
+            const cookieValue = req.cookies.token;
+            const { LOG_TOKEN_KEY } = process.env;
 
-        if (!placeIterationById) {
-            return res.status(400).json({
-                message: '(404 Not Found)-The place iteration to update was not found',
-                success: false
-            });
-        }
+            // Get the token's contents, verifying its validity in the process
+            const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
 
-        if (checkOwnership(placeIterationById.creatorId, decryptedCookie.userId, decryptedCookie.status)) {
-            // Updating the place iteration's data following the IPlaceIteration interface
-            await PlaceIterationsModel.updateOne({ _id: { $in: req.body.placeIterationId } }, {
-                customName: req.body.formData.customName ? sanitizeHtml(req.body.formData.customName, { allowedTags: [] }) : placeIterationById.customName,
-                customDescription: req.body.formData.customDescription ? sanitizeHtml(req.body.formData.customDescription, { allowedTags: [] }) : placeIterationById.customDescription,
-                customTagIds: req.body.formData.customTagIds ? req.body.formData.customTagIds : placeIterationById.customTagIds,
+            if (!placeIterationById) {
+                return res.status(400).json({
+                    message: '(404 Not Found)-The place iteration to update was not found',
+                    success: false
+                });
+            }
 
-            })
+            if (checkOwnership(placeIterationById.creatorId, decryptedCookie.userId, decryptedCookie.status)) {
+                // Updating the place iteration's data following the IPlaceIteration interface
+                await PlaceIterationsModel.updateOne({ _id: { $in: req.body.placeIterationId } }, {
+                    customName: sanitizeHtml(req.body.formData.customName, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.customName, { allowedTags: [] }) : placeIterationById.customName,
+                    customDescription: sanitizeHtml(req.body.formData.customDescription, { allowedTags: [] }) ? sanitizeHtml(req.body.formData.customDescription, { allowedTags: [] }) : placeIterationById.customDescription,
+                    customTagIds: req.body.formData.customTagIds ? req.body.formData.customTagIds : placeIterationById.customTagIds,
 
-            return res.status(204).json({
-                message: '(204 No Content)-Place iteration successfully updated',
-                success: true
-            });
+                })
+
+                return res.status(204).json({
+                    message: '(204 No Content)-Place iteration successfully updated',
+                    success: true
+                });
+            } else {
+                return res.status(403).json({
+                    message: '(403 Forbidden)-The user is not the owner of the iteration, or an admin and thus cannot update its data',
+                    success: false
+                });
+            }
         } else {
-            return res.status(403).json({
-                message: '(403 Forbidden)-The user is not the owner of the iteration, or an admin and thus cannot update its data',
+            return res.status(400).json({
+                message: '(400 Bad Request)-The data given does not match what is needed to update a place iteration',
                 success: false
             });
         }
-
     } catch (err) {
         return res.status(500).json({
             message: '(500 Internal Server Error)-A server side error has occured.',

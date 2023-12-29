@@ -69,6 +69,10 @@ function MapEditor(props: { editedMap: string | undefined }) {
   // Checks if the values for the map's data fit a criteria before allowing its creation or editing
   const [isValidForSending, setIsValidForSending] = useState<boolean>(false);
 
+  // Checks if the values for the place iterations's data fit a criteria before allowing its creation or editing
+  const [isValidPlaceIterationForSending, setIsValidPlaceIterationForSending] =
+    useState<boolean>(false);
+
   // Contains the values used to create an iteration for the map itself before being sent to backend alongside with it
   const [iterationValues, setIterationValues] = useState<IPlaceUpdated>({
     address: "",
@@ -196,18 +200,43 @@ function MapEditor(props: { editedMap: string | undefined }) {
     decideMapValidity();
   }, []);
 
+  useEffect(() => {
+    decideMapValidity();
+  }, [formData]);
+
+  useEffect(() => {
+    decidePlaceIterationValidity();
+  }, [iterationValues]);
+
   function decideMapValidity() {
     setIsValidForSending(
       formData.name.length > 1 && formData.description.length > 1
     );
   }
 
+  function decidePlaceIterationValidity() {
+    setIsValidPlaceIterationForSending(
+      iterationValues.name.length > 1 && iterationValues.description.length > 1
+    );
+  }
+
   function updateField(event) {
-    decideMapValidity();
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
     });
+  }
+
+  function updatePlaceIterationField(event) {
+    setIterationValues({
+      ...iterationValues,
+      [event.target.name]: event.target.value,
+    });
+  }
+
+  function manageIteration(place: IPlaceUpdated) {
+    setIterationValues(place);
+    setIsValidPlaceIterationForSending(true);
   }
 
   function doubleClickMaphandler(lon: number, lat: number) {
@@ -401,9 +430,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
                   {!place.isIteration && (
                     <button
                       type="button"
-                      onClick={() => {
-                        setIterationValues(place);
-                      }}
+                      onClick={() => manageIteration(place)}
                     >
                       Create iteration
                     </button>
@@ -411,9 +438,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
                   {place.isIteration && (
                     <button
                       type="button"
-                      onClick={() => {
-                        setIterationValues(place);
-                      }}
+                      onClick={() => manageIteration(place)}
                     >
                       Edit iteration
                     </button>
@@ -647,10 +672,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
                     name="name"
                     required
                     onInput={(e) => {
-                      setIterationValues({
-                        ...iterationValues,
-                        name: e.target.value,
-                      });
+                      updatePlaceIterationField(e);
                     }}
                     value={iterationValues.name}
                   />
@@ -663,12 +685,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
                     type="text"
                     name="description"
                     required
-                    onInput={(e) => {
-                      setIterationValues({
-                        ...iterationValues,
-                        description: e.target.value,
-                      });
-                    }}
+                    onInput={(e) => updatePlaceIterationField(e)}
                     value={iterationValues.description}
                   />
                 </p>
@@ -741,6 +758,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
               onClick={(e) => {
                 createIteration(e);
               }}
+              disabled={!isValidPlaceIterationForSending}
             >
               {iterationsList.some(
                 (iteration) => iteration._id === iterationValues._id

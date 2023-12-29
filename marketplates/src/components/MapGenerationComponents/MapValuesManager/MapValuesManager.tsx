@@ -26,10 +26,6 @@ function MapValuesManager(props: {
 
   // sets the initial position of the user on the map
   useEffect(() => {
-    console.log("props.latitude", props.latitude);
-    console.log("props.longitude", props.longitude);
-    console.log("props.zoom", props.startingZoom);
-
     if (props.latitude !== null && props.longitude !== null) {
       const expression: LatLngExpression = latLng(
         props.latitude,
