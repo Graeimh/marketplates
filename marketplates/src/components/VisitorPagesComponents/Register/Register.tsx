@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import styles from "./Register.module.scss";
+import styles from "../LoginRegister.module.scss";
 import * as userService from "../../../services/userService.js";
 import {
   IPasswordFitnessCriteria,
@@ -14,7 +14,7 @@ function Register() {
     email: "",
     firstName: "",
     lastName: "",
-    nickName: "",
+    displayName: "",
     country: "",
     city: "",
     county: "",
@@ -53,7 +53,7 @@ function Register() {
     setValidForSending(
       formData.firstName.length > 1 &&
         formData.lastName.length > 1 &&
-        formData.nickName.length > 1 &&
+        formData.displayName.length > 1 &&
         formData.email.length > 3 &&
         formData.password.length >= 12 &&
         formData.passwordMatch.length >= 12 &&
@@ -66,7 +66,7 @@ function Register() {
   }, [
     formData.firstName,
     formData.lastName,
-    formData.nickName,
+    formData.displayName,
     formData.email,
     formData.password,
     formData.passwordMatch,
@@ -126,118 +126,154 @@ function Register() {
 
   return (
     <>
-      <h1>Register</h1>
-      <div className={styles.registerContainer}>
+      <div id={styles.formContainer}>
         <form onSubmit={sendRegistrationForm}>
+          <h2>Register</h2>
           <ul>
             <li>
-              <p>
-                <label>First name : </label>
+              <div>
+                <label htmlFor="firstName">First name</label>
+                <br />
                 <input
                   type="text"
                   name="firstName"
                   required
                   onInput={updateField}
+                  placeholder="First name"
                 />
-              </p>
+              </div>
             </li>
             <li>
-              <p>
-                <label>Last name : </label>
+              <div>
+                <label htmlFor="lastName">Last name</label>
+                <br />
                 <input
                   type="text"
                   name="lastName"
                   required
                   onInput={updateField}
+                  placeholder="Last name"
                 />
-              </p>
+              </div>
             </li>
             <li>
-              <p>
-                <label>Nickname : </label>
+              <div>
+                <label htmlFor="displayName">Nickname</label>
+                <br />
                 <input
                   type="text"
-                  name="nickName"
+                  name="displayName"
                   required
                   onInput={updateField}
+                  placeholder="Nickname"
                 />
-              </p>
+              </div>
             </li>
             <li>
-              <p>
-                <label>Email : </label>
+              <div>
+                <label htmlFor="email">Email</label>
+                <br />
                 <input
                   type="email"
                   name="email"
                   required
                   onInput={updateField}
+                  placeholder="Email"
                 />
-              </p>
+              </div>
+            </li>
+          </ul>
+          <ul>
+            <li>
+              <div>
+                <label htmlFor="streetAddress">Street address</label>
+                <br />
+                <input
+                  type="text"
+                  name="streetAddress"
+                  onInput={updateField}
+                  placeholder="Street address"
+                />
+              </div>
             </li>
             <li>
-              <p>
-                <label>Street address : </label>
-                <input type="text" name="streetAddress" onInput={updateField} />
-              </p>
+              <div>
+                <label htmlFor="county">County</label>
+                <br />
+                <input
+                  type="text"
+                  name="county"
+                  onInput={updateField}
+                  placeholder="County"
+                />
+              </div>
             </li>
             <li>
-              <p>
-                <label>County : </label>
-                <input type="text" name="county" onInput={updateField} />
-              </p>
+              <div>
+                <label htmlFor="city">City</label>
+                <br />
+                <input
+                  type="text"
+                  name="city"
+                  onInput={updateField}
+                  placeholder="City"
+                />
+              </div>
             </li>
             <li>
-              <p>
-                <label>City : </label>
-                <input type="text" name="city" onInput={updateField} />
-              </p>
-            </li>
-            <li>
-              <p>
-                <label>Country : </label>
+              <div>
+                <label htmlFor="country">Country</label>
+                <br />
                 <input
                   type="text"
                   name="country"
                   required
                   onInput={updateField}
+                  placeholder="Country"
                 />
-              </p>
+              </div>
             </li>
             <li>
-              <p>
-                <label>Password : </label>
+              <div>
+                <label htmlFor="password">Password</label>
+                <br />
                 <input
                   type="password"
                   name="password"
                   required
                   onInput={updateField}
+                  placeholder="Password"
                 />
-              </p>
+              </div>
             </li>
             <li>
-              <p>
-                <label>Confirm password : </label>
+              <div>
+                <label htmlFor="passwordMatch">Confirm password</label>
+                <br />
                 <input
                   type="password"
                   name="passwordMatch"
                   required
                   onInput={updateField}
+                  placeholder="Write your password again here"
                 />
-              </p>
+              </div>
             </li>
           </ul>
-          <button
-            type="submit"
-            disabled={
-              Object.values(passwordFitnessCriteria).some(
-                (field) => field === false
-              ) ||
-              !arePasswordsMatching ||
-              !validForSending
-            }
-          >
-            Register
-          </button>
+          <div id={styles.finalButtonContainer}>
+            <button
+              type="submit"
+              disabled={
+                Object.values(passwordFitnessCriteria).some(
+                  (field) => field === false
+                ) ||
+                !arePasswordsMatching ||
+                !validForSending
+              }
+            >
+              Register
+            </button>
+          </div>
         </form>
       </div>
 

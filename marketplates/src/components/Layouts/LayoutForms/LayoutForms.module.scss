@@ -1,75 +1,79 @@
 #formsContainer {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 #formsButton {
-    position: absolute;
-    top: 1rem;
-    left: 1rem; 
-    height: 4rem;
-    width: 4rem;
-    border-radius: 50%;
+  position: absolute;
+  top: 0.8rem;
+  left: 0.8rem;
+  height: 4rem;
+  width: 4rem;
+  border-radius: 50%;
 }
 
 #formsButton:hover {
-    transform: scale(1.1) rotate(-360deg);
-    transition: 0.5s;
+  transform: scale(1.1) rotate(-360deg);
+  transition: 0.5s;
+  color: #eb6700;
+  border: 1px solid #eb6700;
 }
 
 #formsButton:focus {
-    transform: scale(1.1) rotate(-360deg);
-    transition: 0.5s;
+  transform: scale(1.1) rotate(-360deg);
+  transition: 0.5s;
+  color: #eb6700;
+  border: 1px solid #eb6700;
 }
 
-#formsImage{
-    width: 100%;
-    height: 100%;
+#formsImage {
+  width: 100%;
+  height: 100%;
 }
 
 #formsContentContainer {
-    position: absolute;
-    top: 30%;
-    width: 100%;
-    padding: 1rem;
-    background-color: white;
-    margin: auto;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+  position: absolute;
+  top: 30%;
+  width: 100%;
+  padding: 1rem;
+  background-color: white;
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
 #formsContent {
-    width: 90%;
+  width: 90%;
 }
 
 /* For tablets: */
 @media only screen and (min-width: 481px) {
-    #formsContentContainer {
-        height: 100%;
-        width: 50%;
-        top: 0%;
-        left: 25%;
-    }
+  #formsContentContainer {
+    height: 100%;
+    width: 65%;
+    top: 0%;
+    left: 17.5%;
+  }
 }
 
 /* For desktop: */
 @media only screen and (min-width: 769px) {
-    #formsContainer {
-        display: flex;
-    }
+  #formsContainer {
+    display: flex;
+  }
 
-    #formsContentContainer {
-        position: unset;
-        height: 100%;
-        width: 50%;
-        padding: 1rem;
-    }
+  #formsContentContainer {
+    position: unset;
+    height: 100%;
+    width: 50%;
+    padding: 1rem;
+  }
 
-    #formsImage{
-        width: 50%;
-        height: 100%;
-    }
+  #formsImage {
+    width: 50%;
+    height: 100%;
+  }
 }

@@ -30,7 +30,7 @@ export async function createUser(req, res) {
       // Creating the user according to the IUser interface, sanitizing every text input given using sanitizeHtml
       const user: IUser = {
         activeBasketlistIds: [],
-        displayName: sanitizeHtml(req.body.formData.nickName, { allowedTags: [] }),
+        displayName: sanitizeHtml(req.body.formData.displayName, { allowedTags: [] }),
         email: sanitizeHtml(req.body.formData.email, { allowedTags: [] }),
         firstName: sanitizeHtml(req.body.formData.firstName, { allowedTags: [] }),
         lastName: sanitizeHtml(req.body.formData.lastName, { allowedTags: [] }),

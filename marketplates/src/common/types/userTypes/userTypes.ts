@@ -22,7 +22,7 @@ export enum UserType {
  * @member {string} email serves for login, and, in the future, advertisement and password changes
  * @member {string} firstName serves for potential promotional emails
  * @member {string} lastName serves for potential promotional emails 
- * @member {string} nickName is the name other users will see when interacting with the user
+ * @member {string} displayName is the name other users will see when interacting with the user
  * @member {string} city city is used for the user's city
  * @member {string} country country is used for the user's country
  * @member {string} county county is used for the user's county
@@ -34,7 +34,7 @@ export interface IRegisterValues {
     email: string;
     firstName: string;
     lastName: string;
-    nickName: string;
+    displayName: string;
     city: string;
     country: string;
     county: string;

@@ -23,7 +23,7 @@ function Dashboard() {
             <span className={styles.dashboardOptionChevron}>
               <FontAwesomeIcon icon={solid("chevron-right")} />
             </span>
-            Manipulate tags
+            <span className={styles.dashboardOptionText}>Manipulate tags</span>
             <span className={styles.dashboardOptionDecorator}>
               <FontAwesomeIcon icon={solid("tags")} />
             </span>
@@ -34,7 +34,9 @@ function Dashboard() {
             <span className={styles.dashboardOptionChevron}>
               <FontAwesomeIcon icon={solid("chevron-right")} />
             </span>
-            Manipulate places
+            <span className={styles.dashboardOptionText}>
+              Manipulate places
+            </span>
             <span className={styles.dashboardOptionDecorator}>
               <FontAwesomeIcon icon={solid("shop")} />
             </span>

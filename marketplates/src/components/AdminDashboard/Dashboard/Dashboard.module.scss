@@ -1,20 +1,28 @@
-#dashboardPanel {
-
-}
-
 #dashboardPanel li {
-    margin: 3rem 0;
+    margin: 2rem 0;
 }
 
 #dashboardPanel li a{
-    background-color: red;
+    background-color: rgb(85, 79, 79);
     width: 16rem;
-    display:inline-block; 
     padding: 2rem 1rem 2rem 1rem;
     border-radius: 20px 50px 50px 20px;
+    display: flex;
+    align-items: center;
 }
-.dashboardOptionText{
 
+#dashboardPanel li a:active{
+    background-color: rgb(255, 255, 255);
+}
+
+#dashboardPanel li a:active .dashboardOptionDecorator{
+    background-color: rgb(85, 79, 79);
+}
+
+.dashboardOptionText{
+    width: 60%;
+    margin-right: 0.5rem;
+    font-weight: bold;
 }
 
 .dashboardOptionChevron{
@@ -38,8 +46,11 @@
         margin: 4rem 0;
     }
 
+    .dashboardOptionText{
+        margin-right: 2rem;
+    }
+
     #dashboardPanel li a{
-        background-color: blue;
         width: 20rem;
     }
     
@@ -51,8 +62,19 @@
         margin: 5rem 0;
     }
 
+    .dashboardOptionText{
+        margin-right: 1rem;
+    }
+
     #dashboardPanel li a{
-        background-color: green;
-        width: 25rem;
+        width: 18rem;
+        margin-right: 2rem;
+    }
+
+    #dashboardPanel {
+        display: grid;
+        grid-template-columns: 22rem 22rem;
+        width: 80%;
+        margin: auto;
     }
 }

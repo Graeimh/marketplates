@@ -5,7 +5,7 @@ import {
   ISessionValues,
 } from "../../../common/types/userTypes/userTypes.js";
 import * as authenticationService from "../../../services/authenticationService.js";
-import styles from "./Login.module.scss";
+import styles from "../LoginRegister.module.scss";
 import ReCAPTCHA from "react-google-recaptcha";
 import createTemporaryMessage from "../../../common/functions/createTemporaryMessage.js";
 import * as jose from "jose";
@@ -98,40 +98,59 @@ function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
       window.grecaptcha.reset();
     }
   }
+
   return (
     <>
-      <h1>Login</h1>
-      <div className={styles.loginContainer}>
+      <div id={styles.formContainer}>
         <form onSubmit={sendLoginForm}>
+          <h2>Sign in</h2>
           <ul>
             <li>
-              <p>
-                Email :{" "}
+              <div>
+                <label htmlFor="email">Email</label>
+                <br />
                 <input
                   type="text"
                   name="email"
                   required
                   onInput={updateField}
+                  placeholder="Email"
                 />
-              </p>
+              </div>
             </li>
             <li>
-              <p>
-                Password :{" "}
+              <div>
+                <label htmlFor="password">Password</label>
+                <br />
                 <input
                   type="password"
                   name="password"
                   required
                   onInput={updateField}
+                  placeholder="Password"
                 />
-              </p>
+              </div>
             </li>
           </ul>
           <ReCAPTCHA
             sitekey={import.meta.env.VITE_REACT_APP_GOOGLE_SITE_KEY}
             ref={captcha}
+            id={styles.captchaContainer}
+            style={{
+              transform: "scale(0.77)",
+            }}
           />
-          <button type="submit">Log in</button>
+          <div id={styles.finalButtonContainer}>
+            <button type="submit">Log in</button>
+          </div>
+
+          <div id={styles.registerAlternative}>Don't have an account?</div>
+
+          <div id={styles.registerButtonContainer}>
+            <button type="button" onClick={() => navigate("/register")}>
+              Register
+            </button>
+          </div>
         </form>
       </div>
 
