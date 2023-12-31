@@ -67,3 +67,7 @@ button:focus-visible {
 ul {
   list-style-type: none;
 }
+
+html, body {
+  height:100%;
+}

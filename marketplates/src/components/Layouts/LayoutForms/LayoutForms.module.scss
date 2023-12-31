@@ -1,6 +1,7 @@
 #formsContainer {
   width: 100%;
   height: 100%;
+  background-color: #ffffff;
 }
 
 #formsButton {
@@ -52,10 +53,11 @@
 /* For tablets: */
 @media only screen and (min-width: 481px) {
   #formsContentContainer {
-    height: 100%;
     width: 65%;
-    top: 0%;
+    top: 1%;
     left: 17.5%;
+    height: 94%;
+    margin: auto 0;
   }
 }
 
@@ -67,7 +69,6 @@
 
   #formsContentContainer {
     position: unset;
-    height: 100%;
     width: 50%;
     padding: 1rem;
   }

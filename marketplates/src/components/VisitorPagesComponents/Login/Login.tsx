@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ILoginValues,
@@ -42,12 +42,25 @@ function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
     }, time);
   }
 
+  // Serves to check if all values have the correct number of characters
+  const [validForSending, setValidForSending] = useState(false);
+
   function updateField(event) {
     setLoginData({
       ...loginData,
       [event.target.name]: event.target.value,
     });
   }
+
+  function decideLoginValidity() {
+    setValidForSending(
+      loginData.email.length > 3 && loginData.password.length >= 12
+    );
+  }
+
+  useEffect(() => {
+    decideLoginValidity();
+  }, [loginData]);
 
   async function sendLoginForm(event) {
     event.preventDefault();
@@ -141,7 +154,9 @@ function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
             }}
           />
           <div id={styles.finalButtonContainer}>
-            <button type="submit">Log in</button>
+            <button type="submit" disabled={!validForSending}>
+              Log in
+            </button>
           </div>
 
           <div id={styles.registerAlternative}>Don't have an account?</div>
