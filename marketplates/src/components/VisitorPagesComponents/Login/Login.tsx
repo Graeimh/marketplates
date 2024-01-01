@@ -121,7 +121,7 @@ function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
         <link rel="canonical" href="http://localhost:5173/login" />
       </Helmet>
 
-      <div className={formStyles.formContainer}>
+      <article className={formStyles.formContainer}>
         <form onSubmit={sendLoginForm}>
           <h2>Sign in</h2>
           <ul>
@@ -170,7 +170,7 @@ function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
             </button>
           </div>
         </form>
-      </div>
+      </article>
       {responseMessage && (
         <div className={styles.success}>{responseMessage}</div>
       )}

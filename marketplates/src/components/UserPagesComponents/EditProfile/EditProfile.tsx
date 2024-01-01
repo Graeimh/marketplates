@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import formStyles from "../../../common/styles/Forms.module.scss";
 import styles from "./EditProfile.module.scss";
 import * as userService from "../../../services/userService.js";
 import {
@@ -26,6 +27,8 @@ function EditProfile(props: { userId: string }) {
 
   // Error message display
   const [error, setError] = useState(null);
+
+  const [validForSending, setValidForSending] = useState(false);
 
   const value = useContext(UserContext);
 
@@ -55,6 +58,23 @@ function EditProfile(props: { userId: string }) {
     getUserData();
   }, []);
 
+  function decideRegistration() {
+    setValidForSending(
+      formData.firstName.length > 1 &&
+        formData.lastName.length > 1 &&
+        formData.displayName.length > 1 &&
+        formData.email.length > 3 &&
+        formData.country.length > 1 &&
+        formData.county.length > 1 &&
+        formData.city.length > 1 &&
+        formData.streetAddress.length > 1
+    );
+  }
+
+  useEffect(() => {
+    decideRegistration();
+  }, [formData]);
+
   async function sendEditUserForm(event) {
     event.preventDefault();
     try {
@@ -67,6 +87,13 @@ function EditProfile(props: { userId: string }) {
     }
   }
 
+  function updateField(event) {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
+  }
+
   return (
     <>
       <Helmet>
@@ -74,126 +101,121 @@ function EditProfile(props: { userId: string }) {
         <link rel="canonical" href="http://localhost:5173/editprofile" />
       </Helmet>
 
-      <h1>Edit profile</h1>
-      <form>
-        <ul>
-          <li>
-            <p>
-              <label>Display name : </label>
-              <input
-                type="text"
-                name="displayName"
-                required
-                onInput={(e) => {
-                  setFormData({ ...formData, displayName: e.target.value });
-                }}
-                value={formData.displayName}
-              />
-            </p>
-          </li>
-          <li>
-            <p>
-              <label>Email : </label>
-              <input
-                type="email"
-                name="email"
-                required
-                onInput={(e) => {
-                  setFormData({ ...formData, email: e.target.value });
-                }}
-                value={formData.email}
-              />
-            </p>
-          </li>
-          <li>
-            <p>
-              <label>First name : </label>
-              <input
-                type="text"
-                name="firstName"
-                required
-                onInput={(e) => {
-                  setFormData({ ...formData, firstName: e.target.value });
-                }}
-                value={formData.firstName}
-              />
-            </p>
-          </li>
-          <li>
-            <p>
-              <label>Last name : </label>
-              <input
-                type="text"
-                name="lastName"
-                required
-                onInput={(e) => {
-                  setFormData({ ...formData, lastName: e.target.value });
-                }}
-                value={formData.lastName}
-              />
-            </p>
-          </li>
-          <li>
-            <p>
-              <label>Street address : </label>
+      <h2>Edit profile</h2>
+      <article className={formStyles.formContainer} id={styles.userEditForm}>
+        <form onSubmit={sendEditUserForm}>
+          <section className={formStyles.specificData}>
+            <h3>Personnal information</h3>
+            <ul>
+              <li>
+                <label htmlFor="firstName">First name</label>
+                <br />
+                <input
+                  type="text"
+                  name="firstName"
+                  id="firstName"
+                  required
+                  onInput={updateField}
+                  value={formData.firstName}
+                />
+              </li>
+              <li>
+                <label htmlFor="lastName">Last name</label>
+                <br />
+                <input
+                  type="text"
+                  name="lastName"
+                  id="lastName"
+                  required
+                  onInput={updateField}
+                  value={formData.lastName}
+                />
+              </li>
+            </ul>
+            <div>
+              <label htmlFor="streetAddress">Street address</label>
+              <br />
               <input
                 type="text"
                 name="streetAddress"
-                required
-                onInput={(e) => {
-                  setFormData({ ...formData, streetAddress: e.target.value });
-                }}
+                id="streetAddress"
+                onInput={updateField}
                 value={formData.streetAddress}
               />
-            </p>
-          </li>
-          <li>
-            <p>
-              <label>Country : </label>
-              <input
-                type="text"
-                name="country"
-                required
-                onInput={(e) => {
-                  setFormData({ ...formData, country: e.target.value });
-                }}
-                value={formData.country}
-              />
-            </p>
-          </li>
-          <li>
-            <p>
-              <label>County : </label>
-              <input
-                type="text"
-                name="county"
-                required
-                onInput={(e) => {
-                  setFormData({ ...formData, county: e.target.value });
-                }}
-                value={formData.county}
-              />
-            </p>
-          </li>
-          <li>
-            <p>
-              <label>City : </label>
-              <input
-                type="text"
-                name="city"
-                required
-                onInput={(e) => {
-                  setFormData({ ...formData, city: e.target.value });
-                }}
-                value={formData.city}
-              />
-            </p>
-          </li>
-        </ul>
-        <button type="button" onClick={(e) => sendEditUserForm(e)}>
-          Edit my profile
-        </button>
-      </form>
+            </div>
+            <ul>
+              <li>
+                <label htmlFor="county">County</label>
+                <br />
+                <input
+                  type="text"
+                  name="county"
+                  id="county"
+                  onInput={updateField}
+                  value={formData.county}
+                />
+              </li>
+              <li>
+                <label htmlFor="city">City</label>
+                <br />
+                <input
+                  type="text"
+                  name="city"
+                  id="city"
+                  onInput={updateField}
+                  value={formData.city}
+                />
+              </li>
+              <li>
+                <label htmlFor="country">Country</label>
+                <br />
+                <input
+                  type="text"
+                  name="country"
+                  id="country"
+                  required
+                  onInput={updateField}
+                  value={formData.country}
+                />
+              </li>
+            </ul>
+          </section>
+          <section>
+            <h3>Credentials</h3>
+            <ul>
+              <li>
+                <label htmlFor="displayName">Nickname</label>
+                <br />
+                <input
+                  type="text"
+                  name="displayName"
+                  id="displayName"
+                  required
+                  onInput={updateField}
+                  value={formData.displayName}
+                />
+              </li>
+              <li>
+                <label htmlFor="email">Email</label>
+                <br />
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  required
+                  onInput={updateField}
+                  value={formData.email}
+                />
+              </li>
+            </ul>
+          </section>
+          <div className={formStyles.finalButtonContainer}>
+            <button type="submit" disabled={!validForSending}>
+              Edit my profile
+            </button>
+          </div>
+        </form>
+      </article>
       {error && <div className={styles.error}>{error}</div>}
     </>
   );

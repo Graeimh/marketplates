@@ -36,6 +36,14 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
     <>
       <header id={styles.header}>
         <div id={styles.banner}>
+          <Link to="/">
+            <img
+              src="src\assets\logo.png"
+              alt="logo"
+              height="80px"
+              width="80px"
+            />
+          </Link>
           <h1 id={styles.mainTitle}>Marketplates</h1>
         </div>
         <h1>API STATUS</h1>

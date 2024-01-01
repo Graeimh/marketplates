@@ -72,6 +72,14 @@
   cursor: default;
 }
 
+.finalButtonContainer button:active {
+  border: 1px solid #eb6700;
+  background-color: #ffffff;
+  color: #eb6700;
+  transition: 0.2s;
+  cursor: default;
+}
+
 section h3,
 section h5 {
   color: #a32e00;

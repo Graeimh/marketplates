@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import styles from "./Register.module.scss";
 import formStyles from "../../../common/styles/Forms.module.scss";
+import styles from "./Register.module.scss";
 import * as userService from "../../../services/userService.js";
 import {
   IPasswordFitnessCriteria,
@@ -64,7 +64,10 @@ function Register() {
         formData.email.length > 3 &&
         formData.password.length >= 12 &&
         formData.passwordMatch.length >= 12 &&
-        formData.country.length > 1
+        formData.country.length > 1 &&
+        formData.county.length > 1 &&
+        formData.city.length > 1 &&
+        formData.streetAddress.length > 1
     );
   }
 
@@ -165,6 +168,7 @@ function Register() {
                 type="text"
                 name="streetAddress"
                 id="streetAddress"
+                required
                 onInput={updateField}
                 placeholder="Street address"
               />
@@ -176,6 +180,7 @@ function Register() {
                   type="text"
                   name="county"
                   id="county"
+                  required
                   onInput={updateField}
                   placeholder="County"
                 />
@@ -186,6 +191,7 @@ function Register() {
                   type="text"
                   name="city"
                   id="city"
+                  required
                   onInput={updateField}
                   placeholder="City"
                 />

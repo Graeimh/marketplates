@@ -117,8 +117,6 @@ function PlaceManipulation() {
   const displayedTagList =
     placeQuery.length > 0 ? filteredPlaceList : placeList;
 
-  console.log("placeQuery", placeQuery);
-  console.log("displayedTagList", displayedTagList);
   return (
     <>
       <Helmet>
