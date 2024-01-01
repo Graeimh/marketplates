@@ -27,6 +27,9 @@ function PlaceManipulation() {
   // Gives the information whether or not the place belongs to the primed for deletion list
   const [isAllSelected, setIsAllSelected] = useState(false);
 
+  // Holds the value used to filter the name of places when an admin searches for a particular place
+  const [placeQuery, setPlaceQuery] = useState("");
+
   const value = useContext(UserContext);
   async function getAllPlaces() {
     try {
@@ -108,6 +111,14 @@ function PlaceManipulation() {
     }
   }
 
+  const filteredPlaceList = placeList.filter((place) =>
+    new RegExp(placeQuery, "i").test(place.name)
+  );
+  const displayedTagList =
+    placeQuery.length > 0 ? filteredPlaceList : placeList;
+
+  console.log("placeQuery", placeQuery);
+  console.log("displayedTagList", displayedTagList);
   return (
     <>
       <Helmet>
@@ -116,7 +127,6 @@ function PlaceManipulation() {
       </Helmet>
 
       <h1>Place manipulation</h1>
-      <div className={styles.registerContainer}></div>
       <button type="button" onClick={() => deletePrimedForDeletion()}>
         Delete {primedForDeletionList.length} places
       </button>
@@ -128,12 +138,21 @@ function PlaceManipulation() {
       <button type="button" onClick={() => cancelSelection()}>
         Cancel selection{" "}
       </button>
+
+      <label>Search for a place : </label>
+      <input
+        type="text"
+        name="placeQuery"
+        onChange={(e) => {
+          setPlaceQuery(e.target.value);
+        }}
+      />
       {error && <div className={styles.error}>{error}</div>}
       {responseMessage && (
         <div className={styles.success}>{responseMessage}</div>
       )}
-      {placeList.length > 0 &&
-        placeList.map((place) => (
+      {displayedTagList.length > 0 &&
+        displayedTagList.map((place) => (
           <PlaceManipulationItem
             place={place}
             primeForDeletion={manageDeletionList}

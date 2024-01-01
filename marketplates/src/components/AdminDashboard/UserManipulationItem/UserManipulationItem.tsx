@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import * as userService from "../../../services/userService.js";
-import styles from "./UserManipulationItem.module.scss";
+import formStyles from "../../../common/styles/Forms.module.scss";
+import styles from "../../../common/styles/ManipulationItem.module.scss";
 import {
   IUser,
   IUserData,
@@ -8,6 +9,8 @@ import {
 } from "../../../common/types/userTypes/userTypes.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 function UserManipulationItem(props: {
   user: IUser;
@@ -56,17 +59,7 @@ function UserManipulationItem(props: {
 
   useEffect(() => {
     decideUpdatability();
-  }, [
-    formData.displayName,
-    formData.email,
-    formData.firstName,
-    formData.firstName,
-    formData.lastName,
-    formData.streetAddress,
-    formData.county,
-    formData.city,
-    formData.country,
-  ]);
+  }, [formData]);
 
   function handleDeletePrimer() {
     props.primeForDeletion(props.user._id);
@@ -84,6 +77,7 @@ function UserManipulationItem(props: {
         );
         setResponseMessage(response.message);
         props.refetch();
+        setValidForUpdating(false);
       }
     } catch (err) {
       setError(err.message);
@@ -96,57 +90,37 @@ function UserManipulationItem(props: {
 
   return (
     <>
-      <h4>User : {props.user.displayName}</h4>
-      <div
-        className={
-          props.IsSelected
-            ? styles.primedContainer
-            : styles.userManipulationItemContainer
+      <article
+        className={`
+          ${props.IsSelected ? styles.primedContainer : styles.itemContainer} ${
+          formStyles.formContainer
         }
+            `}
       >
-        <button
-          type="button"
-          className={props.IsSelected ? styles.primedButton : ""}
-          onClick={() => handleDeletePrimer()}
-        >
-          {props.IsSelected ? "●" : "○"}
-        </button>
-        <button type="button" onClick={handleDelete}>
-          Delete user
-        </button>
+        <section>
+          <h4>User : {props.user.displayName}</h4>
+          <button
+            type="button"
+            className={props.IsSelected ? styles.primedButton : ""}
+            onClick={() => handleDeletePrimer()}
+          >
+            {props.IsSelected ? (
+              <FontAwesomeIcon icon={regular("trash-can")} />
+            ) : (
+              <FontAwesomeIcon icon={solid("trash-can-arrow-up")} />
+            )}
+            {props.IsSelected ? " Cancel selection" : " Select"}
+          </button>
+
+          <button type="button" onClick={handleDelete}>
+            <FontAwesomeIcon icon={solid("user-slash")} /> Delete user
+          </button>
+        </section>
         <form onSubmit={sendUpdateForm}>
-          <ul>
-            <li>
-              <p>
-                <label>Nickname : </label>
-                <input
-                  type="text"
-                  name="displayName"
-                  onInput={() => {
-                    setFormData({
-                      ...formData,
-                      displayName: event?.target.value,
-                    });
-                  }}
-                  value={formData.displayName}
-                />
-              </p>
-            </li>
-            <li>
-              <p>
-                <label>Email : </label>
-                <input
-                  type="email"
-                  name="email"
-                  onInput={() => {
-                    setFormData({ ...formData, email: event?.target.value });
-                  }}
-                  value={formData.email}
-                />
-              </p>
-            </li>
-            <li>
-              <p>
+          <section className={formStyles.specificData}>
+            <h5>Personnal information</h5>
+            <ul>
+              <li>
                 <label>First name : </label>
                 <input
                   type="text"
@@ -159,39 +133,38 @@ function UserManipulationItem(props: {
                   }}
                   value={formData.firstName}
                 />
-              </p>
-            </li>
-            <li>
-              <p>
+              </li>
+              <li>
                 <label>Last name : </label>
                 <input
                   type="text"
                   name="lastName"
                   onInput={() => {
-                    setFormData({ ...formData, lastName: event?.target.value });
+                    setFormData({
+                      ...formData,
+                      lastName: event?.target.value,
+                    });
                   }}
                   value={formData.lastName}
                 />
-              </p>
-            </li>
-            <li>
-              <p>
-                <label>Street address : </label>
-                <input
-                  type="text"
-                  name="streetAddress"
-                  onInput={() => {
-                    setFormData({
-                      ...formData,
-                      streetAddress: event?.target.value,
-                    });
-                  }}
-                  value={formData.streetAddress}
-                />
-              </p>
-            </li>
-            <li>
-              <p>
+              </li>
+            </ul>
+            <div>
+              <label>Street address : </label>
+              <input
+                type="text"
+                name="streetAddress"
+                onInput={() => {
+                  setFormData({
+                    ...formData,
+                    streetAddress: event?.target.value,
+                  });
+                }}
+                value={formData.streetAddress}
+              />
+            </div>
+            <ul>
+              <li>
                 <label>County : </label>
                 <input
                   type="text"
@@ -201,10 +174,8 @@ function UserManipulationItem(props: {
                   }}
                   value={formData.county}
                 />
-              </p>
-            </li>
-            <li>
-              <p>
+              </li>
+              <li>
                 <label>City : </label>
                 <input
                   type="text"
@@ -214,27 +185,65 @@ function UserManipulationItem(props: {
                   }}
                   value={formData.city}
                 />
-              </p>
-            </li>
-            <li>
-              <p>
+              </li>
+              <li>
                 <label>Country : </label>
                 <input
                   type="text"
                   name="country"
                   onInput={() => {
-                    setFormData({ ...formData, country: event?.target.value });
+                    setFormData({
+                      ...formData,
+                      country: event?.target.value,
+                    });
                   }}
                   value={formData.country}
                 />
-              </p>
-            </li>
-          </ul>
-          <button type="submit" disabled={!validForUpdating}>
-            Update User
-          </button>
+              </li>
+            </ul>
+          </section>
+          <section>
+            <h5>Credentials</h5>
+            <ul>
+              <li>
+                <label>Nickname : </label>
+                <br />
+                <input
+                  type="text"
+                  name="displayName"
+                  onInput={() => {
+                    setFormData({
+                      ...formData,
+                      displayName: event?.target.value,
+                    });
+                  }}
+                  value={formData.displayName}
+                />
+              </li>
+              <li>
+                <label>Email : </label>
+                <br />
+                <input
+                  type="email"
+                  name="email"
+                  onInput={() => {
+                    setFormData({ ...formData, email: event?.target.value });
+                  }}
+                  value={formData.email}
+                />
+              </li>
+            </ul>
+          </section>
+          <div className={formStyles.finalButtonContainer}>
+            <button
+              type="submit"
+              disabled={!validForUpdating || value.email === props.user.email}
+            >
+              Update User
+            </button>
+          </div>
         </form>
-      </div>
+      </article>
 
       {error && <div className={styles.error}>{error}</div>}
       {responseMessage && (

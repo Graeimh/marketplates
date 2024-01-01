@@ -1,13 +1,24 @@
-.tagManipulationItemContainer {
-    border-radius: 16px;
-    border: 1px solid #ccc;
+.tagEditor li {
+  width: 50%;
+  margin: 1rem auto;
 }
 
-.primedContainer{
-    border-radius: 16px;
-    border: 2px solid orange;
+.centeredTagEditorElement {
+  text-align: center;
 }
 
-.primedButton{
-    background-color: orange;
+/* For tablets: */
+@media only screen and (min-width: 535px) {
+  .specificDataTagList ul {
+    display: grid;
+    grid-template-columns: 45% 45%;
+    padding: 0;
+    margin-top: -1rem;
+  }
+
+  .specificDataTagList li {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import styles from "../LoginRegister.module.scss";
+import styles from "./Register.module.scss";
+import formStyles from "../../../common/styles/Forms.module.scss";
 import * as userService from "../../../services/userService.js";
 import {
   IPasswordFitnessCriteria,
@@ -69,15 +70,7 @@ function Register() {
 
   useEffect(() => {
     decideRegistration();
-  }, [
-    formData.firstName,
-    formData.lastName,
-    formData.displayName,
-    formData.email,
-    formData.password,
-    formData.passwordMatch,
-    formData.country,
-  ]);
+  }, [formData]);
 
   function passwordChecker(passwordValue: string): void {
     setPasswordFitnessCriteria({
@@ -137,46 +130,37 @@ function Register() {
         <link rel="canonical" href="http://localhost:5173/register" />
       </Helmet>
 
-      <article id={styles.formContainer}>
+      <article className={formStyles.formContainer}>
         <form onSubmit={sendRegistrationForm}>
           <h2>Register</h2>
-          <section className={styles.specificData}>
+          <section className={formStyles.specificData}>
             <h3>Personnal information</h3>
             <ul>
               <li>
-                <div>
-                  <label htmlFor="firstName">First name</label>
-                  <br />
-                  <input
-                    type="text"
-                    name="firstName"
-                    id="firstName"
-                    required
-                    onInput={updateField}
-                    placeholder="First name"
-                  />
-                </div>
+                <label htmlFor="firstName">First name</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  id="firstName"
+                  required
+                  onInput={updateField}
+                  placeholder="First name"
+                />
               </li>
               <li>
-                <div>
-                  <label htmlFor="lastName">Last name</label>
-                  <br />
-                  <input
-                    type="text"
-                    name="lastName"
-                    id="lastName"
-                    required
-                    onInput={updateField}
-                    placeholder="Last name"
-                  />
-                </div>
+                <label htmlFor="lastName">Last name</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  id="lastName"
+                  required
+                  onInput={updateField}
+                  placeholder="Last name"
+                />
               </li>
             </ul>
-          </section>
-          <section className={styles.specificData}>
             <div>
               <label htmlFor="streetAddress">Street address</label>
-              <br />
               <input
                 type="text"
                 name="streetAddress"
@@ -187,44 +171,35 @@ function Register() {
             </div>
             <ul>
               <li>
-                <div>
-                  <label htmlFor="county">County</label>
-                  <br />
-                  <input
-                    type="text"
-                    name="county"
-                    id="county"
-                    onInput={updateField}
-                    placeholder="County"
-                  />
-                </div>
+                <label htmlFor="county">County</label>
+                <input
+                  type="text"
+                  name="county"
+                  id="county"
+                  onInput={updateField}
+                  placeholder="County"
+                />
               </li>
               <li>
-                <div>
-                  <label htmlFor="city">City</label>
-                  <br />
-                  <input
-                    type="text"
-                    name="city"
-                    id="city"
-                    onInput={updateField}
-                    placeholder="City"
-                  />
-                </div>
+                <label htmlFor="city">City</label>
+                <input
+                  type="text"
+                  name="city"
+                  id="city"
+                  onInput={updateField}
+                  placeholder="City"
+                />
               </li>
               <li>
-                <div>
-                  <label htmlFor="country">Country</label>
-                  <br />
-                  <input
-                    type="text"
-                    name="country"
-                    id="country"
-                    required
-                    onInput={updateField}
-                    placeholder="Country"
-                  />
-                </div>
+                <label htmlFor="country">Country</label>
+                <input
+                  type="text"
+                  name="country"
+                  id="country"
+                  required
+                  onInput={updateField}
+                  placeholder="Country"
+                />
               </li>
             </ul>
           </section>
@@ -232,32 +207,28 @@ function Register() {
             <h3>Credentials</h3>
             <ul>
               <li>
-                <div>
-                  <label htmlFor="displayName">Nickname</label>
-                  <br />
-                  <input
-                    type="text"
-                    name="displayName"
-                    id="displayName"
-                    required
-                    onInput={updateField}
-                    placeholder="Nickname"
-                  />
-                </div>
+                <label htmlFor="displayName">Nickname</label>
+                <br />
+                <input
+                  type="text"
+                  name="displayName"
+                  id="displayName"
+                  required
+                  onInput={updateField}
+                  placeholder="Nickname"
+                />
               </li>
               <li>
-                <div>
-                  <label htmlFor="email">Email</label>
-                  <br />
-                  <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    required
-                    onInput={updateField}
-                    placeholder="Email"
-                  />
-                </div>
+                <label htmlFor="email">Email</label>
+                <br />
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  required
+                  onInput={updateField}
+                  placeholder="Email"
+                />
               </li>
               <li>
                 <div className={styles.toolTip}>
@@ -271,7 +242,6 @@ function Register() {
                     onInput={updateField}
                     placeholder="Password"
                   />
-                  <br />
                   <FontAwesomeIcon
                     icon={
                       passwordVisibility === "password"
@@ -371,22 +341,19 @@ function Register() {
                 </div>
               </li>
               <li>
-                <div>
-                  <label htmlFor="passwordMatch">Confirm password</label>
-                  <br />
-                  <input
-                    type="password"
-                    name="passwordMatch"
-                    id="passwordMatch"
-                    required
-                    onInput={updateField}
-                    placeholder="Write your password again here"
-                  />
-                </div>
+                <label htmlFor="passwordMatch">Confirm password</label>
+                <input
+                  type="password"
+                  name="passwordMatch"
+                  id="passwordMatch"
+                  required
+                  onInput={updateField}
+                  placeholder="Write your password again here"
+                />
               </li>
             </ul>
           </section>
-          <div id={styles.finalButtonContainer}>
+          <div className={formStyles.finalButtonContainer}>
             <button
               type="submit"
               disabled={

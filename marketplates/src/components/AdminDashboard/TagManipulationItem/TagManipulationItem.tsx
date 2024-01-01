@@ -1,5 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import * as tagService from "../../../services/tagService.js";
+import formStyles from "../../../common/styles/Forms.module.scss";
+import itemStyles from "../../../common/styles/ManipulationItem.module.scss";
 import styles from "./TagManipulationItem.module.scss";
 import { ITag, ITagValues } from "../../../common/types/tagTypes/tagTypes.js";
 import { HexColorPicker } from "react-colorful";
@@ -8,6 +10,8 @@ import Tag from "../../MapGenerationComponents/Tag/index.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 function TagManipulationItem(props: {
   tag: ITag;
@@ -84,29 +88,44 @@ function TagManipulationItem(props: {
 
   return (
     <>
-      <h4>Tag name : {props.tag.name}</h4>
-      <div
-        className={
-          props.IsSelected
-            ? styles.primedContainer
-            : styles.tagManipulationItemContainer
-        }
+      <article
+        className={`
+          ${
+            props.IsSelected
+              ? itemStyles.primedContainer
+              : itemStyles.itemContainer
+          } ${formStyles.formContainer}
+            `}
       >
-        <button
-          type="button"
-          className={props.IsSelected ? styles.primedButton : ""}
-          onClick={() => handleDeletePrimer()}
-        >
-          {props.IsSelected ? "●" : "○"}
-        </button>
-        <button type="button" onClick={handleDelete}>
-          Delete tag
-        </button>
+        <section>
+          <h4>
+            Tag :
+            <Tag customStyle={style} tagName={props.tag.name} isTiny={false} />
+          </h4>
+          <button
+            type="button"
+            className={props.IsSelected ? itemStyles.primedButton : ""}
+            onClick={() => handleDeletePrimer()}
+          >
+            {props.IsSelected ? (
+              <FontAwesomeIcon icon={regular("trash-can")} />
+            ) : (
+              <FontAwesomeIcon icon={solid("trash-can-arrow-up")} />
+            )}
+            {props.IsSelected ? " Cancel selection" : " Select"}
+          </button>
+
+          <button type="button" onClick={handleDelete}>
+            <FontAwesomeIcon icon={solid("tag")} />
+            <FontAwesomeIcon icon={solid("xmark")} /> Delete tag
+          </button>
+        </section>
         <form onSubmit={sendUpdateForm}>
-          <ul>
-            <li>
-              <p>
+          <section>
+            <ul className={styles.tagEditor}>
+              <li>
                 <label>Tag name : </label>
+                <br />
                 <input
                   type="text"
                   name="name"
@@ -115,81 +134,93 @@ function TagManipulationItem(props: {
                   }}
                   value={formData.tagName}
                 />
-              </p>
-            </li>
-            <li>
-              <HexColorPicker
-                color={formData.tagBackgroundColor}
-                onChange={(e) =>
-                  setFormData({ ...formData, tagBackgroundColor: e })
-                }
-              />
-              <p>
-                <label>Background Color : </label>
-                <input
-                  type="text"
-                  name="backgroundColor"
-                  onInput={(e) => {
-                    setFormData({
-                      ...formData,
-                      tagBackgroundColor: hexifyColors(
-                        e.target.value.toString()
-                      ),
-                    });
-                  }}
-                  value={formData.tagBackgroundColor}
-                />
-              </p>
-            </li>
-            <li>
-              <HexColorPicker
-                color={formData.tagNameColor}
-                onChange={(e) => setFormData({ ...formData, tagNameColor: e })}
-              />
-              <p>
-                <label>Name Color : </label>
-                <input
-                  type="text"
-                  name="nameColor"
-                  onInput={(e) => {
-                    setFormData({
-                      ...formData,
-                      tagNameColor: hexifyColors(e.target.value.toString()),
-                    });
-                  }}
-                  value={formData.tagNameColor}
-                />
-              </p>
-            </li>
-            <li>Before changes :</li>
-            <li>
-              {" "}
-              <Tag
-                customStyle={style}
-                tagName={props.tag.name}
-                isTiny={false}
-              />
-            </li>
-            {(formData.tagName !== props.tag.name ||
-              formData.tagBackgroundColor !== props.tag.backgroundColor ||
-              formData.tagNameColor !== props.tag.nameColor) && (
-              <>
-                <li>After changes :</li>
-                <li>
-                  <Tag
-                    customStyle={updatedStyle}
-                    tagName={formData.tagName}
-                    isTiny={false}
+              </li>
+            </ul>
+            <div className={styles.specificDataTagList}>
+              <ul className={styles.tagEditor}>
+                <li className={styles.centeredTagEditorElement}>
+                  <div>
+                    <HexColorPicker
+                      color={formData.tagBackgroundColor}
+                      onChange={(e) =>
+                        setFormData({ ...formData, tagBackgroundColor: e })
+                      }
+                      style={{ margin: "auto" }}
+                    />
+                  </div>
+                  <label>Background Color : </label>
+                  <br />
+                  <input
+                    type="text"
+                    name="backgroundColor"
+                    onInput={(e) => {
+                      setFormData({
+                        ...formData,
+                        tagBackgroundColor: hexifyColors(
+                          e.target.value.toString()
+                        ),
+                      });
+                    }}
+                    value={formData.tagBackgroundColor}
                   />
                 </li>
-              </>
-            )}
-          </ul>
-          <button type="submit" disabled={!validForUpdating}>
-            Update tag
-          </button>
+                <li className={styles.centeredTagEditorElement}>
+                  <HexColorPicker
+                    color={formData.tagNameColor}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tagNameColor: e })
+                    }
+                    style={{ margin: "auto" }}
+                  />
+                  <label>Name Color : </label>
+                  <input
+                    type="text"
+                    name="nameColor"
+                    onInput={(e) => {
+                      setFormData({
+                        ...formData,
+                        tagNameColor: hexifyColors(e.target.value.toString()),
+                      });
+                    }}
+                    value={formData.tagNameColor}
+                  />
+                </li>
+              </ul>
+            </div>
+          </section>
+          <section>
+            <ul>
+              <li className={styles.centeredTagEditorElement}>
+                Before changes :
+                <Tag
+                  customStyle={style}
+                  tagName={props.tag.name}
+                  isTiny={false}
+                />
+              </li>
+              {(formData.tagName !== props.tag.name ||
+                formData.tagBackgroundColor !== props.tag.backgroundColor ||
+                formData.tagNameColor !== props.tag.nameColor) && (
+                <>
+                  <li className={styles.centeredTagEditorElement}>
+                    After changes :
+                    <Tag
+                      customStyle={updatedStyle}
+                      tagName={formData.tagName}
+                      isTiny={false}
+                    />
+                  </li>
+                </>
+              )}
+            </ul>
+          </section>
+          <div className={formStyles.finalButtonContainer}>
+            <button type="submit" disabled={!validForUpdating}>
+              Update tag
+            </button>
+          </div>
         </form>
-      </div>
+      </article>
 
       {error && <div className={styles.error}>{error}</div>}
       {responseMessage && (

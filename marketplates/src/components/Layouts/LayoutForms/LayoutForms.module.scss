@@ -44,10 +44,19 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  -webkit-box-shadow: 0 0 2rem #fff;
+  box-shadow: 0 0 2rem #fff;
+  border-radius: 1rem;
 }
 
 #formsContent {
   width: 90%;
+}
+
+#formsBackGround {
+  background-image: url("../../../assets/repeatFormsBackground.png");
+  width: 100%;
+  height: 100%;
 }
 
 /* For tablets: */

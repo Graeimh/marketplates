@@ -107,7 +107,7 @@ function UserManipulation() {
   }
 
   const filteredUserList = userList.filter((user) =>
-    new RegExp(userQuery).test(user.displayName)
+    new RegExp(userQuery, "i").test(user.displayName)
   );
   const displayedUserList = userQuery.length > 0 ? filteredUserList : userList;
 

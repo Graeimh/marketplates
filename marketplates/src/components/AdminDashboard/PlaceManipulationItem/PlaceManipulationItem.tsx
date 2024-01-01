@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import * as tagService from "../../../services/tagService.js";
 import styles from "./PlaceManipulationItem.module.scss";
+import formStyles from "../../../common/styles/Forms.module.scss";
+import itemStyles from "../../../common/styles/ManipulationItem.module.scss";
 import Tag from "../../MapGenerationComponents/Tag/index.js";
 import { IPlace } from "../../../common/types/placeTypes/placeTypes.js";
 import { ITag } from "../../../common/types/tagTypes/tagTypes.js";
@@ -8,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 function PlaceManipulationItem(props: {
   place: IPlace;
@@ -54,60 +58,75 @@ function PlaceManipulationItem(props: {
 
   return (
     <>
-      <h4>Place name : {props.place.name}</h4>
-      <div
-        className={
-          props.IsSelected
-            ? styles.primedContainer
-            : styles.placeManipulationItemContainer
-        }
+      <article
+        className={`
+          ${
+            props.IsSelected
+              ? itemStyles.primedContainer
+              : itemStyles.itemContainer
+          } ${formStyles.formContainer}
+          ${styles.placeDashboardContainer}
+            `}
       >
-        <button
-          type="button"
-          className={props.IsSelected ? styles.primedButton : ""}
-          onClick={() => handleDeletePrimer()}
-        >
-          {props.IsSelected ? "●" : "○"}
-        </button>
-        <button type="button" onClick={handleDelete}>
-          Delete place
-        </button>
-        <ul>
-          <li>Name : {props.place.name}</li>
-          <li>Address : {props.place.address}</li>
-          <li>Description : {props.place.description}</li>
-          <li>
-            <ul>
-              Coordinates :
-              <li>latitude :{props.place.gpsCoordinates.latitude}</li>
-              <li>longitude :{props.place.gpsCoordinates.longitude}</li>
-            </ul>
-          </li>
-          {placeTagsList && (
-            <li>
-              Tags :
-              {placeTagsList.map((tag) => (
-                <Tag
-                  customStyle={{
-                    color: tag.nameColor,
-                    backgroundColor: tag.backgroundColor,
-                  }}
-                  tagName={tag.name}
-                  isTiny={false}
-                />
-              ))}
-            </li>
-          )}
-        </ul>
-        <button
-          type="button"
-          onClick={() => navigate(`/editplace/${props.place._id}`)}
-        >
-          Edit place
-        </button>
-      </div>
+        <section>
+          <h4>{props.place.name}</h4>
+          <button
+            type="button"
+            className={props.IsSelected ? itemStyles.primedButton : ""}
+            onClick={() => handleDeletePrimer()}
+          >
+            {props.IsSelected ? (
+              <FontAwesomeIcon icon={regular("trash-can")} />
+            ) : (
+              <FontAwesomeIcon icon={solid("trash-can-arrow-up")} />
+            )}
+            {props.IsSelected ? " Cancel selection" : " Select"}
+          </button>
+          <button type="button" onClick={handleDelete}>
+            <FontAwesomeIcon icon={solid("shop")} />
+            <FontAwesomeIcon icon={solid("xmark")} />
+            Delete place
+          </button>
+        </section>
+        <section>
+          <h5>Address :</h5>
+          {props.place.address}
+          <h5>Description :</h5>
+          {props.place.description}
+          <h5>Coordinates :</h5>
+          <ul>
+            <li>latitude :{props.place.gpsCoordinates.latitude}</li>
+            <li>longitude :{props.place.gpsCoordinates.longitude}</li>
+          </ul>
+          <h5>Tags :</h5>
+          <ul>
+            {placeTagsList && (
+              <li>
+                {placeTagsList.map((tag) => (
+                  <Tag
+                    customStyle={{
+                      color: tag.nameColor,
+                      backgroundColor: tag.backgroundColor,
+                    }}
+                    tagName={tag.name}
+                    isTiny={false}
+                  />
+                ))}
+              </li>
+            )}
+          </ul>
+        </section>
+        <div className={formStyles.finalButtonContainer}>
+          <button
+            type="button"
+            onClick={() => navigate(`/editplace/${props.place._id}`)}
+          >
+            Edit place
+          </button>
+        </div>
 
-      {error && <div className={styles.error}>{error}</div>}
+        {error && <div className={styles.error}>{error}</div>}
+      </article>
       {responseMessage && (
         <div className={styles.success}>{responseMessage}</div>
       )}

@@ -62,7 +62,7 @@ export async function createUser(req, res) {
 }
 
 /**
-   * Fetches all users
+   * Fetches all users besides the admins
    *
    *
    * @param req - The request object associated with the route parameters, not used here
@@ -73,7 +73,7 @@ export async function createUser(req, res) {
 */
 export async function getAllUsers(req, res) {
   try {
-    const allUsers = await UserModel.find();
+    const allUsers = await UserModel.find({ type: { $nin: [UserType.Admin] } });
     return res.status(200).json({
       data: allUsers,
       message: '(200 OK)-Successfully fetched all users',

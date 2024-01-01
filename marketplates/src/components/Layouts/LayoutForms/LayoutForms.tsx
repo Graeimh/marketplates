@@ -16,11 +16,8 @@ const LayoutForms = () => {
         >
           <FontAwesomeIcon icon={solid("rotate-left")} />
         </button>
-        <img
-          src="https://storage.needpix.com/rsynced_images/kitchen-85270_1280.jpg"
-          alt="pots and pans"
-          id={styles.formsImage}
-        />
+        <div id={styles.formsBackGround}></div>
+
         <div id={styles.formsContentContainer}>
           <div id={styles.formsContent}>
             <Outlet />

@@ -155,7 +155,7 @@ function TagManipulation() {
   }
 
   const filteredTagList = tagList.filter((tag) =>
-    new RegExp(tagQuery).test(tag.name)
+    new RegExp(tagQuery, "i").test(tag.name)
   );
   const displayedTagList = tagQuery.length > 0 ? filteredTagList : tagList;
 

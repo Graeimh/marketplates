@@ -5,7 +5,8 @@ import {
   ISessionValues,
 } from "../../../common/types/userTypes/userTypes.js";
 import * as authenticationService from "../../../services/authenticationService.js";
-import styles from "../LoginRegister.module.scss";
+import styles from "./Login.module.scss";
+import formStyles from "../../../common/styles/Forms.module.scss";
 import ReCAPTCHA from "react-google-recaptcha";
 import createTemporaryMessage from "../../../common/functions/createTemporaryMessage.js";
 import * as jose from "jose";
@@ -120,35 +121,31 @@ function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
         <link rel="canonical" href="http://localhost:5173/login" />
       </Helmet>
 
-      <div id={styles.formContainer}>
+      <div className={formStyles.formContainer}>
         <form onSubmit={sendLoginForm}>
           <h2>Sign in</h2>
           <ul>
             <li>
-              <div>
-                <label htmlFor="email">Email</label>
-                <br />
-                <input
-                  type="text"
-                  name="email"
-                  required
-                  onInput={updateField}
-                  placeholder="Email"
-                />
-              </div>
+              <label htmlFor="email">Email</label>
+              <br />
+              <input
+                type="text"
+                name="email"
+                required
+                onInput={updateField}
+                placeholder="Email"
+              />
             </li>
             <li>
-              <div>
-                <label htmlFor="password">Password</label>
-                <br />
-                <input
-                  type="password"
-                  name="password"
-                  required
-                  onInput={updateField}
-                  placeholder="Password"
-                />
-              </div>
+              <label htmlFor="password">Password</label>
+              <br />
+              <input
+                type="password"
+                name="password"
+                required
+                onInput={updateField}
+                placeholder="Password"
+              />
             </li>
           </ul>
           <ReCAPTCHA
@@ -159,13 +156,13 @@ function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
               transform: "scale(0.77)",
             }}
           />
-          <div id={styles.finalButtonContainer}>
+          <div className={formStyles.finalButtonContainer}>
             <button type="submit" disabled={!validForSending}>
               Log in
             </button>
           </div>
 
-          <div id={styles.registerAlternative}>Don't have an account?</div>
+          <span id={styles.registerAlternative}>Don't have an account?</span>
 
           <div id={styles.registerButtonContainer}>
             <button type="button" onClick={() => navigate("/register")}>

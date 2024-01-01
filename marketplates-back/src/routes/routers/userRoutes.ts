@@ -6,7 +6,7 @@ import { checkIfAdmin } from "../../middlewares/checkIfAdmin.js";
 
 const usersRouter = Router();
 
-// Fetches all users for the admin dashboard
+// Fetches all non-admin users for the admin dashboard
 usersRouter.get("/", checkAccessToken, getAllUsers);
 
 // Allows for user registration

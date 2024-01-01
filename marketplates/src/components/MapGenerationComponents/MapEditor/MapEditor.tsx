@@ -355,7 +355,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
   // Tags are also filtered through user input if they are looking for specific tags
   const tagListWithoutSelectedAndFiltered: ITag[] = [
     ...tagListWithoutSelected,
-  ].filter((tag) => new RegExp(placeFilterQuery.tagName).test(tag.name));
+  ].filter((tag) => new RegExp(placeFilterQuery.tagName, "i").test(tag.name));
 
   const tagListToDisplay: ITag[] =
     placeFilterQuery.tagName.length > 0
@@ -365,7 +365,9 @@ function MapEditor(props: { editedMap: string | undefined }) {
   // The same process goes for the tags list involved when creating or editing an iteration
   const tagListForIterationWithoutSelectedAndFiltered: ITag[] = [
     ...tagListForIterationWithoutSelected,
-  ].filter((tag) => new RegExp(iterationTagFilterQuery.tagName).test(tag.name));
+  ].filter((tag) =>
+    new RegExp(iterationTagFilterQuery.tagName, "i").test(tag.name)
+  );
 
   const tagListForIterationToDisplay: ITag[] =
     iterationTagFilterQuery.tagName.length > 0
@@ -373,7 +375,9 @@ function MapEditor(props: { editedMap: string | undefined }) {
       : tagListForIterationWithoutSelected;
 
   const mapMarkersAfterFilter: IMarkersForMap[] = [...mapMarkersAndIterations]
-    .filter((marker) => new RegExp(placeFilterQuery.name).test(marker.name))
+    .filter((marker) =>
+      new RegExp(placeFilterQuery.name, "i").test(marker.name)
+    )
     .filter((marker) =>
       placeFilterQuery.tags.every((tag) => marker.tagsList.includes(tag))
     );

@@ -1,0 +1,98 @@
+.formContainer {
+  color: #1e1e1e;
+  clear: both;
+  padding: 0.2rem;
+  display: block;
+}
+
+.formContainer form {
+  border: 1px solid #e4e4e4;
+  border-radius: 20px;
+  box-shadow: 2px 2px 2px 2px #e4e4e4;
+}
+
+.formContainer h2 {
+  text-align: center;
+  color: #eb6700;
+  margin: 0;
+}
+
+.formContainer h3 {
+  font-weight: 900;
+}
+
+.formContainer ul {
+  color: #a32e00;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.formContainer li {
+  margin-top: 1rem;
+}
+
+.formContainer input {
+  width: 90%;
+  border-radius: 2px;
+  padding: 0.2rem;
+  line-height: 2rem;
+  padding: 0.2rem 0.2rem 0.2rem 0.5rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  background-color: #ffffff;
+  color: #1e1e1e;
+  border: 2px solid #e4e4e4;
+  transition: 0.2s;
+  outline: none;
+  margin-top: 0.2rem;
+}
+
+.formContainer input:focus {
+  border: 2px solid #eb6700;
+}
+
+.finalButtonContainer {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.finalButtonContainer button {
+  background-color: #eb6700;
+  border-radius: 20px;
+  color: #ffffff;
+  transition: 0.5s;
+}
+
+.finalButtonContainer button:disabled {
+  border: 1px solid #e4e4e4;
+  background-color: #ffffff;
+  color: linen;
+  transition: 0.5s;
+  cursor: default;
+}
+
+section h3,
+section h5 {
+  color: #a32e00;
+  margin-left: 2rem;
+}
+
+.specificData ul {
+  display: grid;
+  grid-template-columns: 45% 45%;
+  padding: 0;
+  margin-top: -1rem;
+}
+
+.specificData li {
+  margin-left: 1rem;
+}
+
+.specificData > div:first-of-type {
+  margin: auto;
+  width: 80%;
+  color: #a32e00;
+  font-size: 0.8rem;
+  font-weight: 600;
+}

@@ -91,7 +91,7 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
   // Tags are also filtered through user input if they are looking for specific tags
   const tagListWithoutSelectedAndFiltered: ITag[] = [
     ...tagListWithoutSelected,
-  ].filter((tag) => new RegExp(tagQuery).test(tag.name));
+  ].filter((tag) => new RegExp(tagQuery, "i").test(tag.name));
 
   const tagListToDisplay: ITag[] =
     formData.tagList.length > 0
