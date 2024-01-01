@@ -29,6 +29,7 @@ import { IGPSCoordinates } from "../../../common/types/commonTypes.ts/commonType
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
+import { Helmet } from "react-helmet";
 
 function MapEditor(props: { editedMap: string | undefined }) {
   // Setting states
@@ -376,9 +377,19 @@ function MapEditor(props: { editedMap: string | undefined }) {
     .filter((marker) =>
       placeFilterQuery.tags.every((tag) => marker.tagsList.includes(tag))
     );
-
   return (
     <>
+      {props.editedMap ? (
+        <Helmet>
+          <title>Edit map : {formData.name}</title>
+          <link rel="canonical" href="http://localhost:5173/createmap" />
+        </Helmet>
+      ) : (
+        <Helmet>
+          <title>Create map : {formData.name}</title>
+          <link rel="canonical" href="http://localhost:5173/createmap" />
+        </Helmet>
+      )}
       <h1>Map editor</h1>
       {/* Here we give the map's basic values according to screen size, for now the placement is arbitrary, but later we could center the map on the user's location in the database */}
       <MapContainer

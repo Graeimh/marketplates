@@ -9,6 +9,7 @@ import { hexifyColors } from "../../../common/functions/hexifyColors.js";
 import Tag from "../../MapGenerationComponents/Tag/Tag.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
+import { Helmet } from "react-helmet";
 
 function TagManipulation() {
   // Setting states
@@ -160,6 +161,11 @@ function TagManipulation() {
 
   return (
     <>
+      <Helmet>
+        <title>Dashboard - Tags</title>
+        <link rel="canonical" href="http://localhost:5173/dashboard/tags" />
+      </Helmet>
+
       <h1>Tag manipulation</h1>
       <div className={styles.registerContainer}>
         <form onSubmit={sendForm}>

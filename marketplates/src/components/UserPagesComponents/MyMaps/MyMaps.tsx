@@ -5,6 +5,7 @@ import { IMaps } from "../../../common/types/mapTypes/mapTypes.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
+import { Helmet } from "react-helmet";
 
 function MyPlaces() {
   // Setting states
@@ -44,6 +45,11 @@ function MyPlaces() {
   }, []);
   return (
     <>
+      <Helmet>
+        <title>My maps</title>
+        <link rel="canonical" href="http://localhost:5173/mymaps" />
+      </Helmet>
+
       <h1>Hi! Here are your Maps!</h1>
       <button
         onClick={() => {

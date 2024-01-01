@@ -19,6 +19,7 @@ import { IGPSCoordinates } from "../../../common/types/commonTypes.ts/commonType
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
+import { Helmet } from "react-helmet";
 
 function PlaceEditor(props: { editPlaceId: string | undefined }) {
   // Setting states
@@ -231,6 +232,20 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
 
   return (
     <>
+      {props.editPlaceId ? (
+        <Helmet>
+          <title>Edit place : {formData.name}</title>
+          <link rel="canonical" href="http://localhost:5173/createplace" />
+        </Helmet>
+      ) : (
+        <Helmet>
+          <title>
+            Create place{formData.name.length > 0 ? `: ${formData.name}` : ""}
+          </title>
+          <link rel="canonical" href="http://localhost:5173/createplace" />
+        </Helmet>
+      )}
+
       <h1>Register a place</h1>
       <div className={styles.registerContainer}>
         <form>

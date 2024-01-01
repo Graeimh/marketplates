@@ -8,6 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
+import { Helmet } from "react-helmet";
 
 function EditProfile(props: { userId: string }) {
   // Setting states
@@ -68,6 +69,11 @@ function EditProfile(props: { userId: string }) {
 
   return (
     <>
+      <Helmet>
+        <title>Edit profile</title>
+        <link rel="canonical" href="http://localhost:5173/editprofile" />
+      </Helmet>
+
       <h1>Edit profile</h1>
       <form>
         <ul>

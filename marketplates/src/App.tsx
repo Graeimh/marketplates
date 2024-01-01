@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import * as authenticationService from "../src/services/authenticationService.js";
 import "./App.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layouts/Layout/index.js";
 import AboutUs from "./components/VisitorPagesComponents/AboutUs/index.js";
 import Explore from "./components/UserPagesComponents/Explore/index.js";
@@ -27,6 +27,7 @@ import EditProfile from "./components/UserPagesComponents/EditProfile/index.js";
 import EditMapWrapper from "./components/MapGenerationComponents/EditMapWrapper/index.js";
 import { ISessionValues } from "./common/types/userTypes/userTypes.js";
 import LayoutDashboard from "./components/Layouts/LayoutDashboard/LayoutDashboard.js";
+import { Helmet } from "react-helmet";
 
 function App() {
   // Setting states
@@ -67,6 +68,11 @@ function App() {
 
   return (
     <>
+      <Helmet>
+        <title>Marketplates</title>
+        <link rel="canonical" href="http://localhost:5173/" />
+      </Helmet>
+
       <UserContext.Provider value={sessionValue}>
         <BrowserRouter>
           <Routes>
@@ -182,7 +188,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="users"
+                  path="/dashboard/users"
                   element={
                     <AdminPathResolver userTypes={sessionValue.status}>
                       <UserManipulation />
@@ -190,7 +196,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="tags"
+                  path="/dashboard/tags"
                   element={
                     <AdminPathResolver userTypes={sessionValue.status}>
                       <TagManipulation />
@@ -198,7 +204,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="places"
+                  path="/dashboard/places"
                   element={
                     <AdminPathResolver userTypes={sessionValue.status}>
                       <PlaceManipulation />
@@ -207,6 +213,7 @@ function App() {
                 />
               </Route>
             )}
+            <Route path="*" element={<Navigate to="" replace />} />
           </Routes>
         </BrowserRouter>
       </UserContext.Provider>

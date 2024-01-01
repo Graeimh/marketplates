@@ -8,6 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { Helmet } from "react-helmet";
 
 function Register() {
   // Setting states
@@ -131,6 +132,11 @@ function Register() {
 
   return (
     <>
+      <Helmet>
+        <title>Register</title>
+        <link rel="canonical" href="http://localhost:5173/register" />
+      </Helmet>
+
       <article id={styles.formContainer}>
         <form onSubmit={sendRegistrationForm}>
           <h2>Register</h2>

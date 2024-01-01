@@ -5,6 +5,7 @@ import UserContext from "../../Contexts/UserContext/UserContext.js";
 import UserManipulationItem from "../UserManipulationItem/UserManipulationItem.js";
 import { IUser, UserType } from "../../../common/types/userTypes/userTypes.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
+import { Helmet } from "react-helmet";
 
 function UserManipulation() {
   // Setting states
@@ -112,6 +113,11 @@ function UserManipulation() {
 
   return (
     <>
+      <Helmet>
+        <title>Dashboard - Users</title>
+        <link rel="canonical" href="http://localhost:5173/dashboard/users" />
+      </Helmet>
+
       <h1>UsersManipulation</h1>
 
       <button type="button" onClick={() => deletePrimedForDeletion()}>

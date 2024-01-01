@@ -10,6 +10,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import createTemporaryMessage from "../../../common/functions/createTemporaryMessage.js";
 import * as jose from "jose";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
+import { Helmet } from "react-helmet";
 
 function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
   // Setting states
@@ -114,6 +115,11 @@ function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
 
   return (
     <>
+      <Helmet>
+        <title>Login</title>
+        <link rel="canonical" href="http://localhost:5173/login" />
+      </Helmet>
+
       <div id={styles.formContainer}>
         <form onSubmit={sendLoginForm}>
           <h2>Sign in</h2>
@@ -168,7 +174,6 @@ function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
           </div>
         </form>
       </div>
-
       {responseMessage && (
         <div className={styles.success}>{responseMessage}</div>
       )}

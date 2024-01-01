@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
+import { Helmet } from "react-helmet";
 
 function MyPlaces() {
   // Setting states
@@ -45,6 +46,11 @@ function MyPlaces() {
   }, []);
   return (
     <>
+      <Helmet>
+        <title>My places</title>
+        <link rel="canonical" href="http://localhost:5173/myplaces" />
+      </Helmet>
+
       <h1>Hi! Here are your places!</h1>
       <button
         onClick={() => {

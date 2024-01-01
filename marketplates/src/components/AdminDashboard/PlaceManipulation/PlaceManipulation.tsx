@@ -6,6 +6,7 @@ import PlaceManipulationItem from "../PlaceManipulationItem/PlaceManipulationIte
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
+import { Helmet } from "react-helmet";
 
 function PlaceManipulation() {
   // Setting states
@@ -109,6 +110,11 @@ function PlaceManipulation() {
 
   return (
     <>
+      <Helmet>
+        <title>Dashboard - Places</title>
+        <link rel="canonical" href="http://localhost:5173/dashboard/places" />
+      </Helmet>
+
       <h1>Place manipulation</h1>
       <div className={styles.registerContainer}></div>
       <button type="button" onClick={() => deletePrimedForDeletion()}>

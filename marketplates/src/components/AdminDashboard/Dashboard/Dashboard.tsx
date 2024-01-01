@@ -2,13 +2,19 @@ import { Link } from "react-router-dom";
 import styles from "./Dashboard.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { Helmet } from "react-helmet";
 
 function Dashboard() {
   return (
     <>
+      <Helmet>
+        <title>Dashboard</title>
+        <link rel="canonical" href="http://localhost:5173/dashboard" />
+      </Helmet>
+
       <ul id={styles.dashboardPanel}>
         <li>
-          <Link to="/users">
+          <Link to="/dashboard/users">
             <span className={styles.dashboardOptionChevron}>
               <FontAwesomeIcon icon={solid("chevron-right")} />
             </span>
@@ -19,7 +25,7 @@ function Dashboard() {
           </Link>
         </li>
         <li>
-          <Link to="/tags">
+          <Link to="/dashboard/tags">
             <span className={styles.dashboardOptionChevron}>
               <FontAwesomeIcon icon={solid("chevron-right")} />
             </span>
@@ -30,7 +36,7 @@ function Dashboard() {
           </Link>
         </li>
         <li>
-          <Link to="/places">
+          <Link to="/dashboard/places">
             <span className={styles.dashboardOptionChevron}>
               <FontAwesomeIcon icon={solid("chevron-right")} />
             </span>
