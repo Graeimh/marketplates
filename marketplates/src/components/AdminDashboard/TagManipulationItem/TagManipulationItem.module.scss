@@ -8,10 +8,10 @@
 }
 
 /* For tablets: */
-@media only screen and (min-width: 535px) {
+@media only screen and (min-width: 1300px) {
   .specificDataTagList ul {
     display: grid;
-    grid-template-columns: 45% 45%;
+    grid-template-columns: 50% 50%;
     padding: 0;
     margin-top: -1rem;
   }
@@ -20,5 +20,6 @@
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
+    padding: 0;
   }
 }

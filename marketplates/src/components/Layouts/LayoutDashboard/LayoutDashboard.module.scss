@@ -1,0 +1,50 @@
+#dashboardContainer {
+  height: 100%;
+  background-color: #ffffff;
+  width: 100%;
+}
+
+#dashboardContainer nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: red;
+}
+
+#dashboardContentContainer {
+  margin-bottom: 5rem;
+}
+
+/* For tablets: */
+@media only screen and (min-width: 481px) {
+  #dashboardContainer nav {
+    width: 6rem;
+    height: 100%;
+  }
+
+  #dashboardContainer nav button {
+    margin-top: 1.6rem;
+  }
+
+  #dashboardContentContainer {
+    margin-left: 6rem;
+  }
+}
+
+/* For desktop: */
+@media only screen and (min-width: 769px) {
+  #dashboardContainer nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 6rem;
+  }
+
+  #dashboardContainer nav button {
+    margin-top: -0.4rem;
+  }
+
+  #dashboardContentContainer {
+    margin-top: 9rem;
+  }
+}

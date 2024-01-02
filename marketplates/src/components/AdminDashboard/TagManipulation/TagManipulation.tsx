@@ -1,5 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import * as tagService from "../../../services/tagService.js";
+import formStyles from "../../../common/styles/Forms.module.scss";
+import manipulationStyles from "../../../common/styles/ManipulationContainer.module.scss";
+import tagStyles from "../TagManipulationItem/TagManipulationItem.module.scss";
 import styles from "./TagManipulation.module.scss";
 import TagManipulationItem from "../TagManipulationItem/TagManipulationItem.js";
 import { ITag, ITagValues } from "../../../common/types/tagTypes/tagTypes.js";
@@ -10,6 +13,8 @@ import Tag from "../../MapGenerationComponents/Tag/Tag.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import { Helmet } from "react-helmet";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 function TagManipulation() {
   // Setting states
@@ -166,147 +171,160 @@ function TagManipulation() {
         <link rel="canonical" href="http://localhost:5173/dashboard/tags" />
       </Helmet>
 
-      <h1>Tag manipulation</h1>
-      <div className={styles.registerContainer}>
-        <form onSubmit={sendForm}>
-          <ul>
-            <li>
-              <p>
-                <label>Name : </label>
-                <input
-                  type="text"
-                  name="name"
-                  onInput={(e) =>
-                    setFormData({
-                      ...formData,
-                      tagName: e.target.value,
-                    })
-                  }
-                  value={formData.tagName}
-                />
-              </p>
-            </li>
-            <li>
-              <HexColorPicker
-                color={formData.tagBackgroundColor}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    tagBackgroundColor: hexifyColors(e.toString()),
-                  })
-                }
-              />
-              <p>
-                <label>Background color : </label>
-
-                <input
-                  type="text"
-                  name="backgroundColor"
-                  onInput={(e) =>
-                    setFormData({
-                      ...formData,
-                      tagBackgroundColor: hexifyColors(
-                        e.target.value.toString()
-                      ),
-                    })
-                  }
-                  value={formData.tagBackgroundColor}
-                />
-              </p>
-            </li>
-            <li>
-              <HexColorPicker
-                color={formData.tagNameColor}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    tagNameColor: hexifyColors(e.toString()),
-                  })
-                }
-              />
-              <p>
-                <label>Name color : </label>
-
-                <input
-                  type="text"
-                  name="nameColor"
-                  onInput={(e) =>
-                    setFormData({
-                      ...formData,
-                      tagNameColor: hexifyColors(e.target.value.toString()),
-                    })
-                  }
-                  value={formData.tagNameColor}
-                />
-              </p>
-            </li>
-            {formData.tagName && (
-              <li>
-                Display
-                <Tag
-                  customStyle={{
-                    color: formData.tagNameColor,
-                    backgroundColor: formData.tagBackgroundColor,
-                  }}
-                  tagName={formData.tagName}
-                  isTiny={false}
-                />
-              </li>
-            )}
-          </ul>
-          <button type="submit" disabled={!validForUpdating}>
-            Create Tag
+      <article id={manipulationStyles.manipulationContainer}>
+        <h2>Manage tags</h2>
+        <section className={formStyles.formContainer}>
+          <form onSubmit={sendForm} id={styles.formCreateTag}>
+            <h3>Create a tag</h3>
+            <section>
+              <ul className={tagStyles.tagEditor}>
+                <li>
+                  <label>Tag name : </label>
+                  <br />
+                  <input
+                    type="text"
+                    name="name"
+                    onInput={(e) => {
+                      setFormData({ ...formData, tagName: e.target.value });
+                    }}
+                    value={formData.tagName}
+                  />
+                </li>
+              </ul>
+            </section>
+            <section className={tagStyles.specificDataTagList}>
+              <ul className={tagStyles.tagEditor}>
+                <li className={tagStyles.centeredTagEditorElement}>
+                  <HexColorPicker
+                    color={formData.tagBackgroundColor}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tagBackgroundColor: e })
+                    }
+                    style={{ margin: "auto" }}
+                  />
+                  <label>Background Color : </label>
+                  <br />
+                  <input
+                    type="text"
+                    name="backgroundColor"
+                    onInput={(e) => {
+                      setFormData({
+                        ...formData,
+                        tagBackgroundColor: hexifyColors(
+                          e.target.value.toString()
+                        ),
+                      });
+                    }}
+                    value={formData.tagBackgroundColor}
+                  />
+                </li>
+                <li className={tagStyles.centeredTagEditorElement}>
+                  <HexColorPicker
+                    color={formData.tagNameColor}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tagNameColor: e })
+                    }
+                    style={{ margin: "auto" }}
+                  />
+                  <label>Name Color : </label>
+                  <input
+                    type="text"
+                    name="nameColor"
+                    onInput={(e) => {
+                      setFormData({
+                        ...formData,
+                        tagNameColor: hexifyColors(e.target.value.toString()),
+                      });
+                    }}
+                    value={formData.tagNameColor}
+                  />
+                </li>
+              </ul>
+            </section>
+            <section className={tagStyles.centeredTagEditorElement}>
+              {formData.tagName && (
+                <>
+                  <h3>Display</h3>
+                  <Tag
+                    customStyle={{
+                      color: formData.tagNameColor,
+                      backgroundColor: formData.tagBackgroundColor,
+                    }}
+                    tagName={formData.tagName}
+                    isTiny={false}
+                  />
+                </>
+              )}
+            </section>
+            <div className={formStyles.finalButtonContainer}>
+              <button type="submit" disabled={!validForUpdating}>
+                Create Tag
+              </button>
+            </div>
+          </form>
+        </section>
+        <section id={manipulationStyles.searchBar}>
+          <label>
+            <FontAwesomeIcon icon={solid("magnifying-glass")} />
+            Search for a tag :{" "}
+          </label>
+          <input
+            type="text"
+            name="tagQuery"
+            onChange={(e) => {
+              setTagQuery(e.target.value);
+            }}
+          />
+        </section>
+        <section id={manipulationStyles.manipulationButtonsContainer}>
+          <button type="button" onClick={() => deletePrimedForDeletion()}>
+            Delete {primedForDeletionList.length} tags
           </button>
-        </form>
-      </div>
-      <button type="button" onClick={() => deletePrimedForDeletion()}>
-        Delete {primedForDeletionList.length} tags
-      </button>
-      {primedForDeletionList.length !== tagList.length && (
-        <>
-          <button type="button" onClick={() => selectAllTags()}>
-            Select all ({tagList.length}) tags
+
+          <button type="button" onClick={() => cancelSelection()}>
+            Cancel selection
           </button>
 
-          {displayedTagList.length < tagList.length && (
+          <>
             <button
               type="button"
-              onClick={() => selectAllPresentTags(displayedTagList)}
+              onClick={() => selectAllTags()}
+              disabled={primedForDeletionList.length === tagList.length}
             >
-              Select ({displayedTagList.length}) tags
+              Select all ({tagList.length}) tags
             </button>
+
+            {displayedTagList.length < tagList.length && (
+              <button
+                type="button"
+                onClick={() => selectAllPresentTags(displayedTagList)}
+              >
+                Select ({displayedTagList.length}) tags
+              </button>
+            )}
+          </>
+
+          {error && <div className={tagStyles.error}>{error}</div>}
+          {responseMessage && (
+            <div className={tagStyles.success}>{responseMessage}</div>
           )}
-        </>
-      )}
-
-      <button type="button" onClick={() => cancelSelection()}>
-        Cancel selection{" "}
-      </button>
-      {error && <div className={styles.error}>{error}</div>}
-      {responseMessage && (
-        <div className={styles.success}>{responseMessage}</div>
-      )}
-
-      <label>Search for a tag : </label>
-      <input
-        type="text"
-        name="tagQuery"
-        onChange={(e) => {
-          setTagQuery(e.target.value);
-        }}
-      />
-
-      {displayedTagList.length > 0 &&
-        displayedTagList.map((tag) => (
-          <TagManipulationItem
-            tag={tag}
-            primeForDeletion={manageDeletionList}
-            uponDeletion={sendDeleteTagCall}
-            refetch={getAllTags}
-            key={tag._id}
-            IsSelected={primedForDeletionList.indexOf(tag._id) !== -1}
-          />
-        ))}
+        </section>
+      </article>
+      <ul id={manipulationStyles.manipulationItemContainer}>
+        {displayedTagList.length > 0 &&
+          displayedTagList.map((tag) => (
+            <li>
+              <TagManipulationItem
+                tag={tag}
+                primeForDeletion={manageDeletionList}
+                uponDeletion={sendDeleteTagCall}
+                refetch={getAllTags}
+                key={tag._id}
+                IsSelected={primedForDeletionList.indexOf(tag._id) !== -1}
+              />
+            </li>
+          ))}
+      </ul>
     </>
   );
 }

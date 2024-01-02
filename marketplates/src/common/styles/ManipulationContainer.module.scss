@@ -1,0 +1,24 @@
+#manipulationContainer h2 {
+  text-decoration: underline;
+}
+
+#manipulationButtonsContainer button {
+  margin: 0.5rem 1rem;
+  width: 12rem;
+}
+
+#searchBar,
+#manipulationButtonsContainer {
+  text-align: center;
+  margin: 1rem;
+}
+
+/* For desktop: */
+@media only screen and (min-width: 769px) {
+  #manipulationItemContainer {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    width: 100%;
+    margin: auto;
+  }
+}

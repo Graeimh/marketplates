@@ -1,12 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import * as placeService from "../../../services/placeService.js";
-import styles from "./PlaceManipulation.module.scss";
+import styles from "../../../common/styles/ManipulationContainer.module.scss";
 import { IPlace } from "../../../common/types/placeTypes/placeTypes.js";
 import PlaceManipulationItem from "../PlaceManipulationItem/PlaceManipulationItem.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { Helmet } from "react-helmet";
+import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function PlaceManipulation() {
   // Setting states
@@ -124,41 +126,55 @@ function PlaceManipulation() {
         <link rel="canonical" href="http://localhost:5173/dashboard/places" />
       </Helmet>
 
-      <h1>Place manipulation</h1>
-      <button type="button" onClick={() => deletePrimedForDeletion()}>
-        Delete {primedForDeletionList.length} places
-      </button>
-      {primedForDeletionList.length !== placeList.length && (
-        <button type="button" onClick={() => selectAllPlaces()}>
-          Select all ({placeList.length}) places
-        </button>
-      )}
-      <button type="button" onClick={() => cancelSelection()}>
-        Cancel selection{" "}
-      </button>
-
-      <label>Search for a place : </label>
-      <input
-        type="text"
-        name="placeQuery"
-        onChange={(e) => {
-          setPlaceQuery(e.target.value);
-        }}
-      />
+      <article id={styles.manipulationContainer}>
+        <h2>Manage places</h2>
+        <section id={styles.searchBar}>
+          <label>
+            <FontAwesomeIcon icon={solid("magnifying-glass")} />
+            Search for a place :{" "}
+          </label>
+          <input
+            type="text"
+            name="placeQuery"
+            onChange={(e) => {
+              setPlaceQuery(e.target.value);
+            }}
+          />
+        </section>
+        <section id={styles.manipulationButtonsContainer}>
+          <button type="button" onClick={() => deletePrimedForDeletion()}>
+            Delete {primedForDeletionList.length} place(s)
+          </button>
+          <button
+            type="button"
+            onClick={() => selectAllPlaces()}
+            disabled={primedForDeletionList.length === placeList.length}
+          >
+            Select all ({placeList.length}) places
+          </button>
+          <button type="button" onClick={() => cancelSelection()}>
+            Cancel selection
+          </button>
+        </section>
+      </article>
       {error && <div className={styles.error}>{error}</div>}
       {responseMessage && (
         <div className={styles.success}>{responseMessage}</div>
       )}
-      {displayedTagList.length > 0 &&
-        displayedTagList.map((place) => (
-          <PlaceManipulationItem
-            place={place}
-            primeForDeletion={manageDeletionList}
-            uponDeletion={sendDeletePlaceCall}
-            key={place._id}
-            IsSelected={primedForDeletionList.indexOf(place._id) !== -1}
-          />
-        ))}
+      <ul id={styles.manipulationItemContainer}>
+        {displayedTagList.length > 0 &&
+          displayedTagList.map((place) => (
+            <li>
+              <PlaceManipulationItem
+                place={place}
+                primeForDeletion={manageDeletionList}
+                uponDeletion={sendDeletePlaceCall}
+                key={place._id}
+                IsSelected={primedForDeletionList.indexOf(place._id) !== -1}
+              />
+            </li>
+          ))}
+      </ul>
     </>
   );
 }

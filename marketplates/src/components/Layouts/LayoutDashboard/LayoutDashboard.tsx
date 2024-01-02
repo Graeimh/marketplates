@@ -6,12 +6,17 @@ const LayoutDashboard = () => {
 
   return (
     <>
-      <button type="button" onClick={() => navigate(-1)}>
-        {"<"}
-      </button>
-      <h1>New layout for the dashboard!</h1>
+      <div id={styles.dashboardContainer}>
+        <nav>
+          <button type="button" onClick={() => navigate(-1)}>
+            {"<"}
+          </button>
+        </nav>
 
-      <Outlet />
+        <div id={styles.dashboardContentContainer}>
+          <Outlet />
+        </div>
+      </div>
     </>
   );
 };

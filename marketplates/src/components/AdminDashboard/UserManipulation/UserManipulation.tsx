@@ -1,11 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import * as userService from "../../../services/userService.js";
-import styles from "./UserManipulation.module.scss";
+import styles from "../../../common/styles/ManipulationContainer.module.scss";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import UserManipulationItem from "../UserManipulationItem/UserManipulationItem.js";
 import { IUser, UserType } from "../../../common/types/userTypes/userTypes.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { Helmet } from "react-helmet";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 function UserManipulation() {
   // Setting states
@@ -118,45 +120,61 @@ function UserManipulation() {
         <link rel="canonical" href="http://localhost:5173/dashboard/users" />
       </Helmet>
 
-      <h1>UsersManipulation</h1>
+      <article id={styles.manipulationContainer}>
+        <h2>Manage users</h2>
+        <section id={styles.searchBar}>
+          <label>
+            <FontAwesomeIcon icon={solid("magnifying-glass")} />
+            Search for a user via their display name :{" "}
+          </label>
+          <input
+            type="text"
+            name="userQuery"
+            onChange={(e) => {
+              setUserQuery(e.target.value);
+            }}
+          />
+        </section>
+        <section id={styles.manipulationButtonsContainer}>
+          <button type="button" onClick={() => deletePrimedForDeletion()}>
+            <FontAwesomeIcon icon={regular("trash-can")} />
+            Delete {primedForDeletionList.length} users
+          </button>
+          <button type="button" onClick={() => cancelSelection()}>
+            <FontAwesomeIcon icon={regular("rectangle-xmark")} />
+            Cancel selection
+          </button>
 
-      <button type="button" onClick={() => deletePrimedForDeletion()}>
-        Delete {primedForDeletionList.length} users{" "}
-      </button>
-      {primedForDeletionList.length !== userList.length && (
-        <button type="button" onClick={() => selectAllUsers()}>
-          Select all ({userList.length}) users{" "}
-        </button>
-      )}
-      <button type="button" onClick={() => cancelSelection()}>
-        Cancel selection{" "}
-      </button>
-
-      <label>Search for a user via their display name : </label>
-      <input
-        type="text"
-        name="userQuery"
-        onChange={(e) => {
-          setUserQuery(e.target.value);
-        }}
-      />
+          <button
+            type="button"
+            onClick={() => selectAllUsers()}
+            disabled={primedForDeletionList.length === userList.length}
+          >
+            <FontAwesomeIcon icon={solid("reply-all")} />
+            Select all ({userList.length}) users
+          </button>
+        </section>
+      </article>
 
       {error && <div className={styles.error}>{error}</div>}
       {responseMessage && (
         <div className={styles.success}>{responseMessage}</div>
       )}
-
-      {displayedUserList.length > 0 &&
-        displayedUserList.map((user) => (
-          <UserManipulationItem
-            user={user}
-            uponDeletion={sendDeleteUserCall}
-            primeForDeletion={manageDeletionList}
-            refetch={getAllUsers}
-            key={user._id}
-            IsSelected={primedForDeletionList.indexOf(user._id) !== -1}
-          />
-        ))}
+      <ul id={styles.manipulationItemContainer}>
+        {displayedUserList.length > 0 &&
+          displayedUserList.map((user) => (
+            <li>
+              <UserManipulationItem
+                user={user}
+                uponDeletion={sendDeleteUserCall}
+                primeForDeletion={manageDeletionList}
+                refetch={getAllUsers}
+                key={user._id}
+                IsSelected={primedForDeletionList.indexOf(user._id) !== -1}
+              />
+            </li>
+          ))}
+      </ul>
     </>
   );
 }

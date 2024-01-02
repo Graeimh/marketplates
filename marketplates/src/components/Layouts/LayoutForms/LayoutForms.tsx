@@ -16,7 +16,7 @@ const LayoutForms = () => {
         >
           <FontAwesomeIcon icon={solid("rotate-left")} />
         </button>
-        <div id={styles.formsBackGround}></div>
+        <div id={styles.formsBackground}></div>
 
         <div id={styles.formsContentContainer}>
           <div id={styles.formsContent}>

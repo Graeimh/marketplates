@@ -9,10 +9,8 @@ h4, h5, h6 {
   font-family: "Source Sans 3";
   line-height: 1.5;
   font-weight: 400;
-  color-scheme: light dark;
   color: #242424;
   background-color: rgba(255, 255, 255, 0.87);
-  
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -80,8 +78,14 @@ button:focus-visible {
 
 ul {
   list-style-type: none;
+  padding: 0 0 0 0.5rem;
 }
 
-html, body {
-  height:100%;
+button {
+color: #ffffff;
 }
+
+button:disabled {
+  opacity: 0.2;
+  cursor: default;
+  }
