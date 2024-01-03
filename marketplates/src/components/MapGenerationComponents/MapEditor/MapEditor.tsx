@@ -30,6 +30,8 @@ import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { Helmet } from "react-helmet";
+import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function MapEditor(props: { editedMap: string | undefined }) {
   // Setting states
@@ -103,6 +105,12 @@ function MapEditor(props: { editedMap: string | undefined }) {
     useState<ITagFilterQuery>({
       tagName: "",
     });
+
+  const [mapDataCollapseVisible, setMapDataCollapseVisible] = useState(false);
+  const [addressCollapseVisible, setAddressCollapseVisible] = useState(false);
+  const [filtersCollapseVisible, setFiltersCollapseVisible] = useState(false);
+  const [iterationCollapseVisible, setIterationCollapseVisible] =
+    useState(false);
 
   const value = useContext(UserContext);
   const navigate = useNavigate();
@@ -381,6 +389,8 @@ function MapEditor(props: { editedMap: string | undefined }) {
     .filter((marker) =>
       placeFilterQuery.tags.every((tag) => marker.tagsList.includes(tag))
     );
+
+  console.log("values", iterationValues);
   return (
     <>
       {props.editedMap ? (
@@ -463,325 +473,462 @@ function MapEditor(props: { editedMap: string | undefined }) {
             </Marker>
           ))}
       </MapContainer>
-      <h3>Map data</h3>
       <form>
-        <ul>
-          <li>
-            <p>
-              <label>Name : </label>
-              <input
-                type="text"
-                name="name"
-                required
-                onInput={updateField}
-                value={formData.name}
-              />
-            </p>
-          </li>
-          <li>
-            <p>
-              <label>Description : </label>
-              <input
-                type="text"
-                name="description"
-                required
-                onInput={updateField}
-                value={formData.description}
-              />
-            </p>
-          </li>
-        </ul>
-
-        <h3>Privacy</h3>
-
-        <div>
-          <input
-            type="radio"
-            id="privacyStatus1"
-            name="privacyStatus"
-            value={PrivacyStatus.Private}
-            onChange={() => {
-              setFormData({
-                ...formData,
-                privacyStatus: PrivacyStatus.Private,
-              });
-            }}
-            checked={formData.privacyStatus === PrivacyStatus.Private}
-          />
-          <label htmlFor="privacyStatus1">Private</label>
-
-          <input
-            type="radio"
-            id="privacyStatus2"
-            name="privacyStatus"
-            value={PrivacyStatus.Protected}
-            onChange={() => {
-              setFormData({
-                ...formData,
-                privacyStatus: PrivacyStatus.Protected,
-              });
-            }}
-            checked={formData.privacyStatus === PrivacyStatus.Protected}
-          />
-          <label htmlFor="privacyStatus2">Friends only</label>
-
-          <input
-            type="radio"
-            id="privacyStatus3"
-            name="privacyStatus"
-            value={PrivacyStatus.Public}
-            onChange={() => {
-              setFormData({ ...formData, privacyStatus: PrivacyStatus.Public });
-            }}
-            checked={formData.privacyStatus === PrivacyStatus.Public}
-          />
-          <label htmlFor="privacyStatus3">Public</label>
-        </div>
-
-        <h3>Find an address</h3>
-
-        <label>Get an address : </label>
-        <input
-          type="text"
-          name="address"
-          onInput={(e) => {
-            setAddressQuery(e.target.value);
-          }}
-        />
         <button
           type="button"
-          onClick={() => {
-            handleAdressButton();
+          onClick={() => setMapDataCollapseVisible(!mapDataCollapseVisible)}
+          className={
+            mapDataCollapseVisible
+              ? styles.collapseButtonActive
+              : styles.collapseButtonInactive
+          }
+        >
+          Map data & privacy
+          <span>
+            {mapDataCollapseVisible ? (
+              <FontAwesomeIcon icon={solid("chevron-down")} />
+            ) : (
+              <FontAwesomeIcon icon={solid("chevron-up")} />
+            )}
+          </span>
+        </button>
+
+        <section
+          className={
+            mapDataCollapseVisible
+              ? styles.mapDataVisible
+              : styles.mapDataCollapsed
+          }
+        >
+          {mapDataCollapseVisible && (
+            <>
+              <h3>Map data</h3>
+              <ul>
+                <li>
+                  <p>
+                    <label>Name : </label>
+                    <input
+                      type="text"
+                      name="name"
+                      required
+                      onInput={updateField}
+                      value={formData.name}
+                    />
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    <label>Description : </label>
+                    <input
+                      type="text"
+                      name="description"
+                      required
+                      onInput={updateField}
+                      value={formData.description}
+                    />
+                  </p>
+                </li>
+              </ul>
+
+              <h3>Privacy</h3>
+
+              <div>
+                <input
+                  type="radio"
+                  id="privacyStatus1"
+                  name="privacyStatus"
+                  value={PrivacyStatus.Private}
+                  onChange={() => {
+                    setFormData({
+                      ...formData,
+                      privacyStatus: PrivacyStatus.Private,
+                    });
+                  }}
+                  checked={formData.privacyStatus === PrivacyStatus.Private}
+                />
+                <label htmlFor="privacyStatus1">Private</label>
+
+                <input
+                  type="radio"
+                  id="privacyStatus2"
+                  name="privacyStatus"
+                  value={PrivacyStatus.Protected}
+                  onChange={() => {
+                    setFormData({
+                      ...formData,
+                      privacyStatus: PrivacyStatus.Protected,
+                    });
+                  }}
+                  checked={formData.privacyStatus === PrivacyStatus.Protected}
+                />
+                <label htmlFor="privacyStatus2">Friends only</label>
+
+                <input
+                  type="radio"
+                  id="privacyStatus3"
+                  name="privacyStatus"
+                  value={PrivacyStatus.Public}
+                  onChange={() => {
+                    setFormData({
+                      ...formData,
+                      privacyStatus: PrivacyStatus.Public,
+                    });
+                  }}
+                  checked={formData.privacyStatus === PrivacyStatus.Public}
+                />
+                <label htmlFor="privacyStatus3">Public</label>
+              </div>
+            </>
+          )}
+        </section>
+
+        <button
+          type="button"
+          onClick={() => setAddressCollapseVisible(!addressCollapseVisible)}
+          className={
+            addressCollapseVisible
+              ? styles.collapseButtonActive
+              : styles.collapseButtonInactive
+          }
+        >
+          Find an address
+          <span>
+            {addressCollapseVisible ? (
+              <FontAwesomeIcon icon={solid("chevron-down")} />
+            ) : (
+              <FontAwesomeIcon icon={solid("chevron-up")} />
+            )}
+          </span>
+        </button>
+        <section
+          className={
+            addressCollapseVisible
+              ? styles.addressVisible
+              : styles.addressCollapsed
+          }
+          style={{
+            height: addressCollapseVisible
+              ? `${13 + newResults.length * 2}rem`
+              : "0px",
           }}
         >
-          Get locations
-        </button>
-      </form>
-      {newResults.length > 1 && (
-        <ul>
-          {newResults.map((result) => (
-            <li
-              key={result.label}
-              onClick={() => {
-                setCoordinates({
-                  longitude: result.x,
-                  latitude: result.y,
-                });
-                setNewResults([]);
-              }}
-            >
-              {result.label}
-            </li>
-          ))}
-        </ul>
-      )}
+          <h3>Find an address</h3>
 
-      <h3>Filter map markers</h3>
-      <p>
-        <label>Filter places by name: </label>
-        <input
-          type="text"
-          name="filterNameQuery"
-          required
-          onInput={(e) => {
-            setPlaceFilterQuery({
-              ...placeFilterQuery,
-              name: e.target.value,
-            });
-          }}
-          value={placeFilterQuery.name}
-        />
-      </p>
-      <label>Filter places by tags: </label>
-      <input
-        type="text"
-        name="filterTagQuery"
-        required
-        onInput={(e) => {
-          setPlaceFilterQuery({
-            ...placeFilterQuery,
-            tagName: e.target.value,
-          });
-        }}
-        value={placeFilterQuery.tagName}
-      />
-      <p>Select tags:</p>
-      {tagListToDisplay.length > 0 &&
-        tagListToDisplay.map((tag) => (
-          <Tag
-            customStyle={{
-              color: tag.nameColor,
-              backgroundColor: tag.backgroundColor,
+          <label>Get an address : </label>
+          <input
+            type="text"
+            name="address"
+            onInput={(e) => {
+              setAddressQuery(e.target.value);
             }}
-            tagName={tag.name}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              handleAdressButton();
+            }}
+          >
+            Get locations
+          </button>
+
+          {newResults.length > 1 && (
+            <ul>
+              {newResults.map((result) => (
+                <li
+                  key={result.label}
+                  onClick={() => {
+                    setCoordinates({
+                      longitude: result.x,
+                      latitude: result.y,
+                    });
+                    setNewResults([]);
+                  }}
+                >
+                  {result.label}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+        <button
+          type="button"
+          onClick={() => setIterationCollapseVisible(!iterationCollapseVisible)}
+          className={
+            iterationCollapseVisible
+              ? styles.collapseButtonActive
+              : styles.collapseButtonInactive
+          }
+        >
+          Filters
+          <span>
+            {iterationCollapseVisible ? (
+              <FontAwesomeIcon icon={solid("chevron-down")} />
+            ) : (
+              <FontAwesomeIcon icon={solid("chevron-up")} />
+            )}
+          </span>
+        </button>
+        <section
+          className={
+            iterationCollapseVisible
+              ? styles.addressVisible
+              : styles.addressCollapsed
+          }
+          style={{
+            height: iterationCollapseVisible
+              ? `${28 + Math.floor(placeFilterQuery.tags.length / 5) * 2}rem`
+              : "0px",
+          }}
+        >
+          <h3>Filtering place</h3>
+          <p>
+            <label>Filter places by name: </label>
+            <input
+              type="text"
+              name="filterNameQuery"
+              required
+              onInput={(e) => {
+                setPlaceFilterQuery({
+                  ...placeFilterQuery,
+                  name: e.target.value,
+                });
+              }}
+              value={placeFilterQuery.name}
+            />
+          </p>
+          <label>Filter places by tags: </label>
+          <input
+            type="text"
+            name="filterTagQuery"
+            required
+            onInput={(e) => {
+              setPlaceFilterQuery({
+                ...placeFilterQuery,
+                tagName: e.target.value,
+              });
+            }}
+            value={placeFilterQuery.tagName}
+          />
+          <p>Select tags:</p>
+          {tagListToDisplay.length > 0 &&
+            tagListToDisplay.map((tag) => (
+              <Tag
+                customStyle={{
+                  color: tag.nameColor,
+                  backgroundColor: tag.backgroundColor,
+                }}
+                tagName={tag.name}
+                onClick={() => {
+                  setPlaceFilterQuery({
+                    ...placeFilterQuery,
+                    tags: [...placeFilterQuery.tags, tag],
+                  });
+                  setTagFilterList(
+                    tagFilterList.filter((tagId) => tagId._id !== tag._id)
+                  );
+                }}
+                isIn={placeFilterQuery.tags.some(
+                  (tagData) => tagData._id === tag._id
+                )}
+                isTiny={false}
+                key={tag.name}
+              />
+            ))}
+          <p>Selected tags :</p>
+          {placeFilterQuery.tags.length > 0 &&
+            placeFilterQuery.tags.map((tag) => (
+              <Tag
+                customStyle={{
+                  color: tag.nameColor,
+                  backgroundColor: tag.backgroundColor,
+                }}
+                tagName={tag.name}
+                onClose={() => {
+                  setPlaceFilterQuery({
+                    ...placeFilterQuery,
+                    tags: placeFilterQuery.tags.filter(
+                      (tagId) => tagId._id !== tag._id
+                    ),
+                  });
+                  setTagFilterList([...tagFilterList, tag]);
+                }}
+                isIn={placeFilterQuery.tags.some(
+                  (tagData) => tagData._id === tag._id
+                )}
+                isTiny={false}
+                key={tag.name}
+              />
+            ))}
+          <button
             onClick={() => {
               setPlaceFilterQuery({
-                ...placeFilterQuery,
-                tags: [...placeFilterQuery.tags, tag],
+                name: "",
+                tagName: "",
+                tags: [],
               });
-              setTagFilterList(
-                tagFilterList.filter((tagId) => tagId._id !== tag._id)
-              );
             }}
-            isIn={placeFilterQuery.tags.some(
-              (tagData) => tagData._id === tag._id
-            )}
-            isTiny={false}
-            key={tag.name}
-          />
-        ))}
-      <p>Selected tags :</p>
-      {placeFilterQuery.tags.length > 0 &&
-        placeFilterQuery.tags.map((tag) => (
-          <Tag
-            customStyle={{
-              color: tag.nameColor,
-              backgroundColor: tag.backgroundColor,
-            }}
-            tagName={tag.name}
-            onClose={() => {
-              setPlaceFilterQuery({
-                ...placeFilterQuery,
-                tags: placeFilterQuery.tags.filter(
-                  (tagId) => tagId._id !== tag._id
-                ),
-              });
-              setTagFilterList([...tagFilterList, tag]);
-            }}
-            isIn={placeFilterQuery.tags.some(
-              (tagData) => tagData._id === tag._id
-            )}
-            isTiny={false}
-            key={tag.name}
-          />
-        ))}
-      <button
-        onClick={() => {
-          setPlaceFilterQuery({
-            name: "",
-            tagName: "",
-            tags: [],
-          });
-        }}
-      >
-        Clear filter
-      </button>
+          >
+            Clear filter
+          </button>
+        </section>
+      </form>
 
       {iterationValues.address.length > 0 && (
         <>
-          <h2>
-            {iterationsList.some(
-              (iteration) => iteration._id === iterationValues._id
-            )
-              ? "Edit an iteration"
-              : "Create an iteration"}
-          </h2>
-          <form>
-            {" "}
-            <ul>
-              <li>
-                <p>
-                  <label>Name : </label>
-                  <input
-                    type="text"
-                    name="name"
-                    required
-                    onInput={(e) => {
-                      updatePlaceIterationField(e);
-                    }}
-                    value={iterationValues.name}
-                  />
-                </p>
-              </li>
-              <li>
-                <p>
-                  <label>Description : </label>
-                  <input
-                    type="text"
-                    name="description"
-                    required
-                    onInput={(e) => updatePlaceIterationField(e)}
-                    value={iterationValues.description}
-                  />
-                </p>
-              </li>
-              <p>Selected tags :</p>
-              {iterationValues.tagsList.length > 0 &&
-                iterationValues.tagsList.map((tag) => (
-                  <Tag
-                    customStyle={{
-                      color: tag.nameColor,
-                      backgroundColor: tag.backgroundColor,
-                    }}
-                    tagName={tag.name}
-                    onClose={() => {
-                      setIterationValues({
-                        ...iterationValues,
-                        tagsList: iterationValues.tagsList.filter(
-                          (tagId) => tagId._id !== tag._id
-                        ),
-                      });
-                      setTagList([...tagList, tag]);
-                    }}
-                    isIn={iterationValues.tagsList.some(
-                      (tagData) => tagData._id === tag._id
-                    )}
-                    isTiny={false}
-                    key={tag.name}
-                  />
-                ))}
-              <p>
-                <label>Filter tags: </label>
-                <input
-                  type="text"
-                  name="filterTagQuery"
-                  required
-                  onInput={(e) => {
-                    setIterationTagFilterQuery({
-                      ...iterationTagFilterQuery,
-                      tagName: e.target.value,
-                    });
-                  }}
-                  value={iterationTagFilterQuery.tagName}
-                />
-              </p>
-              <p>Select tags:</p>
-              {tagListForIterationToDisplay.length > 0 &&
-                tagListForIterationToDisplay.map((tag) => (
-                  <Tag
-                    customStyle={{
-                      color: tag.nameColor,
-                      backgroundColor: tag.backgroundColor,
-                    }}
-                    tagName={tag.name}
-                    onClick={() => {
-                      setIterationValues({
-                        ...iterationValues,
-                        tagsList: [...iterationValues.tagsList, tag],
-                        tagsIdList: [...iterationValues.tagsIdList, tag._id],
-                      });
-                    }}
-                    isIn={iterationValues.tagsList.some(
-                      (tagData) => tagData._id === tag._id
-                    )}
-                    isTiny={false}
-                    key={tag.name}
-                  />
-                ))}
-            </ul>
-            <button
-              onClick={(e) => {
-                createIteration(e);
-              }}
-              disabled={!isValidPlaceIterationForSending}
-            >
+          <button
+            type="button"
+            onClick={() => setFiltersCollapseVisible(!filtersCollapseVisible)}
+            className={
+              filtersCollapseVisible
+                ? styles.collapseButtonActive
+                : styles.collapseButtonInactive
+            }
+          >
+            Create / Edit iteration
+            <span>
+              {filtersCollapseVisible ? (
+                <FontAwesomeIcon icon={solid("chevron-down")} />
+              ) : (
+                <FontAwesomeIcon icon={solid("chevron-up")} />
+              )}
+            </span>
+          </button>
+          <section
+            className={
+              filtersCollapseVisible
+                ? styles.addressVisible
+                : styles.addressCollapsed
+            }
+            style={{
+              height: filtersCollapseVisible
+                ? `${
+                    38 + Math.floor(iterationValues.tagsList.length / 5) * 2
+                  }rem`
+                : "0px",
+            }}
+          >
+            <h2>
               {iterationsList.some(
                 (iteration) => iteration._id === iterationValues._id
               )
-                ? "Edit iteration"
-                : "Create iteration"}
-            </button>
-          </form>
+                ? "Edit an iteration"
+                : "Create an iteration"}
+            </h2>
+            <form>
+              {" "}
+              <ul>
+                <li>
+                  <p>
+                    <label>Name : </label>
+                    <input
+                      type="text"
+                      name="name"
+                      required
+                      onInput={(e) => {
+                        updatePlaceIterationField(e);
+                      }}
+                      value={iterationValues.name}
+                    />
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    <label>Description : </label>
+                    <input
+                      type="text"
+                      name="description"
+                      required
+                      onInput={(e) => updatePlaceIterationField(e)}
+                      value={iterationValues.description}
+                    />
+                  </p>
+                </li>
+                <p>Selected tags :</p>
+                {iterationValues.tagsList.length > 0 &&
+                  tagList
+                    .filter((tag) =>
+                      iterationValues.tagsIdList.some(
+                        (iterationTagId) => iterationTagId === tag._id
+                      )
+                    )
+                    .map((tag) => (
+                      <Tag
+                        customStyle={{
+                          color: tag.nameColor,
+                          backgroundColor: tag.backgroundColor,
+                        }}
+                        tagName={tag.name}
+                        onClose={() => {
+                          setIterationValues({
+                            ...iterationValues,
+                            tagsList: iterationValues.tagsList.filter(
+                              (tagId) => tagId._id !== tag._id
+                            ),
+                            tagsIdList: iterationValues.tagsIdList.filter(
+                              (tagId) => tagId !== tag._id
+                            ),
+                          });
+                        }}
+                        isIn={iterationValues.tagsList.some(
+                          (tagData) => tagData._id === tag._id
+                        )}
+                        isTiny={false}
+                        key={tag.name}
+                      />
+                    ))}
+                <p>
+                  <label>Filter tags: </label>
+                  <input
+                    type="text"
+                    name="filterTagQuery"
+                    required
+                    onInput={(e) => {
+                      setIterationTagFilterQuery({
+                        ...iterationTagFilterQuery,
+                        tagName: e.target.value,
+                      });
+                    }}
+                    value={iterationTagFilterQuery.tagName}
+                  />
+                </p>
+                <p>Select tags:</p>
+                {tagListForIterationToDisplay.length > 0 &&
+                  tagListForIterationToDisplay.map((tag) => (
+                    <Tag
+                      customStyle={{
+                        color: tag.nameColor,
+                        backgroundColor: tag.backgroundColor,
+                      }}
+                      tagName={tag.name}
+                      onClick={() => {
+                        setIterationValues({
+                          ...iterationValues,
+                          tagsList: [...iterationValues.tagsList, tag],
+                          tagsIdList: [...iterationValues.tagsIdList, tag._id],
+                        });
+                      }}
+                      isIn={iterationValues.tagsIdList.some(
+                        (tagDataId) => tagDataId === tag._id
+                      )}
+                      isTiny={false}
+                      key={tag.name}
+                    />
+                  ))}
+              </ul>
+              <button
+                onClick={(e) => {
+                  createIteration(e);
+                }}
+                disabled={!isValidPlaceIterationForSending}
+              >
+                {iterationsList.some(
+                  (iteration) => iteration._id === iterationValues._id
+                )
+                  ? "Edit iteration"
+                  : "Create iteration"}
+              </button>
+            </form>
+          </section>
         </>
       )}
 

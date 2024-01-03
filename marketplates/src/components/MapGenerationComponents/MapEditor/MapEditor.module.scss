@@ -1,7 +1,45 @@
 h1 {
-    color: red
+  color: red;
 }
 
 .placeMap {
-    height: 180px;
+  height: 180px;
+}
+
+.mapDataCollapsed {
+  height: 0px;
+  overflow: hidden;
+  transition: height ease 0.9s;
+}
+
+.mapDataVisible {
+  height: 15rem;
+  overflow: hidden;
+  transition: height ease 0.9s;
+}
+
+.addressCollapsed {
+  overflow: hidden;
+  transition: height ease 0.9s;
+}
+
+.addressVisible {
+  overflow: hidden;
+  transition: height ease 0.9s;
+}
+
+.collapseButtonActive,
+.collapseButtonInactive {
+  width: 100%;
+}
+
+.collapseButtonActive span,
+.collapseButtonInactive span {
+  float: right;
+}
+
+.collapseButtonActive {
+}
+
+.collapseButtonInactive {
 }

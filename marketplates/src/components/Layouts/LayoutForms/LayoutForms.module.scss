@@ -60,7 +60,7 @@
 }
 
 /* For tablets: */
-@media only screen and (min-width: 481px) {
+@media only screen and (min-width: 768px) {
   #formsContentContainer {
     width: 65%;
     top: 1%;
@@ -71,7 +71,7 @@
 }
 
 /* For desktop: */
-@media only screen and (min-width: 769px) {
+@media only screen and (min-width: 1024px) {
   #formsContainer {
     display: flex;
   }

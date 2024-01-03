@@ -1,3 +1,7 @@
+#manipulationContainer {
+  margin-left: -5rem;
+}
+
 #manipulationContainer h2 {
   text-decoration: underline;
 }
@@ -14,7 +18,7 @@
 }
 
 /* For desktop: */
-@media only screen and (min-width: 769px) {
+@media only screen and (min-width: 1024px) {
   #manipulationItemContainer {
     display: grid;
     grid-template-columns: 50% 50%;

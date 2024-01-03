@@ -47,7 +47,7 @@
 }
 
 /* For tablets: */
-@media only screen and (min-width: 481px) {
+@media only screen and (min-width: 768px) {
   #dashboardPanel li {
     margin: 4rem 0;
   }
@@ -62,7 +62,7 @@
 }
 
 /* For desktop: */
-@media only screen and (min-width: 769px) {
+@media only screen and (min-width: 1024px) {
   #dashboardPanel li {
     margin: 5rem 0;
   }

@@ -8,15 +8,47 @@
   position: fixed;
   bottom: 0;
   width: 100%;
-  background-color: red;
+  background-color: #a32e00;
+  z-index: 1;
 }
 
 #dashboardContentContainer {
-  margin-bottom: 5rem;
+  margin-bottom: 12rem;
+}
+
+#small {
+  padding: 0;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  line-height: 4rem;
+}
+
+#small li {
+  margin: 0 2%;
+  width: 4rem;
+}
+
+#small button {
+  border-radius: 50%;
+  width: 4rem;
+  height: 4rem;
+  text-align: center;
+}
+
+#tablet {
+  display: none;
+}
+
+#homeButton {
+  background-image: url("../../../assets/logo.png");
+  background-size: cover;
+  width: 4rem;
+  height: 4rem;
 }
 
 /* For tablets: */
-@media only screen and (min-width: 481px) {
+@media only screen and (min-width: 768px) {
   #dashboardContainer nav {
     width: 6rem;
     height: 100%;
@@ -27,12 +59,36 @@
   }
 
   #dashboardContentContainer {
-    margin-left: 6rem;
+    margin-left: 10rem;
+  }
+
+  #small {
+    display: none;
+  }
+
+  #tablet {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+
+  #tablet button {
+    padding: 3rem 1.2rem;
+    width: 90%;
+  }
+
+  #tablet #homeButton {
+    padding: 0;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
   }
 }
 
 /* For desktop: */
-@media only screen and (min-width: 769px) {
+@media only screen and (min-width: 1024px) {
   #dashboardContainer nav {
     position: fixed;
     top: 0;
@@ -46,5 +102,22 @@
 
   #dashboardContentContainer {
     margin-top: 9rem;
+    margin-left: 5rem;
+  }
+
+  #tablet {
+    flex-direction: row;
+  }
+
+  #tablet button {
+    padding: 1.5rem 4.5rem;
+    width: 90%;
+  }
+
+  #tablet #homeButton {
+    padding: 0;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
   }
 }
