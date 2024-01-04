@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import formStyles from "../../../common/styles/Forms.module.scss";
 import styles from "./PlaceEditor.module.scss";
 import * as placeService from "../../../services/placeService.js";
 import * as tagService from "../../../services/tagService.js";
@@ -246,13 +247,17 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
         </Helmet>
       )}
 
-      <h1>Register a place</h1>
-      <div className={styles.registerContainer}>
-        <form>
-          <ul>
-            <li>
-              <p>
+      <article
+        className={formStyles.formContainer}
+        id={styles.placeRegisterContainer}
+      >
+        <section>
+          <form>
+            <ul>
+              <h1>Register a place</h1>
+              <li>
                 <label>Name : </label>
+                <br />
                 <input
                   type="text"
                   name="name"
@@ -260,11 +265,10 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
                   onInput={updateField}
                   value={formData.name}
                 />
-              </p>
-            </li>
-            <li>
-              <p>
+              </li>
+              <li>
                 <label>Description : </label>
+                <br />
                 <input
                   type="text"
                   name="description"
@@ -272,22 +276,80 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
                   onInput={updateField}
                   value={formData.description}
                 />
-              </p>
-            </li>
-            <li>
-              <p>
+              </li>
+              <li>Locate your business</li>
+              <li id={styles.phoneMapContainer}>
+                <MapContainer
+                  style={{ height: "30rem", width: "100%" }}
+                  center={{ lat: 50.633333, lng: 3.066667 }}
+                  zoom={13}
+                  maxZoom={18}
+                >
+                  <MapValuesManager
+                    latitude={
+                      formData.gpsCoordinates.latitude !== null
+                        ? formData.gpsCoordinates.latitude
+                        : 50.633333
+                    }
+                    longitude={
+                      formData.gpsCoordinates.longitude !== null
+                        ? formData.gpsCoordinates.longitude
+                        : 3.066667
+                    }
+                    startingZoom={13}
+                    doubleClickEvent={doubleClickMaphandler}
+                  />
+                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+                  {formData.gpsCoordinates.latitude !== null &&
+                    formData.gpsCoordinates.longitude !== null && (
+                      <Marker
+                        position={[
+                          formData.gpsCoordinates.latitude,
+                          formData.gpsCoordinates.longitude,
+                        ]}
+                      >
+                        <Popup>
+                          <h3>{formData.name}</h3>
+                          <p>{formData.description}</p>
+                          <ul>
+                            {formData.tagList.map((tag) => (
+                              <li>
+                                <Tag
+                                  tagName={tag.name}
+                                  customStyle={{
+                                    color: tag.nameColor,
+                                    backgroundColor: tag.backgroundColor,
+                                  }}
+                                  isTiny={true}
+                                />
+                              </li>
+                            ))}
+                          </ul>
+                        </Popup>
+                      </Marker>
+                    )}
+                </MapContainer>
+              </li>
+              <li>
                 <label>Address : </label>
+                <br />
                 <input
                   type="text"
                   name="address"
                   onInput={updateField}
                   value={formData.address}
                 />
+              </li>
+              <li className={styles.secondaryButton}>
                 <button type="button" onClick={handleAdressButton}>
                   Get locations
                 </button>
-                {newResults.length > 1 && (
-                  <ul>
+              </li>
+              {newResults.length > 1 && (
+                <>
+                  <li>Select a result:</li>
+                  <ul className={styles.addressClickables}>
                     {newResults.map((result) => (
                       <li
                         onClick={() => {
@@ -310,13 +372,12 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
                       </li>
                     ))}
                   </ul>
-                )}
-              </p>
-            </li>
-            <li>
-              <p>
-                Off the grid? Write the coordinates here!
+                </>
+              )}
+              <li>Off the grid? Write the coordinates here!</li>
+              <li>
                 <label>Latitude : </label>
+                <br />
                 <input
                   type="number"
                   name="latitude"
@@ -330,7 +391,10 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
                   }}
                   value={temporaryCoordinates.latitude?.toString()}
                 />
+              </li>
+              <li>
                 <label>Longitude : </label>
+                <br />
                 <input
                   type="number"
                   name="longitude"
@@ -344,15 +408,91 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
                   }
                   value={temporaryCoordinates.longitude?.toString()}
                 />
+              </li>
+              <li className={styles.secondaryButton}>
                 <button type="button" onClick={handleManualCoordinates}>
                   Use coordinates instead!
                 </button>
-              </p>
-            </li>
-          </ul>
+              </li>
 
+              <li>
+                <label>Search for a tag : </label>
+                <input
+                  type="text"
+                  name="tagQuery"
+                  onChange={(e) => {
+                    setTagQuery(e.target.value);
+                  }}
+                />
+              </li>
+
+              <p>Select tags:</p>
+              {tagListToDisplay.length > 0 &&
+                tagListToDisplay.map((tag) => (
+                  <Tag
+                    customStyle={{
+                      color: tag.nameColor,
+                      backgroundColor: tag.backgroundColor,
+                    }}
+                    tagName={tag.name}
+                    onClick={() => {
+                      setFormData({
+                        ...formData,
+                        tagList: [...formData.tagList, tag],
+                      });
+                      setTagList(
+                        tagList.filter((tagId) => tagId._id !== tag._id)
+                      );
+                    }}
+                    isIn={formData.tagList.some(
+                      (tagData) => tagData._id === tag._id
+                    )}
+                    isTiny={false}
+                    key={tag.name}
+                  />
+                ))}
+              <p>Selected tags :</p>
+              {formData.tagList.length > 0 &&
+                formData.tagList.map((tag) => (
+                  <Tag
+                    customStyle={{
+                      color: tag.nameColor,
+                      backgroundColor: tag.backgroundColor,
+                    }}
+                    tagName={tag.name}
+                    onClose={() => {
+                      setFormData({
+                        ...formData,
+                        tagList: formData.tagList.filter(
+                          (tagId) => tagId._id !== tag._id
+                        ),
+                      });
+                      setTagList([...tagList, tag]);
+                    }}
+                    isIn={formData.tagList.some(
+                      (tagData) => tagData._id === tag._id
+                    )}
+                    isTiny={false}
+                    key={tag.name}
+                  />
+                ))}
+            </ul>
+            <div className={formStyles.finalButtonContainer}>
+              <button
+                type="button"
+                disabled={!isValidForSending}
+                onClick={sendRegistrationForm}
+              >
+                {props.editPlaceId === undefined
+                  ? "Register place"
+                  : "Edit place"}
+              </button>
+            </div>
+          </form>
+        </section>
+        <section id={styles.mapDesktopContainer}>
           <MapContainer
-            style={{ height: "30rem", width: "100%" }}
+            style={{ height: "100%", width: "100%" }}
             center={{ lat: 50.633333, lng: 3.066667 }}
             zoom={13}
             maxZoom={18}
@@ -402,75 +542,8 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
                 </Marker>
               )}
           </MapContainer>
-
-          <label>Search for a tag : </label>
-          <input
-            type="text"
-            name="tagQuery"
-            onChange={(e) => {
-              setTagQuery(e.target.value);
-            }}
-          />
-
-          <p>Select tags:</p>
-          {tagListToDisplay.length > 0 &&
-            tagListToDisplay.map((tag) => (
-              <Tag
-                customStyle={{
-                  color: tag.nameColor,
-                  backgroundColor: tag.backgroundColor,
-                }}
-                tagName={tag.name}
-                onClick={() => {
-                  setFormData({
-                    ...formData,
-                    tagList: [...formData.tagList, tag],
-                  });
-                  setTagList(tagList.filter((tagId) => tagId._id !== tag._id));
-                }}
-                isIn={formData.tagList.some(
-                  (tagData) => tagData._id === tag._id
-                )}
-                isTiny={false}
-                key={tag.name}
-              />
-            ))}
-          <p>Selected tags :</p>
-          {formData.tagList.length > 0 &&
-            formData.tagList.map((tag) => (
-              <Tag
-                customStyle={{
-                  color: tag.nameColor,
-                  backgroundColor: tag.backgroundColor,
-                }}
-                tagName={tag.name}
-                onClose={() => {
-                  setFormData({
-                    ...formData,
-                    tagList: formData.tagList.filter(
-                      (tagId) => tagId._id !== tag._id
-                    ),
-                  });
-                  setTagList([...tagList, tag]);
-                }}
-                isIn={formData.tagList.some(
-                  (tagData) => tagData._id === tag._id
-                )}
-                isTiny={false}
-                key={tag.name}
-              />
-            ))}
-
-          <button
-            type="button"
-            disabled={!isValidForSending}
-            onClick={sendRegistrationForm}
-          >
-            {props.editPlaceId === undefined ? "Register place" : "Edit place"}
-          </button>
-        </form>
-      </div>
-
+        </section>
+      </article>
       {responseMessage && (
         <div className={styles.success}>{responseMessage}</div>
       )}

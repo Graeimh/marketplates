@@ -1,11 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import * as placeService from "../../../services/placeService.js";
+import styles from "./MyPlaces.module.scss";
 import { IPlace } from "../../../common/types/placeTypes/placeTypes.js";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import { Helmet } from "react-helmet";
+import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function MyPlaces() {
   // Setting states
@@ -51,38 +54,64 @@ function MyPlaces() {
         <link rel="canonical" href="http://localhost:5173/myplaces" />
       </Helmet>
 
-      <h1>Hi! Here are your places!</h1>
-      <button
-        onClick={() => {
-          navigate("/createplace");
-        }}
-      >
-        Create a place
-      </button>
-      <ul>
+      <h1>Manage your businesses</h1>
+
+      {userPlacesList ? (
+        <button
+          onClick={() => {
+            navigate("/createplace");
+          }}
+        >
+          Register a business
+        </button>
+      ) : (
+        <article>
+          <h1>No businesses ?</h1>
+          <button
+            onClick={() => {
+              navigate("/createplace");
+            }}
+          >
+            Register your first business
+          </button>
+        </article>
+      )}
+      <div id={styles.itemListContainer}>
         {userPlacesList &&
           userPlacesList.map((place) => (
-            <li key={place.name}>
-              {place.name}
-              <button
-                type="button"
-                onClick={() => navigate(`/editplace/${place._id}`)}
-              >
-                Edit place
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  place._id
-                    ? handleUserPlaceDeleted(place._id)
-                    : setError("The place has been deleted already");
-                }}
-              >
-                Delete place
-              </button>
-            </li>
+            <article className={styles.userItemContainer} key={place.name}>
+              <section className={styles.itemDataContainer}>
+                <h2>{place.name}</h2>
+                <ul>
+                  <li className={styles.itemDataField}>Description</li>
+                  <li>{place.description}</li>
+                  <li className={styles.itemDataField}>Address</li>
+                  <li>{place.address}</li>
+                </ul>
+              </section>
+              <section className={styles.itemButtonContainer}>
+                <button
+                  type="button"
+                  onClick={() => navigate(`/editplace/${place._id}`)}
+                >
+                  <FontAwesomeIcon icon={solid("pen-to-square")} />
+                  Edit place
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    place._id
+                      ? handleUserPlaceDeleted(place._id)
+                      : setError("The place has been deleted already");
+                  }}
+                >
+                  <FontAwesomeIcon icon={solid("trash-can")} />
+                  Delete place
+                </button>
+              </section>
+            </article>
           ))}
-      </ul>
+      </div>
     </>
   );
 }

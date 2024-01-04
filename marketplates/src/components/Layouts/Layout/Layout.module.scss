@@ -1,32 +1,31 @@
-#header{
-    margin: 0;
-    padding: 0;
-    background-color: #000000;
+#header {
+  margin: 0;
+  padding: 0;
+  background-color: #000000;
+  display: flex;
 }
 
 nav {
-    padding: 1rem 0;
+  padding: 1rem 0;
 }
 ul li {
-
 }
 
 #mainTitle {
-    padding: 1rem 1rem 0 1rem;
+  padding: 1rem 1rem 0 1rem;
 }
 
-.banner{
-
+.banner {
 }
 
-.navigationOption a{
-    // background: url(../../assets/ardoise.png) center center fixed;
+.navigationOption a {
+  // background: url(../../assets/ardoise.png) center center fixed;
 }
 
-#registerButton a{
-    background-color: rebeccapurple;
+#registerButton a {
+  background-color: rebeccapurple;
 }
 
-#loginButton a{
-    background-color: firebrick;
+#loginButton a {
+  background-color: firebrick;
 }

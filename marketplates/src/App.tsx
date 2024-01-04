@@ -15,7 +15,6 @@ import AdminPathResolver from "./components/PathResolvers/AdminPathResolver/inde
 import Dashboard from "./components/AdminDashboard/Dashboard/index.js";
 import MyPlaces from "./components/UserPagesComponents/MyPlaces/index.js";
 import LayoutForms from "./components/Layouts/LayoutForms/index.js";
-import LayoutLogged from "./components/Layouts/LayoutLogged/index.js";
 import UserManipulation from "./components/AdminDashboard/UserManipulation/index.js";
 import TagManipulation from "./components/AdminDashboard/TagManipulation/index.js";
 import PlaceEditor from "./components/MapGenerationComponents/PlaceEditor/index.js";
@@ -82,8 +81,7 @@ function App() {
 
               {/* If the user isn't logged in, the routes to interact with user concent in do not exist*/}
               {sessionValue.userId.length !== 0 && (
-                // LayoutLogged is used if the user accesses pages where the user is supposed to be logged in *
-                <Route element={<LayoutLogged />}>
+                <>
                   <Route
                     path="explore"
                     element={
@@ -158,7 +156,7 @@ function App() {
                       </UserPathResolver>
                     }
                   />
-                </Route>
+                </>
               )}
             </Route>
 
