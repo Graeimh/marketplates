@@ -82,7 +82,7 @@ function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
             captchaToken
           );
           // Sets the refresh token within the session storage
-          sessionStorage.setItem("refreshToken", response.refreshToken);
+          localStorage.setItem("refreshToken", response.refreshToken);
           const refreshTokenData: ISessionValues = jose.decodeJwt(
             response.refreshToken
           );

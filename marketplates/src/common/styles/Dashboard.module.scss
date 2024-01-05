@@ -1,3 +1,52 @@
+#dashboardPanel li {
+  margin: 2rem 0;
+}
+
+#dashboardPanel li a {
+  background-color: #1a1a1a;
+  width: 16rem;
+  padding: 2rem 1rem 2rem 1rem;
+  border-radius: 20px 50px 50px 20px;
+  display: flex;
+  align-items: center;
+  border: 2px solid #eb6700;
+}
+
+#dashboardPanel li a:active {
+  background-color: #ffffff;
+}
+
+#dashboardPanel li a:active span {
+  color: #eb6700;
+}
+
+#dashboardPanel li a:active .dashboardOptionDecorator {
+  background-color: #1a1a1a;
+}
+
+.dashboardOptionText {
+  width: 60%;
+  margin-right: 0.5rem;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.dashboardOptionChevron {
+  margin-right: 2rem;
+  font-size: 2rem;
+  color: #ffffff;
+}
+
+.dashboardOptionDecorator {
+  float: right;
+  font-size: 2rem;
+  width: 3rem;
+  height: 3rem;
+  background-color: #ffffff;
+  text-align: center;
+  border-radius: 50%;
+}
+
 #dashboardContainer {
   height: 100%;
   background-color: #ffffff;
@@ -50,6 +99,18 @@
 
 /* For tablets: */
 @media only screen and (min-width: 768px) {
+  #dashboardPanel li {
+    margin: 4rem 0;
+  }
+
+  .dashboardOptionText {
+    margin-right: 2rem;
+  }
+
+  #dashboardPanel li a {
+    width: 20rem;
+  }
+
   #dashboardContainer nav {
     width: 6rem;
     height: 100%;
@@ -90,6 +151,26 @@
 
 /* For desktop: */
 @media only screen and (min-width: 1024px) {
+  #dashboardPanel li {
+    margin: 5rem 0;
+  }
+
+  .dashboardOptionText {
+    margin-right: 1rem;
+  }
+
+  #dashboardPanel li a {
+    width: 18rem;
+    margin-right: 2rem;
+  }
+
+  #dashboardPanel {
+    display: grid;
+    grid-template-columns: 22rem 22rem;
+    width: 80%;
+    margin: auto 0;
+  }
+
   #dashboardContainer {
     overflow: hidden;
   }

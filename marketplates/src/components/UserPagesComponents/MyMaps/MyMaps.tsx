@@ -1,11 +1,15 @@
 import { useContext, useEffect, useState } from "react";
 import * as mapsService from "../../../services/mapService.js";
+import stylesItem from "../../../common/styles/UserItems.module.scss";
+import styles from "./MyMaps.module.scss";
 import { useNavigate } from "react-router-dom";
 import { IMaps } from "../../../common/types/mapTypes/mapTypes.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { Helmet } from "react-helmet";
+import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function MyPlaces() {
   // Setting states
@@ -49,39 +53,63 @@ function MyPlaces() {
         <title>My maps</title>
         <link rel="canonical" href="http://localhost:5173/mymaps" />
       </Helmet>
-
-      <h1>Hi! Here are your Maps!</h1>
-      <button
-        onClick={() => {
-          navigate("/createmap");
-        }}
-      >
-        Create a map
-      </button>
-      <ul>
-        {userMapsList &&
-          userMapsList.map((map) => (
-            <li key={map.name}>
-              {map.name}
+      <article id={stylesItem.itemContainer}>
+        <h1>Manage your maps</h1>
+        <section id={stylesItem.itemCreationContainer}>
+          {userMapsList.length > 0 ? (
+            <button
+              onClick={() => {
+                navigate("/createmap");
+              }}
+            >
+              Create a map
+            </button>
+          ) : (
+            <>
+              <h2>No map of your own yet?</h2>
               <button
-                type="button"
-                onClick={() => navigate(`/editmap/${map._id}`)}
-              >
-                Edit map
-              </button>
-              <button
-                type="button"
                 onClick={() => {
-                  map._id
-                    ? handleUserMapDeleted(map._id)
-                    : setError("The map has been deleted already");
+                  navigate("/createmap");
                 }}
               >
-                Delete map
+                Create your first map here
               </button>
-            </li>
-          ))}
-      </ul>
+            </>
+          )}
+        </section>
+
+        <div id={stylesItem.itemListContainer}>
+          {userMapsList &&
+            userMapsList.map((map) => (
+              <article className={stylesItem.userItemContainer} key={map.name}>
+                <section className={stylesItem.itemDataContainer}>
+                  <h2>{map.name}</h2>
+                  <p className={styles.mapDescription}>{map.description}</p>
+                </section>
+                <section className={stylesItem.itemButtonContainer}>
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/editmap/${map._id}`)}
+                  >
+                    <FontAwesomeIcon icon={solid("pen-to-square")} />
+                    Edit map
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      map._id
+                        ? handleUserMapDeleted(map._id)
+                        : setError("The map has been deleted already");
+                    }}
+                  >
+                    <FontAwesomeIcon icon={solid("trash-can")} />
+                    Delete map
+                  </button>
+                </section>
+              </article>
+            ))}
+        </div>
+      </article>
     </>
   );
 }

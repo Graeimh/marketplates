@@ -1,14 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
-const UserPathResolver = (props: { children: React.ReactNode }) => {
+const NonLoggedPathResolver = (props: { children: React.ReactNode }) => {
     const navigate = useNavigate();
 
     //Check if the user is logged in
     useEffect(() => {
         const refreshValue = localStorage.getItem("refreshToken");
-        if (refreshValue === null) {
-            navigate("/login");
+        if (refreshValue !== null) {
+            navigate("/");
         }
     }
     );
@@ -16,4 +16,4 @@ const UserPathResolver = (props: { children: React.ReactNode }) => {
     return props.children;
 };
 
-export default UserPathResolver
+export default NonLoggedPathResolver

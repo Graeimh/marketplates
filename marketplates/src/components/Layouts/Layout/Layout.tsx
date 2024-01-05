@@ -1,5 +1,5 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import styles from "./Layout.module.scss";
+import styles from "../../../common/styles/Dashboard.module.scss";
 import { useContext, useState } from "react";
 import * as authenticationService from "../../../services/authenticationService.js";
 import { ISessionValues } from "../../../common/types/userTypes/userTypes.js";
@@ -34,73 +34,117 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
 
   return (
     <>
-      <header id={styles.header}>
-        <div id={styles.banner}>
-          <Link to="/">
-            <img
-              src="src\assets\logo.png"
-              alt="logo"
-              height="80px"
-              width="80px"
-            />
-          </Link>
-          <h1 id={styles.mainTitle}>Marketplates</h1>
-        </div>
-        <h1>API STATUS</h1>
-
-        {value.userId.length > 0 && (
-          <>
-            <div>
-              <span>{value.displayName}</span>
-            </div>
-
-            <button type="button" onClick={logoutUser}>
-              Log out
-            </button>
-          </>
-        )}
-        {message.length > 0 && <h2>{message}</h2>}
-        <nav>
-          <ul>
-            <li className={styles.navigationOption}>
-              <Link to="/">About us</Link>
-            </li>
-            {value.userId.length === 0 && (
-              <>
-                <li className={styles.navigationOption}>
+      <div id={styles.dashboardContainer}>
+        {value.userId.length > 0 ? (
+          <header>
+            <nav>
+              <ul id={styles.small}>
+                <Link to="/">
+                  <img
+                    src="src\assets\logo.png"
+                    alt="logo"
+                    height="80px"
+                    width="80px"
+                  />
+                </Link>
+                <li>
+                  <button>(Explore Edit profile, My Maps, My place)</button>
+                </li>
+                <li>
+                  <button>(User Data + log out)</button>
+                </li>
+                {value.status.split("&").indexOf("Admin") !== -1 && (
+                  <li className={styles.navigationOption}>
+                    <Link to="/dashboard">Dashboard</Link>
+                  </li>
+                )}
+                <li>
+                  <Link to="/contact">Contact</Link>
+                </li>
+              </ul>
+              <ul id={styles.tablet}>
+                <Link to="/">
+                  <img
+                    src="src\assets\logo.png"
+                    alt="logo"
+                    height="80px"
+                    width="80px"
+                  />
+                </Link>
+                <li>Marketplates</li>
+                <li>
+                  <button>(Explore Edit profile, My Maps, My place)</button>
+                </li>
+                {value.status.split("&").indexOf("Admin") !== -1 && (
+                  <li className={styles.navigationOption}>
+                    <Link to="/dashboard">Dashboard</Link>
+                  </li>
+                )}
+                <li>
+                  <button>(User Data + log out)</button>
+                </li>
+                <li>
+                  <Link to="/contact">Contact</Link>
+                </li>
+              </ul>
+            </nav>
+          </header>
+        ) : (
+          <header>
+            <nav>
+              <ul id={styles.small}>
+                <li>
+                  <Link to="/">
+                    <img
+                      src="src\assets\logo.png"
+                      alt="logo"
+                      height="80px"
+                      width="80px"
+                    />
+                  </Link>
+                </li>
+                <li>
                   <Link to="/register">Register</Link>
                 </li>
-                <li className={styles.navigationOption}>
+                <li>
                   <Link to="/login">Login</Link>
                 </li>
-              </>
-            )}
-            {value.userId.length > 0 && (
-              <>
-                <li className={styles.navigationOption}>
-                  <Link to="/explore">Explore</Link>
+                <li>
+                  <Link to="/contact">Contact</Link>
                 </li>
-                <li className={styles.navigationOption}>
-                  <Link to="/profile">Profile</Link>
+              </ul>
+              <ul id={styles.tablet}>
+                <li>
+                  <Link to="/">
+                    <img
+                      src="src\assets\logo.png"
+                      alt="logo"
+                      height="80px"
+                      width="80px"
+                    />
+                  </Link>
                 </li>
-                <li className={styles.navigationOption}>
-                  <Link to="/myplaces">My places</Link>
+                <li>Marketplates</li>
+                <li>
+                  <Link to="/register">Register</Link>
                 </li>
-                <li className={styles.navigationOption}>
-                  <Link to="/mymaps">My maps</Link>
+                <li>
+                  <Link to="/login">Login</Link>
                 </li>
-              </>
-            )}
-            {value.status.split("&").indexOf("Admin") !== -1 && (
-              <li className={styles.navigationOption}>
-                <Link to="/dashboard">Dashboard</Link>
-              </li>
-            )}
-          </ul>
-        </nav>
-      </header>
+                <li>
+                  <Link to="/contact">Contact</Link>
+                </li>
+              </ul>
+            </nav>
+          </header>
+        )}
 
-      <Outlet />
+        <button type="button" onClick={logoutUser}>
+          Log out
+        </button>
+
+        <Outlet />
+      </div>
     </>
   );
 };

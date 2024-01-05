@@ -1,15 +1,21 @@
 import { useNavigate } from "react-router-dom";
-import { UserType } from "../../../common/types/userTypes/userTypes";
+import { ISessionValues, UserType } from "../../../common/types/userTypes/userTypes";
 import { useEffect } from "react";
+import * as jose from "jose";
 import { checkPermission } from "../../../common/functions/checkPermission";
 
-const AdminPathResolver = (props: { userTypes: string, children: React.ReactNode }) => {
+const AdminPathResolver = (props: { children: React.ReactNode }) => {
     const navigate = useNavigate();
 
     //Check if the user is logged in and an admin
+
     useEffect(() => {
-        if (!checkPermission(props.userTypes, UserType.Admin)) {
-            navigate("/");
+        const refreshValue = localStorage.getItem("refreshToken");
+        if (refreshValue && refreshValue !== null) {
+            const userSessionData: ISessionValues = jose.decodeJwt(refreshValue);
+            if (!checkPermission(userSessionData.status, UserType.Admin)) {
+                navigate("/");
+            }
         }
     });
 

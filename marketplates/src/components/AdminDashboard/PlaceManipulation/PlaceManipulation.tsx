@@ -47,7 +47,7 @@ function PlaceManipulation() {
 
   useEffect(() => {
     getAllPlaces();
-  }, []);
+  }, [value]);
 
   function manageDeletionList(id: string) {
     // Upon clicking on the button to select, we check if the id was already part of the primed for deletion list

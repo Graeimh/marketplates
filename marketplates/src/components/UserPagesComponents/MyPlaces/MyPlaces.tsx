@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import * as placeService from "../../../services/placeService.js";
-import styles from "./MyPlaces.module.scss";
+import styles from "../../../common/styles/UserItems.module.scss";
 import { IPlace } from "../../../common/types/placeTypes/placeTypes.js";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
@@ -53,65 +53,68 @@ function MyPlaces() {
         <title>My places</title>
         <link rel="canonical" href="http://localhost:5173/myplaces" />
       </Helmet>
+      <article id={styles.itemContainer}>
+        <h1>Manage your businesses</h1>
+        <section id={styles.itemCreationContainer}>
+          {userPlacesList.length > 0 ? (
+            <button
+              onClick={() => {
+                navigate("/createplace");
+              }}
+            >
+              Register a business
+            </button>
+          ) : (
+            <>
+              <h2>No businesses here yet?</h2>
+              <button
+                onClick={() => {
+                  navigate("/createplace");
+                }}
+              >
+                Register your first business
+              </button>
+            </>
+          )}
+        </section>
 
-      <h1>Manage your businesses</h1>
-
-      {userPlacesList ? (
-        <button
-          onClick={() => {
-            navigate("/createplace");
-          }}
-        >
-          Register a business
-        </button>
-      ) : (
-        <article>
-          <h1>No businesses ?</h1>
-          <button
-            onClick={() => {
-              navigate("/createplace");
-            }}
-          >
-            Register your first business
-          </button>
-        </article>
-      )}
-      <div id={styles.itemListContainer}>
-        {userPlacesList &&
-          userPlacesList.map((place) => (
-            <article className={styles.userItemContainer} key={place.name}>
-              <section className={styles.itemDataContainer}>
-                <h2>{place.name}</h2>
-                <ul>
-                  <li className={styles.itemDataField}>Description</li>
-                  <li>{place.description}</li>
-                  <li className={styles.itemDataField}>Address</li>
-                  <li>{place.address}</li>
-                </ul>
-              </section>
-              <section className={styles.itemButtonContainer}>
-                <button
-                  type="button"
-                  onClick={() => navigate(`/editplace/${place._id}`)}
-                >
-                  <FontAwesomeIcon icon={solid("pen-to-square")} />
-                  Edit place
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    place._id
-                      ? handleUserPlaceDeleted(place._id)
-                      : setError("The place has been deleted already");
-                  }}
-                >
-                  <FontAwesomeIcon icon={solid("trash-can")} />
-                  Delete place
-                </button>
-              </section>
-            </article>
-          ))}
-      </div>
+        <div id={styles.itemListContainer}>
+          {userPlacesList &&
+            userPlacesList.map((place) => (
+              <article className={styles.userItemContainer} key={place.name}>
+                <section className={styles.itemDataContainer}>
+                  <h2>{place.name}</h2>
+                  <ul>
+                    <li className={styles.itemDataField}>Description</li>
+                    <li>{place.description}</li>
+                    <li className={styles.itemDataField}>Address</li>
+                    <li>{place.address}</li>
+                  </ul>
+                </section>
+                <section className={styles.itemButtonContainer}>
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/editplace/${place._id}`)}
+                  >
+                    <FontAwesomeIcon icon={solid("pen-to-square")} />
+                    Edit place
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      place._id
+                        ? handleUserPlaceDeleted(place._id)
+                        : setError("The place has been deleted already");
+                    }}
+                  >
+                    <FontAwesomeIcon icon={solid("trash-can")} />
+                    Delete place
+                  </button>
+                </section>
+              </article>
+            ))}
+        </div>
+      </article>
     </>
   );
 }

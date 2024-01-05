@@ -30,7 +30,7 @@ export async function login(loginData: ILoginValues, captchaToken: string) {
    * @returns A JSON containing the success status as well as a message, removes all tokens associated with the user
 */
 export async function logout(refreshToken: string | null) {
-    sessionStorage.clear();
+    localStorage.clear();
     const response = await authenticationInstance.post('/auth/logout', {
         refreshToken,
     });
@@ -52,5 +52,5 @@ export async function getSessionData() {
    * 
 */
 export async function generateAccessToken() {
-    await authenticationInstance.post("/auth/accessToken/", { refreshToken: sessionStorage.getItem("refreshToken") });
+    await authenticationInstance.post("/auth/accessToken/", { refreshToken: localStorage.getItem("refreshToken") });
 }

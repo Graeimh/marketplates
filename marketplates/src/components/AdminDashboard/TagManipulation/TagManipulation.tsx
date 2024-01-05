@@ -40,6 +40,7 @@ function TagManipulation() {
   });
   const [validForUpdating, setValidForUpdating] = useState(false);
   const [isAllSelected, setIsAllSelected] = useState(false);
+  const [isStateLoading, setIsStateLoading] = useState(true);
   const [tagQuery, setTagQuery] = useState("");
 
   const value = useContext(UserContext);
@@ -57,7 +58,7 @@ function TagManipulation() {
 
   useEffect(() => {
     getAllTags();
-  }, []);
+  }, [value]);
 
   function decideUpdatability() {
     setValidForUpdating(

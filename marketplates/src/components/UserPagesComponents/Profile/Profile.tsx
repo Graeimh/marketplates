@@ -1,18 +1,102 @@
 import { Link } from "react-router-dom";
+import stylesUserDashboard from "../../../common/styles/Dashboard.module.scss";
 import styles from "./Profile.module.scss";
+import * as jose from "jose";
+import * as authenticationService from "../../../services/authenticationService.js";
+import * as userService from "../../../services/userService.js";
 import { Helmet } from "react-helmet";
-function Profile() {
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { ISessionValues } from "../../../common/types/userTypes/userTypes.js";
+function Profile(props: { contextSetter: React.Dispatch<ISessionValues> }) {
+  async function deleteUser() {
+    if (confirm("Are you sure you want to delete your account?")) {
+      try {
+        const userData = localStorage.getItem("refreshToken");
+        if (userData !== null) {
+          const userDataDecrypted: ISessionValues = jose.decodeJwt(userData);
+          const statusDelete = await userService.deleteUserById(
+            userDataDecrypted.userId
+          );
+          const statusLogout = await authenticationService.logout(userData);
+
+          props.contextSetter({
+            email: "",
+            displayName: "",
+            userId: "",
+            status: "",
+            iat: 0,
+            exp: 0,
+          });
+        }
+      } catch (err) {}
+    }
+  }
+
   return (
     <>
       <Helmet>
         <title>Profile</title>
         <link rel="canonical" href="http://localhost:5173/profile" />
       </Helmet>
-
-      <h1>Profile</h1>
-      <li>
-        <Link to="/editprofile">Edit my profile</Link>
-      </li>
+      <div id={stylesUserDashboard.dashboardContentContainer}>
+        <ul id={stylesUserDashboard.dashboardPanel}>
+          <li>
+            <Link to="/editprofile">
+              <span className={stylesUserDashboard.dashboardOptionChevron}>
+                <FontAwesomeIcon icon={solid("chevron-right")} />
+              </span>
+              <span className={stylesUserDashboard.dashboardOptionText}>
+                Edit my profile
+              </span>
+              <span className={stylesUserDashboard.dashboardOptionDecorator}>
+                <FontAwesomeIcon icon={regular("user")} />
+              </span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/mymaps">
+              <span className={stylesUserDashboard.dashboardOptionChevron}>
+                <FontAwesomeIcon icon={solid("chevron-right")} />
+              </span>
+              <span className={stylesUserDashboard.dashboardOptionText}>
+                My Maps
+              </span>
+              <span className={stylesUserDashboard.dashboardOptionDecorator}>
+                <FontAwesomeIcon icon={solid("map")} />
+              </span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/myplaces">
+              <span className={stylesUserDashboard.dashboardOptionChevron}>
+                <FontAwesomeIcon icon={solid("chevron-right")} />
+              </span>
+              <span className={stylesUserDashboard.dashboardOptionText}>
+                My Businesses
+              </span>
+              <span className={stylesUserDashboard.dashboardOptionDecorator}>
+                <FontAwesomeIcon icon={solid("map-location-dot")} />
+              </span>
+            </Link>
+          </li>
+          <li id={styles.deleteUserButton}>
+            <div>
+              <Link to="/" onClick={deleteUser}>
+                <span className={stylesUserDashboard.dashboardOptionChevron}>
+                  <FontAwesomeIcon icon={solid("chevron-right")} />
+                </span>
+                <span className={stylesUserDashboard.dashboardOptionText}>
+                  Delete my account
+                </span>
+                <span className={stylesUserDashboard.dashboardOptionDecorator}>
+                  <FontAwesomeIcon icon={solid("user-slash")} />
+                </span>
+              </Link>
+            </div>
+          </li>
+        </ul>
+      </div>
     </>
   );
 }

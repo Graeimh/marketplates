@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import styles from "./Dashboard.module.scss";
+import styles from "../../../common/styles/Dashboard.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { Helmet } from "react-helmet";

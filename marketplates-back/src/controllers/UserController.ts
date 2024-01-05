@@ -226,12 +226,14 @@ export async function deleteUserById(req, res) {
 */
 export async function deleteUsersByIds(req, res) {
   try {
+
     await UserModel.deleteMany({ _id: { $in: req.params.ids.split("&") } });
 
     return res.status(204).json({
       message: '(204 No Content)-Users successfully deleted',
       success: true
     });
+
 
   } catch (err) {
     return res.status(404).json({

@@ -22,8 +22,8 @@ export default function generateApiInstance(): AxiosInstance {
         (config) => config,
         async (error: AxiosError) => {
             // if the access token has expired, then try generating a new one and make the request again
-            if (error.response?.status === 401 && sessionStorage.getItem("refreshToken")) {
-                const response = await apiInstance.post("/auth/accessToken/", { refreshToken: sessionStorage.getItem("refreshToken") });
+            if (error.response?.status === 401 && localStorage.getItem("refreshToken")) {
+                const response = await apiInstance.post("/auth/accessToken/", { refreshToken: localStorage.getItem("refreshToken") });
 
                 const newRequest = new Request(error.request)
                 newRequest.headers.append('Cookie', `token=${response.newAccessToken}`);

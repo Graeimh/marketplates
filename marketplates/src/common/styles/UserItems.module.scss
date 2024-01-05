@@ -1,0 +1,50 @@
+#itemContainer h1 {
+  font-size: 1.5rem;
+  color: #a32e00;
+  text-align: center;
+}
+
+#itemContainer #itemCreationContainer {
+  text-align: center;
+}
+
+#itemContainer #itemCreationContainer button {
+  background-color: #eb6700;
+  border-radius: 20px;
+  color: #ffffff;
+}
+
+#itemListContainer h2 {
+  font-size: 1.5rem;
+}
+
+.itemDataField {
+  font-weight: 800;
+  text-decoration: underline;
+  color: #a32e00;
+}
+
+.userItemContainer {
+  border: 1px solid #e4e4e4;
+  border-radius: 20px;
+  box-shadow: 2px 2px 2px 2px #e4e4e4;
+  width: 80%;
+  margin: 1rem auto;
+}
+
+.itemButtonContainer {
+  text-align: center;
+}
+.itemButtonContainer button {
+  margin: 0.5rem 1rem;
+}
+
+/* For desktop: */
+@media only screen and (min-width: 1024px) {
+  #itemListContainer {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    padding: 0;
+    margin: auto;
+  }
+}

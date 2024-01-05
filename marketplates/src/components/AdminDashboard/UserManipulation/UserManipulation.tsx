@@ -31,6 +31,7 @@ function UserManipulation() {
   const [userQuery, setUserQuery] = useState("");
 
   const value = useContext(UserContext);
+  console.log(value);
 
   async function getAllUsers() {
     try {
@@ -46,7 +47,7 @@ function UserManipulation() {
 
   useEffect(() => {
     getAllUsers();
-  }, []);
+  }, [value]);
 
   function manageDeletionList(id: string) {
     // Upon clicking on the button to select, we check if the id was already part of the primed for deletion list
