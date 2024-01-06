@@ -108,3 +108,7 @@
     grid-template-columns: auto 20rem;
   }
 }
+
+#addressListContainer {
+  overflow: scroll;
+}

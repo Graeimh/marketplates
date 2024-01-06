@@ -3,6 +3,7 @@ import * as tagService from "../../../services/tagService.js";
 import styles from "./PlaceManipulationItem.module.scss";
 import formStyles from "../../../common/styles/Forms.module.scss";
 import itemStyles from "../../../common/styles/ManipulationItem.module.scss";
+import stylesUserDashboard from "../../../common/styles/Dashboard.module.scss";
 import Tag from "../../MapGenerationComponents/Tag/index.js";
 import { IPlace } from "../../../common/types/placeTypes/placeTypes.js";
 import { ITag } from "../../../common/types/tagTypes/tagTypes.js";
@@ -82,11 +83,13 @@ function PlaceManipulationItem(props: {
             )}
             {props.IsSelected ? " Cancel selection" : " Select"}
           </button>
-          <button type="button" onClick={handleDelete}>
-            <FontAwesomeIcon icon={solid("shop")} />
-            <FontAwesomeIcon icon={solid("xmark")} />
-            Delete place
-          </button>
+          <span className={stylesUserDashboard.deleteButton}>
+            <button type="button" onClick={handleDelete}>
+              <FontAwesomeIcon icon={solid("shop")} />
+              <FontAwesomeIcon icon={solid("xmark")} />
+              Delete place
+            </button>
+          </span>
         </section>
         <section>
           <h5>Address :</h5>

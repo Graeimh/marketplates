@@ -158,7 +158,7 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
     if (props.editPlaceId !== undefined) {
       getPlaceEditValue(props.editPlaceId);
     }
-  }, []);
+  }, [value]);
 
   function decideRegistration() {
     setIsValidForSending(
@@ -254,7 +254,7 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
         <section>
           <form>
             <ul>
-              <h1>Register a place</h1>
+              <h1>Register a business</h1>
               <li>
                 <label>Name : </label>
                 <br />
@@ -349,7 +349,7 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
               {newResults.length > 1 && (
                 <>
                   <li>Select a result:</li>
-                  <ul className={styles.addressClickables}>
+                  <ul className={formStyles.addressClickables}>
                     {newResults.map((result) => (
                       <li
                         onClick={() => {
@@ -484,8 +484,8 @@ function PlaceEditor(props: { editPlaceId: string | undefined }) {
                 onClick={sendRegistrationForm}
               >
                 {props.editPlaceId === undefined
-                  ? "Register place"
-                  : "Edit place"}
+                  ? "Register business"
+                  : "Edit business"}
               </button>
             </div>
           </form>

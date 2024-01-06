@@ -80,7 +80,7 @@ function Profile(props: { contextSetter: React.Dispatch<ISessionValues> }) {
               </span>
             </Link>
           </li>
-          <li id={styles.deleteUserButton}>
+          <li className={stylesUserDashboard.deleteButton}>
             <div>
               <Link to="/" onClick={deleteUser}>
                 <span className={stylesUserDashboard.dashboardOptionChevron}>

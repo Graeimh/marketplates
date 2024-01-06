@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import * as mapsService from "../../../services/mapService.js";
+import formStyles from "../../../common/styles/Forms.module.scss";
 import stylesItem from "../../../common/styles/UserItems.module.scss";
+import stylesUserDashboard from "../../../common/styles/Dashboard.module.scss";
 import styles from "./MyMaps.module.scss";
 import { useNavigate } from "react-router-dom";
 import { IMaps } from "../../../common/types/mapTypes/mapTypes.js";
@@ -35,9 +37,11 @@ function MyPlaces() {
 
   async function handleUserMapDeleted(placeId: string) {
     try {
-      if (checkPermission(value.status, UserType.User)) {
-        await mapsService.deleteMapById(placeId);
-        getUserMaps();
+      if (confirm("Are you sure you want to delete this map?")) {
+        if (checkPermission(value.status, UserType.User)) {
+          await mapsService.deleteMapById(placeId);
+          getUserMaps();
+        }
       }
     } catch (err) {
       setError(err.message);
@@ -46,7 +50,7 @@ function MyPlaces() {
 
   useEffect(() => {
     getUserMaps();
-  }, []);
+  }, [value]);
   return (
     <>
       <Helmet>
@@ -55,7 +59,7 @@ function MyPlaces() {
       </Helmet>
       <article id={stylesItem.itemContainer}>
         <h1>Manage your maps</h1>
-        <section id={stylesItem.itemCreationContainer}>
+        <section className={formStyles.finalButtonContainer}>
           {userMapsList.length > 0 ? (
             <button
               onClick={() => {
@@ -94,17 +98,19 @@ function MyPlaces() {
                     <FontAwesomeIcon icon={solid("pen-to-square")} />
                     Edit map
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      map._id
-                        ? handleUserMapDeleted(map._id)
-                        : setError("The map has been deleted already");
-                    }}
-                  >
-                    <FontAwesomeIcon icon={solid("trash-can")} />
-                    Delete map
-                  </button>
+                  <span className={stylesUserDashboard.deleteButton}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        map._id
+                          ? handleUserMapDeleted(map._id)
+                          : setError("The map has been deleted already");
+                      }}
+                    >
+                      <FontAwesomeIcon icon={solid("trash-can")} />
+                      Delete map
+                    </button>
+                  </span>
                 </section>
               </article>
             ))}

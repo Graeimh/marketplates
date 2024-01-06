@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import * as placeService from "../../../services/placeService.js";
+import stylesUserDashboard from "../../../common/styles/Dashboard.module.scss";
 import styles from "../../../common/styles/ManipulationContainer.module.scss";
 import { IPlace } from "../../../common/types/placeTypes/placeTypes.js";
 import PlaceManipulationItem from "../PlaceManipulationItem/PlaceManipulationItem.js";
@@ -142,9 +143,11 @@ function PlaceManipulation() {
           />
         </section>
         <section id={styles.manipulationButtonsContainer}>
-          <button type="button" onClick={() => deletePrimedForDeletion()}>
-            Delete {primedForDeletionList.length} place(s)
-          </button>
+          <span className={stylesUserDashboard.deleteButton}>
+            <button type="button" onClick={() => deletePrimedForDeletion()}>
+              Delete {primedForDeletionList.length} place(s)
+            </button>
+          </span>
           <button
             type="button"
             onClick={() => selectAllPlaces()}

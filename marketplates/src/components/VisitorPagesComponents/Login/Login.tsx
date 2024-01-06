@@ -171,10 +171,15 @@ function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
           </div>
         </form>
       </article>
-      {responseMessage && (
-        <div className={styles.success}>{responseMessage}</div>
-      )}
-      {error && <div className={styles.error}>{error}</div>}
+
+      <div
+        className={responseMessage.length > 0 ? styles.shown : styles.hidden}
+      >
+        {responseMessage}
+      </div>
+      <div className={error.length > 0 ? styles.shown : styles.hidden}>
+        {error}
+      </div>
     </>
   );
 }

@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import * as userService from "../../../services/userService.js";
+import stylesUserDashboard from "../../../common/styles/Dashboard.module.scss";
 import styles from "../../../common/styles/ManipulationContainer.module.scss";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import UserManipulationItem from "../UserManipulationItem/UserManipulationItem.js";
@@ -31,7 +32,6 @@ function UserManipulation() {
   const [userQuery, setUserQuery] = useState("");
 
   const value = useContext(UserContext);
-  console.log(value);
 
   async function getAllUsers() {
     try {
@@ -137,10 +137,12 @@ function UserManipulation() {
           />
         </section>
         <section id={styles.manipulationButtonsContainer}>
-          <button type="button" onClick={() => deletePrimedForDeletion()}>
-            <FontAwesomeIcon icon={regular("trash-can")} />
-            Delete {primedForDeletionList.length} users
-          </button>
+          <span className={stylesUserDashboard.deleteButton}>
+            <button type="button" onClick={() => deletePrimedForDeletion()}>
+              <FontAwesomeIcon icon={regular("trash-can")} />
+              Delete {primedForDeletionList.length} users
+            </button>
+          </span>
           <button type="button" onClick={() => cancelSelection()}>
             <FontAwesomeIcon icon={regular("rectangle-xmark")} />
             Cancel selection

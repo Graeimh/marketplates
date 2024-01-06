@@ -1,11 +1,9 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import styles from "./LayoutDashboard.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 const LayoutDashboard = () => {
-  const navigate = useNavigate();
-
   return (
     <>
       <div id={styles.dashboardContainer}>
@@ -13,72 +11,58 @@ const LayoutDashboard = () => {
           <nav>
             <ul id={styles.small}>
               <li>
-                <button id={styles.homeButton} onClick={() => navigate("/")}>
+                <Link id={styles.homeButton} to="/">
                   &#8205;
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => navigate("/dashboard/users")}
-                >
+                <Link to="/dashboard/users">
                   <FontAwesomeIcon icon={solid("users")} />
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => navigate("/dashboard/tags")}
-                >
+                <Link to="/dashboard/tags">
                   <FontAwesomeIcon icon={solid("tags")} />
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => navigate("/dashboard/places")}
-                >
+                <Link to="/dashboard/places">
                   <FontAwesomeIcon icon={solid("shop")} />
-                </button>
+                </Link>
               </li>
             </ul>
             <ul id={styles.tablet}>
               <li>
-                <button id={styles.homeButton} onClick={() => navigate("/")}>
+                <Link id={styles.homeButton} to="/">
                   &#8205;
-                </button>
+                </Link>
               </li>
               <li>
-                <button type="button" onClick={() => navigate("/dashboard/")}>
-                  <FontAwesomeIcon icon={solid("house")} /> Index
-                </button>
+                <Link to="/dashboard">
+                  <FontAwesomeIcon icon={solid("house")} /> <br />
+                  Index
+                </Link>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => navigate("/dashboard/users")}
-                >
+                <Link to="/dashboard/users">
                   <FontAwesomeIcon icon={solid("users")} />
+                  <br />
                   Users
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => navigate("/dashboard/tags")}
-                >
+                <Link to="/dashboard/tags">
                   <FontAwesomeIcon icon={solid("tags")} />
+                  <br />
                   Tags
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => navigate("/dashboard/places")}
-                >
+                <Link to="/dashboard/places">
                   <FontAwesomeIcon icon={solid("shop")} />
+                  <br />
                   Places
-                </button>
+                </Link>
               </li>
             </ul>
           </nav>

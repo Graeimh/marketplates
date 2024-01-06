@@ -10,6 +10,10 @@ function AboutUs() {
       </Helmet>
 
       <h1>About us</h1>
+      <span id={styles.spoonWrapper}>
+        <img src="src\assets\spoon.svg" alt="Pot" id={styles.spoon} />
+      </span>
+      <img src="src\assets\pot.svg" alt="Spoon" id={styles.pot} />
     </>
   );
 }

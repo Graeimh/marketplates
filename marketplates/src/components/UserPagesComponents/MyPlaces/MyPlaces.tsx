@@ -1,5 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import * as placeService from "../../../services/placeService.js";
+import formStyles from "../../../common/styles/Forms.module.scss";
+import stylesUserDashboard from "../../../common/styles/Dashboard.module.scss";
 import styles from "../../../common/styles/UserItems.module.scss";
 import { IPlace } from "../../../common/types/placeTypes/placeTypes.js";
 import { useNavigate } from "react-router-dom";
@@ -35,9 +37,11 @@ function MyPlaces() {
 
   async function handleUserPlaceDeleted(placeId: string) {
     try {
-      if (checkPermission(value.status, UserType.User)) {
-        await placeService.deletePlaceById(placeId);
-        getUserPlaces();
+      if (confirm("Are you sure you want to delete this business?")) {
+        if (checkPermission(value.status, UserType.User)) {
+          await placeService.deletePlaceById(placeId);
+          getUserPlaces();
+        }
       }
     } catch (err) {
       setError(err.message);
@@ -46,7 +50,7 @@ function MyPlaces() {
 
   useEffect(() => {
     getUserPlaces();
-  }, []);
+  }, [value]);
   return (
     <>
       <Helmet>
@@ -55,7 +59,7 @@ function MyPlaces() {
       </Helmet>
       <article id={styles.itemContainer}>
         <h1>Manage your businesses</h1>
-        <section id={styles.itemCreationContainer}>
+        <section className={formStyles.finalButtonContainer}>
           {userPlacesList.length > 0 ? (
             <button
               onClick={() => {
@@ -97,19 +101,21 @@ function MyPlaces() {
                     onClick={() => navigate(`/editplace/${place._id}`)}
                   >
                     <FontAwesomeIcon icon={solid("pen-to-square")} />
-                    Edit place
+                    Edit business
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      place._id
-                        ? handleUserPlaceDeleted(place._id)
-                        : setError("The place has been deleted already");
-                    }}
-                  >
-                    <FontAwesomeIcon icon={solid("trash-can")} />
-                    Delete place
-                  </button>
+                  <span className={stylesUserDashboard.deleteButton}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        place._id
+                          ? handleUserPlaceDeleted(place._id)
+                          : setError("The place has been deleted already");
+                      }}
+                    >
+                      <FontAwesomeIcon icon={solid("trash-can")} />
+                      Delete business
+                    </button>
+                  </span>
                 </section>
               </article>
             ))}

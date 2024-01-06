@@ -12,25 +12,6 @@
   margin: 0.5rem 0;
 }
 
-.addressClickables {
-  margin-bottom: 0.5rem;
-}
-
-.addressClickables li {
-  cursor: pointer;
-  background-color: #ffffff;
-  margin-top: 0rem;
-  width: 80%;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid #a32e00;
-  color: #1e1e1e;
-}
-
-.addressClickables li:hover {
-  background-color: #e4e4e4;
-}
-
 #mapDesktopContainer {
   display: none;
 }

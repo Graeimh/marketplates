@@ -11,14 +11,13 @@ function Dashboard() {
         <title>Dashboard</title>
         <link rel="canonical" href="http://localhost:5173/dashboard" />
       </Helmet>
-
       <ul id={styles.dashboardPanel}>
         <li>
           <Link to="/dashboard/users">
             <span className={styles.dashboardOptionChevron}>
               <FontAwesomeIcon icon={solid("chevron-right")} />
             </span>
-            <span className={styles.dashboardOptionText}>Manipulate users</span>
+            <span className={styles.dashboardOptionText}>Manage users</span>
             <span className={styles.dashboardOptionDecorator}>
               <FontAwesomeIcon icon={solid("users")} />
             </span>
@@ -29,7 +28,7 @@ function Dashboard() {
             <span className={styles.dashboardOptionChevron}>
               <FontAwesomeIcon icon={solid("chevron-right")} />
             </span>
-            <span className={styles.dashboardOptionText}>Manipulate tags</span>
+            <span className={styles.dashboardOptionText}>Manage tags</span>
             <span className={styles.dashboardOptionDecorator}>
               <FontAwesomeIcon icon={solid("tags")} />
             </span>
@@ -40,9 +39,7 @@ function Dashboard() {
             <span className={styles.dashboardOptionChevron}>
               <FontAwesomeIcon icon={solid("chevron-right")} />
             </span>
-            <span className={styles.dashboardOptionText}>
-              Manipulate places
-            </span>
+            <span className={styles.dashboardOptionText}>Manage places</span>
             <span className={styles.dashboardOptionDecorator}>
               <FontAwesomeIcon icon={solid("shop")} />
             </span>

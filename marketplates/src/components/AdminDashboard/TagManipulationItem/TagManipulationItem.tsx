@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import * as tagService from "../../../services/tagService.js";
 import formStyles from "../../../common/styles/Forms.module.scss";
 import itemStyles from "../../../common/styles/ManipulationItem.module.scss";
+import stylesUserDashboard from "../../../common/styles/Dashboard.module.scss";
 import styles from "./TagManipulationItem.module.scss";
 import { ITag, ITagValues } from "../../../common/types/tagTypes/tagTypes.js";
 import { HexColorPicker } from "react-colorful";
@@ -38,6 +39,28 @@ function TagManipulationItem(props: {
     setIsPrimed(!isPrimed);
   }
 
+  function updateField(event) {
+    switch (event.target.name) {
+      case "tagNameColor":
+        setFormData({
+          ...formData,
+          tagNameColor: hexifyColors(event.target.value.toString()),
+        });
+        break;
+      case "tagBackgroundColor":
+        setFormData({
+          ...formData,
+          tagBackgroundColor: hexifyColors(event.target.value.toString()),
+        });
+        break;
+      default:
+        setFormData({
+          ...formData,
+          [event.target.name]: event.target.value,
+        });
+    }
+  }
+
   function handleDelete() {
     props.uponDeletion(props.tag._id);
   }
@@ -58,7 +81,7 @@ function TagManipulationItem(props: {
 
   async function sendUpdateForm(event) {
     event.preventDefault();
-    if (formData.tagName.length > 2) {
+    if (validForUpdating) {
       try {
         if (checkPermission(value.status, UserType.Admin)) {
           const response = await tagService.updateTagById(
@@ -66,6 +89,7 @@ function TagManipulationItem(props: {
             formData
           );
           setResponseMessage(response.message);
+          setValidForUpdating(false);
           props.refetch();
         }
       } catch (err) {
@@ -114,11 +138,12 @@ function TagManipulationItem(props: {
             )}
             {props.IsSelected ? " Cancel selection" : " Select"}
           </button>
-
-          <button type="button" onClick={handleDelete}>
-            <FontAwesomeIcon icon={solid("tag")} />
-            <FontAwesomeIcon icon={solid("xmark")} /> Delete tag
-          </button>
+          <span className={stylesUserDashboard.deleteButton}>
+            <button type="button" onClick={handleDelete}>
+              <FontAwesomeIcon icon={solid("tag")} />
+              <FontAwesomeIcon icon={solid("xmark")} /> Delete tag
+            </button>
+          </span>
         </section>
         <form onSubmit={sendUpdateForm}>
           <section>
@@ -128,10 +153,8 @@ function TagManipulationItem(props: {
                 <br />
                 <input
                   type="text"
-                  name="name"
-                  onInput={(e) => {
-                    setFormData({ ...formData, tagName: e.target.value });
-                  }}
+                  name="tagName"
+                  onInput={updateField}
                   value={formData.tagName}
                 />
               </li>
@@ -152,15 +175,8 @@ function TagManipulationItem(props: {
                   <br />
                   <input
                     type="text"
-                    name="backgroundColor"
-                    onInput={(e) => {
-                      setFormData({
-                        ...formData,
-                        tagBackgroundColor: hexifyColors(
-                          e.target.value.toString()
-                        ),
-                      });
-                    }}
+                    name="tagBackgroundColor"
+                    onInput={updateField}
                     value={formData.tagBackgroundColor}
                   />
                 </li>
@@ -175,13 +191,8 @@ function TagManipulationItem(props: {
                   <label>Name Color : </label>
                   <input
                     type="text"
-                    name="nameColor"
-                    onInput={(e) => {
-                      setFormData({
-                        ...formData,
-                        tagNameColor: hexifyColors(e.target.value.toString()),
-                      });
-                    }}
+                    name="tagNameColor"
+                    onInput={updateField}
                     value={formData.tagNameColor}
                   />
                 </li>

@@ -1,3 +1,48 @@
-h1 {
-    color: red
+#spoon,
+#spoonWrapper {
+  position: absolute;
+  bottom: 12rem;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 1;
+}
+
+#spoon {
+  animation: stirX 2s infinite ease-in-out;
+}
+
+#spoonWrapper {
+  animation: stirY 2s infinite ease-in-out;
+  width: 6rem;
+}
+
+#pot {
+  position: absolute;
+  bottom: 9rem;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+@keyframes stirX {
+  25% {
+    transform: translateX(6.5rem);
+  }
+
+  50% {
+    transform: translateX(-2rem);
+  }
+}
+
+@keyframes stirY {
+  33% {
+    transform: translateY(1.3rem);
+  }
+
+  66% {
+    transform: translateX(0.5rem);
+  }
 }

@@ -1,12 +1,17 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import styles from "../../../common/styles/Dashboard.module.scss";
+import stylesUserDashboard from "../../../common/styles/Dashboard.module.scss";
+import stylesAdminDashboard from "../LayoutDashboard/LayoutDashboard.module.scss";
+import styles from "./Layout.module.scss";
 import { useContext, useState } from "react";
 import * as authenticationService from "../../../services/authenticationService.js";
 import { ISessionValues } from "../../../common/types/userTypes/userTypes.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
+import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
   const [message, setMessage] = useState("");
+  const [isBurgerOpen, setIsBurgerOpen] = useState(false);
   sessionStorage.getItem("refreshToken");
   const navigate = useNavigate();
 
@@ -34,57 +39,96 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
 
   return (
     <>
-      <div id={styles.dashboardContainer}>
+      <div id={stylesUserDashboard.dashboardContainer}>
         {value.userId.length > 0 ? (
           <header>
             <nav>
-              <ul id={styles.small}>
-                <Link to="/">
-                  <img
-                    src="src\assets\logo.png"
-                    alt="logo"
-                    height="80px"
-                    width="80px"
-                  />
-                </Link>
+              <ul id={stylesUserDashboard.small}>
                 <li>
-                  <button>(Explore Edit profile, My Maps, My place)</button>
+                  <Link id={stylesAdminDashboard.homeButton} to="/">
+                    &#8205;
+                  </Link>
                 </li>
                 <li>
-                  <button>(User Data + log out)</button>
+                  <button
+                    onClick={() => {
+                      setIsBurgerOpen(!isBurgerOpen);
+                    }}
+                    className={isBurgerOpen ? styles.burgerIsOpened : ""}
+                  >
+                    <FontAwesomeIcon icon={solid("bars")} />
+                  </button>
                 </li>
                 {value.status.split("&").indexOf("Admin") !== -1 && (
-                  <li className={styles.navigationOption}>
-                    <Link to="/dashboard">Dashboard</Link>
+                  <li className={stylesUserDashboard.navigationOption}>
+                    <Link to="/dashboard">
+                      <FontAwesomeIcon icon={solid("gauge")} />
+                    </Link>
                   </li>
                 )}
                 <li>
-                  <Link to="/contact">Contact</Link>
+                  <Link to="/contact">
+                    <FontAwesomeIcon icon={solid("square-envelope")} />
+                  </Link>
+                </li>
+                <li>
+                  <button type="button" onClick={logoutUser} id={styles.logout}>
+                    <FontAwesomeIcon icon={solid("right-from-bracket")} />
+                  </button>
                 </li>
               </ul>
-              <ul id={styles.tablet}>
-                <Link to="/">
-                  <img
-                    src="src\assets\logo.png"
-                    alt="logo"
-                    height="80px"
-                    width="80px"
-                  />
-                </Link>
-                <li>Marketplates</li>
+              <ul id={stylesAdminDashboard.tablet}>
                 <li>
-                  <button>(Explore Edit profile, My Maps, My place)</button>
+                  <Link id={stylesAdminDashboard.homeButton} to="/">
+                    &#8205;
+                  </Link>
                 </li>
+
+                <li>
+                  <Link to="/mymaps">
+                    <FontAwesomeIcon icon={solid("map")} />
+                    <br />
+                    My Maps
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/myplaces">
+                    <FontAwesomeIcon icon={solid("shop")} />
+                    <br />
+                    My Places
+                  </Link>
+                </li>
+
+                <li>
+                  <Link to="/profile">
+                    <FontAwesomeIcon icon={regular("user")} />
+                    <br />
+                    Profile
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contact">
+                    <FontAwesomeIcon icon={solid("square-envelope")} />
+                    <br />
+                    Contact
+                  </Link>
+                </li>
+
                 {value.status.split("&").indexOf("Admin") !== -1 && (
-                  <li className={styles.navigationOption}>
-                    <Link to="/dashboard">Dashboard</Link>
+                  <li className={stylesUserDashboard.navigationOption}>
+                    <Link to="/dashboard">
+                      <FontAwesomeIcon icon={solid("gauge")} />
+                      <br />
+                      Dashboard
+                    </Link>
                   </li>
                 )}
                 <li>
-                  <button>(User Data + log out)</button>
-                </li>
-                <li>
-                  <Link to="/contact">Contact</Link>
+                  <button type="button" onClick={logoutUser} id={styles.logout}>
+                    <FontAwesomeIcon icon={solid("right-from-bracket")} />
+                    <br />
+                    Log out
+                  </button>
                 </li>
               </ul>
             </nav>
@@ -92,58 +136,78 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
         ) : (
           <header>
             <nav>
-              <ul id={styles.small}>
+              <ul id={stylesUserDashboard.small}>
                 <li>
-                  <Link to="/">
-                    <img
-                      src="src\assets\logo.png"
-                      alt="logo"
-                      height="80px"
-                      width="80px"
-                    />
+                  <Link id={stylesAdminDashboard.homeButton} to="/">
+                    &#8205;
                   </Link>
                 </li>
                 <li>
-                  <Link to="/register">Register</Link>
+                  <Link to="/register">
+                    <FontAwesomeIcon icon={solid("user-plus")} />
+                  </Link>
                 </li>
                 <li>
-                  <Link to="/login">Login</Link>
+                  <Link to="/login">
+                    <FontAwesomeIcon icon={solid("right-to-bracket")} />
+                  </Link>
                 </li>
                 <li>
-                  <Link to="/contact">Contact</Link>
+                  <Link to="/contact">
+                    <FontAwesomeIcon icon={solid("square-envelope")} />
+                  </Link>
                 </li>
               </ul>
-              <ul id={styles.tablet}>
+              <ul id={stylesAdminDashboard.tablet}>
                 <li>
-                  <Link to="/">
-                    <img
-                      src="src\assets\logo.png"
-                      alt="logo"
-                      height="80px"
-                      width="80px"
-                    />
+                  <Link id={stylesAdminDashboard.homeButton} to="/">
+                    &#8205;
                   </Link>
                 </li>
-                <li>Marketplates</li>
                 <li>
-                  <Link to="/register">Register</Link>
+                  <Link to="/register">
+                    <FontAwesomeIcon icon={solid("user-plus")} />
+                    <br />
+                    Register
+                  </Link>
                 </li>
                 <li>
-                  <Link to="/login">Login</Link>
+                  <Link to="/login">
+                    <FontAwesomeIcon icon={solid("right-to-bracket")} />
+                    <br />
+                    Login
+                  </Link>
                 </li>
                 <li>
-                  <Link to="/contact">Contact</Link>
+                  <Link to="/contact">
+                    <FontAwesomeIcon icon={solid("square-envelope")} />
+                    <br />
+                    Contact
+                  </Link>
                 </li>
               </ul>
             </nav>
           </header>
         )}
 
-        <button type="button" onClick={logoutUser}>
-          Log out
-        </button>
+        <div id={styles.siteContentContainer}>
+          <Outlet />
+        </div>
+      </div>
+      <div id={isBurgerOpen ? styles.burgerOpen : styles.burgerClosed}>
+        <Link to="/profile" onClick={() => setIsBurgerOpen(!isBurgerOpen)}>
+          <FontAwesomeIcon icon={regular("user")} />
+          Profile
+        </Link>
+        <Link to="/mymaps" onClick={() => setIsBurgerOpen(!isBurgerOpen)}>
+          <FontAwesomeIcon icon={solid("map")} />
+          My Maps
+        </Link>
 
-        <Outlet />
+        <Link to="/myplaces" onClick={() => setIsBurgerOpen(!isBurgerOpen)}>
+          <FontAwesomeIcon icon={solid("shop")} />
+          My Businesses
+        </Link>
       </div>
     </>
   );

@@ -96,8 +96,8 @@ function MapEditor(props: { editedMap: string | undefined }) {
 
   // Contains the values used to filter places and iterations, either via name, or via tags which can be filtered using tagName
   const [placeFilterQuery, setPlaceFilterQuery] = useState<IPlaceFilterQuery>({
-    name: "",
-    tagName: "",
+    filterNameQuery: "",
+    filterTagQuery: "",
     tags: [],
   });
 
@@ -208,7 +208,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
   useEffect(() => {
     getMapEditorTools();
     decideMapValidity();
-  }, []);
+  }, [value]);
 
   useEffect(() => {
     decideMapValidity();
@@ -233,6 +233,13 @@ function MapEditor(props: { editedMap: string | undefined }) {
   function updateField(event) {
     setFormData({
       ...formData,
+      [event.target.name]: event.target.value,
+    });
+  }
+
+  function updatePlaceFilterQueryFields(event) {
+    setPlaceFilterQuery({
+      ...placeFilterQuery,
       [event.target.name]: event.target.value,
     });
   }
@@ -364,10 +371,12 @@ function MapEditor(props: { editedMap: string | undefined }) {
   // Tags are also filtered through user input if they are looking for specific tags
   const tagListWithoutSelectedAndFiltered: ITag[] = [
     ...tagListWithoutSelected,
-  ].filter((tag) => new RegExp(placeFilterQuery.tagName, "i").test(tag.name));
+  ].filter((tag) =>
+    new RegExp(placeFilterQuery.filterTagQuery, "i").test(tag.name)
+  );
 
   const tagListToDisplay: ITag[] =
-    placeFilterQuery.tagName.length > 0
+    placeFilterQuery.filterTagQuery.length > 0
       ? tagListWithoutSelectedAndFiltered
       : tagSelection;
 
@@ -385,13 +394,12 @@ function MapEditor(props: { editedMap: string | undefined }) {
 
   const mapMarkersAfterFilter: IMarkersForMap[] = [...mapMarkersAndIterations]
     .filter((marker) =>
-      new RegExp(placeFilterQuery.name, "i").test(marker.name)
+      new RegExp(placeFilterQuery.filterNameQuery, "i").test(marker.name)
     )
     .filter((marker) =>
       placeFilterQuery.tags.every((tag) => marker.tagsList.includes(tag))
     );
 
-  console.log("values", iterationValues);
   return (
     <>
       {props.editedMap ? (
@@ -463,7 +471,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
                           type="button"
                           onClick={() => manageIteration(place)}
                         >
-                          Create iteration
+                          Create a version
                         </button>
                       )}
                       {place.isIteration && (
@@ -471,7 +479,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
                           type="button"
                           onClick={() => manageIteration(place)}
                         >
-                          Edit iteration
+                          Edit version
                         </button>
                       )}
                     </ul>
@@ -580,7 +588,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
                             }
                           />
                           <br />
-                          <label htmlFor="privacyStatus2">Friends only</label>
+                          <label htmlFor="privacyStatus2">Friends</label>
                         </div>
                         <div>
                           <input
@@ -637,6 +645,7 @@ function MapEditor(props: { editedMap: string | undefined }) {
                       ? `${13 + newResults.length * 2}rem`
                       : "0px",
                   }}
+                  id={styles.addressListContainer}
                 >
                   <h3>Find an address</h3>
                   <ul>
@@ -663,8 +672,8 @@ function MapEditor(props: { editedMap: string | undefined }) {
                     </li>
                   </ul>
 
-                  {newResults.length > 1 && (
-                    <ul>
+                  {newResults.length > 0 && (
+                    <ul className={formStyles.addressClickables}>
                       {newResults.map((result) => (
                         <li
                           key={result.label}
@@ -728,13 +737,8 @@ function MapEditor(props: { editedMap: string | undefined }) {
                         type="text"
                         name="filterNameQuery"
                         id="filterNameQuery"
-                        onInput={(e) => {
-                          setPlaceFilterQuery({
-                            ...placeFilterQuery,
-                            name: e.target.value,
-                          });
-                        }}
-                        value={placeFilterQuery.name}
+                        onInput={updatePlaceFilterQueryFields}
+                        value={placeFilterQuery.filterNameQuery}
                       />
                     </li>
                     <li>
@@ -746,13 +750,8 @@ function MapEditor(props: { editedMap: string | undefined }) {
                         type="text"
                         name="filterTagQuery"
                         id="filterTagQuery"
-                        onInput={(e) => {
-                          setPlaceFilterQuery({
-                            ...placeFilterQuery,
-                            tagName: e.target.value,
-                          });
-                        }}
-                        value={placeFilterQuery.tagName}
+                        onInput={updatePlaceFilterQueryFields}
+                        value={placeFilterQuery.filterTagQuery}
                       />
                     </li>
                     <li>
@@ -785,11 +784,11 @@ function MapEditor(props: { editedMap: string | undefined }) {
                           />
                         ))}
                     </li>
-                    <li>
-                      Selected tags :
-                      <br />
-                      {placeFilterQuery.tags.length > 0 &&
-                        placeFilterQuery.tags.map((tag) => (
+                    {placeFilterQuery.tags.length > 0 && (
+                      <li>
+                        Selected tags :
+                        <br />
+                        {placeFilterQuery.tags.map((tag) => (
                           <Tag
                             customStyle={{
                               color: tag.nameColor,
@@ -812,14 +811,15 @@ function MapEditor(props: { editedMap: string | undefined }) {
                             key={tag.name}
                           />
                         ))}
-                    </li>
-                    <li>
+                      </li>
+                    )}
+                    <li className={formStyles.finalButtonContainer}>
                       <button
                         type="button"
                         onClick={() => {
                           setPlaceFilterQuery({
-                            name: "",
-                            tagName: "",
+                            filterNameQuery: "",
+                            filterTagQuery: "",
                             tags: [],
                           });
                         }}
@@ -875,8 +875,8 @@ function MapEditor(props: { editedMap: string | undefined }) {
                     {iterationsList.some(
                       (iteration) => iteration._id === iterationValues._id
                     )
-                      ? "Edit an iteration"
-                      : "Create an iteration"}
+                      ? "Edit version"
+                      : "Create a version"}
                   </h2>
                   <form className={formStyles.formContainer}>
                     <ul>
@@ -997,8 +997,8 @@ function MapEditor(props: { editedMap: string | undefined }) {
                       {iterationsList.some(
                         (iteration) => iteration._id === iterationValues._id
                       )
-                        ? "Edit iteration"
-                        : "Create iteration"}
+                        ? "Edit version"
+                        : "Create version"}
                     </button>
                   </form>
                 </section>

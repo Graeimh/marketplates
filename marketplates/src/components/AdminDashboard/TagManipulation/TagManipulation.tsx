@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import * as tagService from "../../../services/tagService.js";
+import stylesUserDashboard from "../../../common/styles/Dashboard.module.scss";
 import formStyles from "../../../common/styles/Forms.module.scss";
 import manipulationStyles from "../../../common/styles/ManipulationContainer.module.scss";
 import tagStyles from "../TagManipulationItem/TagManipulationItem.module.scss";
@@ -59,6 +60,28 @@ function TagManipulation() {
   useEffect(() => {
     getAllTags();
   }, [value]);
+
+  function updateField(event) {
+    switch (event.target.name) {
+      case "tagNameColor":
+        setFormData({
+          ...formData,
+          tagNameColor: hexifyColors(event.target.value.toString()),
+        });
+        break;
+      case "tagBackgroundColor":
+        setFormData({
+          ...formData,
+          tagBackgroundColor: hexifyColors(event.target.value.toString()),
+        });
+        break;
+      default:
+        setFormData({
+          ...formData,
+          [event.target.name]: event.target.value,
+        });
+    }
+  }
 
   function decideUpdatability() {
     setValidForUpdating(
@@ -184,10 +207,8 @@ function TagManipulation() {
                   <br />
                   <input
                     type="text"
-                    name="name"
-                    onInput={(e) => {
-                      setFormData({ ...formData, tagName: e.target.value });
-                    }}
+                    name="tagName"
+                    onInput={updateField}
                     value={formData.tagName}
                   />
                 </li>
@@ -207,15 +228,8 @@ function TagManipulation() {
                   <br />
                   <input
                     type="text"
-                    name="backgroundColor"
-                    onInput={(e) => {
-                      setFormData({
-                        ...formData,
-                        tagBackgroundColor: hexifyColors(
-                          e.target.value.toString()
-                        ),
-                      });
-                    }}
+                    name="tagBackgroundColor"
+                    onInput={updateField}
                     value={formData.tagBackgroundColor}
                   />
                 </li>
@@ -230,13 +244,8 @@ function TagManipulation() {
                   <label>Name Color : </label>
                   <input
                     type="text"
-                    name="nameColor"
-                    onInput={(e) => {
-                      setFormData({
-                        ...formData,
-                        tagNameColor: hexifyColors(e.target.value.toString()),
-                      });
-                    }}
+                    name="tagNameColor"
+                    onInput={updateField}
                     value={formData.tagNameColor}
                   />
                 </li>
@@ -278,9 +287,11 @@ function TagManipulation() {
           />
         </section>
         <section id={manipulationStyles.manipulationButtonsContainer}>
-          <button type="button" onClick={() => deletePrimedForDeletion()}>
-            Delete {primedForDeletionList.length} tags
-          </button>
+          <span className={stylesUserDashboard.deleteButton}>
+            <button type="button" onClick={() => deletePrimedForDeletion()}>
+              Delete {primedForDeletionList.length} tags
+            </button>
+          </span>
 
           <button type="button" onClick={() => cancelSelection()}>
             Cancel selection

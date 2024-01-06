@@ -67,9 +67,9 @@
 }
 
 .finalButtonContainer button:disabled {
-  border: 1px solid #e4e4e4;
-  background-color: #ffffff;
-  color: linen;
+  border: 1px solid #9e9e9e;
+  background-color: #e4e4e4;
+  color: #464646;
   transition: 0.5s;
   cursor: default;
 }
@@ -105,4 +105,23 @@ section h5 {
   color: #a32e00;
   font-size: 0.8rem;
   font-weight: 600;
+}
+
+.addressClickables {
+  margin-bottom: 0.5rem;
+}
+
+.addressClickables li {
+  cursor: pointer;
+  background-color: #ffffff;
+  margin: 0.2rem 0;
+  width: 80%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #a32e00;
+  color: #1e1e1e;
+}
+
+.addressClickables li:hover {
+  background-color: #e4e4e4;
 }

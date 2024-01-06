@@ -68,8 +68,8 @@ export interface IPlaceUpdated {
  */
 
 export interface IPlaceFilterQuery {
-    name: string;
-    tagName: string;
+    filterNameQuery: string;
+    filterTagQuery: string;
     tags: ITag[];
 }
 

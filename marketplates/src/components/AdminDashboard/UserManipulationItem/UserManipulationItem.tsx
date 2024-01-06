@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import * as userService from "../../../services/userService.js";
 import formStyles from "../../../common/styles/Forms.module.scss";
+import stylesUserDashboard from "../../../common/styles/Dashboard.module.scss";
 import styles from "../../../common/styles/ManipulationItem.module.scss";
 import {
   IUser,
@@ -57,6 +58,13 @@ function UserManipulationItem(props: {
     );
   }
 
+  function updateField(event) {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
+  }
+
   useEffect(() => {
     decideUpdatability();
   }, [formData]);
@@ -111,10 +119,11 @@ function UserManipulationItem(props: {
             )}
             {props.IsSelected ? " Cancel selection" : " Select"}
           </button>
-
-          <button type="button" onClick={handleDelete}>
-            <FontAwesomeIcon icon={solid("user-slash")} /> Delete user
-          </button>
+          <span className={stylesUserDashboard.deleteButton}>
+            <button type="button" onClick={handleDelete}>
+              <FontAwesomeIcon icon={solid("user-slash")} /> Delete user
+            </button>
+          </span>
         </section>
         <form onSubmit={sendUpdateForm}>
           <section className={formStyles.specificData}>
@@ -125,12 +134,7 @@ function UserManipulationItem(props: {
                 <input
                   type="text"
                   name="firstName"
-                  onInput={() => {
-                    setFormData({
-                      ...formData,
-                      firstName: event?.target.value,
-                    });
-                  }}
+                  onInput={updateField}
                   value={formData.firstName}
                 />
               </li>
@@ -139,12 +143,7 @@ function UserManipulationItem(props: {
                 <input
                   type="text"
                   name="lastName"
-                  onInput={() => {
-                    setFormData({
-                      ...formData,
-                      lastName: event?.target.value,
-                    });
-                  }}
+                  onInput={updateField}
                   value={formData.lastName}
                 />
               </li>
@@ -154,12 +153,7 @@ function UserManipulationItem(props: {
               <input
                 type="text"
                 name="streetAddress"
-                onInput={() => {
-                  setFormData({
-                    ...formData,
-                    streetAddress: event?.target.value,
-                  });
-                }}
+                onInput={updateField}
                 value={formData.streetAddress}
               />
             </div>
@@ -169,9 +163,7 @@ function UserManipulationItem(props: {
                 <input
                   type="text"
                   name="county"
-                  onInput={() => {
-                    setFormData({ ...formData, county: event?.target.value });
-                  }}
+                  onInput={updateField}
                   value={formData.county}
                 />
               </li>
@@ -180,9 +172,7 @@ function UserManipulationItem(props: {
                 <input
                   type="text"
                   name="city"
-                  onInput={() => {
-                    setFormData({ ...formData, city: event?.target.value });
-                  }}
+                  onInput={updateField}
                   value={formData.city}
                 />
               </li>
@@ -191,12 +181,7 @@ function UserManipulationItem(props: {
                 <input
                   type="text"
                   name="country"
-                  onInput={() => {
-                    setFormData({
-                      ...formData,
-                      country: event?.target.value,
-                    });
-                  }}
+                  onInput={updateField}
                   value={formData.country}
                 />
               </li>
@@ -211,12 +196,7 @@ function UserManipulationItem(props: {
                 <input
                   type="text"
                   name="displayName"
-                  onInput={() => {
-                    setFormData({
-                      ...formData,
-                      displayName: event?.target.value,
-                    });
-                  }}
+                  onInput={updateField}
                   value={formData.displayName}
                 />
               </li>
@@ -226,9 +206,7 @@ function UserManipulationItem(props: {
                 <input
                   type="email"
                   name="email"
-                  onInput={() => {
-                    setFormData({ ...formData, email: event?.target.value });
-                  }}
+                  onInput={updateField}
                   value={formData.email}
                 />
               </li>

@@ -56,7 +56,7 @@ function EditProfile(props: { userId: string }) {
 
   useEffect(() => {
     getUserData();
-  }, []);
+  }, [value]);
 
   function decideRegistration() {
     setValidForSending(
