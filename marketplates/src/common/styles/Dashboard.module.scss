@@ -122,7 +122,7 @@
   cursor: pointer;
   transition: border-color 0.25s;
   display: block;
-  font-size: 2rem;
+  font-size: 1.5rem;
   height: 4rem;
   width: 4rem;
   line-height: 4rem;
@@ -144,6 +144,16 @@
   background-size: cover;
   width: 4rem;
   height: 4rem;
+}
+
+#small li a:hover {
+  color: #eb6700;
+}
+
+#small li a:active {
+  color: #eb6700;
+  border: 1px solid #eb6700;
+  background-color: #ffffff;
 }
 
 /* For tablets: */
@@ -194,6 +204,7 @@
     width: 4rem;
     height: 4rem;
     border-radius: 50%;
+    margin-right: 2rem;
   }
 }
 
@@ -254,8 +265,6 @@
   }
 
   #tablet #homeButton {
-    position: absolute;
-    top: 0.8rem;
-    left: 5%;
+    margin-bottom: 2rem;
   }
 }

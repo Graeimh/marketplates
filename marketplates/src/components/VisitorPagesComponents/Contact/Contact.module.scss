@@ -1,0 +1,39 @@
+#contactContainer {
+  padding: 0 2rem;
+}
+#contactContainer h1 {
+  text-align: center;
+}
+
+#contactContainer h2 {
+  text-decoration: underline;
+}
+
+.contactSections a {
+  color: #a32e00;
+  text-decoration: underline;
+}
+
+.contactSections a:hover {
+  color: #eb6700;
+}
+
+.contactSections a:active {
+  color: #1e1e1e;
+}
+
+/* For desktop: */
+@media only screen and (min-width: 1024px) {
+  #contactDisposition {
+    margin: 5% 10%;
+    display: grid;
+    grid-template-columns: 50% 50%;
+  }
+  #contactDisposition section:first-child {
+    margin-right: 3rem;
+  }
+
+  #contactDisposition section:last-child {
+    margin-left: 3rem;
+  }
+}

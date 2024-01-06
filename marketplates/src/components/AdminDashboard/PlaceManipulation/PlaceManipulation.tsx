@@ -10,14 +10,12 @@ import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { Helmet } from "react-helmet";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IMessageValues } from "../../../common/types/commonTypes.ts/commonTypes.js";
 
-function PlaceManipulation() {
+function PlaceManipulation(props: {
+  messageSetter: React.Dispatch<IMessageValues>;
+}) {
   // Setting states
-  // Error message display
-  const [error, setError] = useState(null);
-
-  // Response message display
-  const [responseMessage, setResponseMessage] = useState("");
 
   // Array of places meant to be displayed, edited or deleted
   const [placeList, setPlaceList] = useState<IPlace[]>([]);
@@ -42,7 +40,10 @@ function PlaceManipulation() {
         setPlaceList(allPlaces.data);
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "An error has occured and we could not fetch places",
+        successStatus: false,
+      });
     }
   }
 
@@ -86,16 +87,21 @@ function PlaceManipulation() {
     try {
       if (checkPermission(value.status, UserType.Admin)) {
         // Delete all the places whose ids are within the primed for deletion list
-        const responseForDelete = await placeService.deletePlacesByIds(
-          primedForDeletionList
-        );
+        await placeService.deletePlacesByIds(primedForDeletionList);
         setPrimedForDeletionList([]);
         // Once the deletion is made, pull the remaining places from the database
         getAllPlaces();
-        setResponseMessage(responseForDelete.message);
+        props.messageSetter({
+          message: "Successfully deleted the selected places",
+          successStatus: true,
+        });
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message:
+          "An error has occured and we could not delete the selected places",
+        successStatus: false,
+      });
     }
   }
 
@@ -103,14 +109,20 @@ function PlaceManipulation() {
     try {
       if (checkPermission(value.status, UserType.Admin)) {
         // Delete a singular place
-        const response = await placeService.deletePlaceById(id);
+        await placeService.deletePlaceById(id);
         // Once the deletion is made, pull the remaining places from the database
         setPrimedForDeletionList([]);
         getAllPlaces();
-        setResponseMessage(response.message);
+        props.messageSetter({
+          message: "The place has been successfully deleted",
+          successStatus: true,
+        });
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "An error has occured and we could not delete this places",
+        successStatus: false,
+      });
     }
   }
 
@@ -160,10 +172,6 @@ function PlaceManipulation() {
           </button>
         </section>
       </article>
-      {error && <div className={styles.error}>{error}</div>}
-      {responseMessage && (
-        <div className={styles.success}>{responseMessage}</div>
-      )}
       <ul id={styles.manipulationItemContainer}>
         {displayedTagList.length > 0 &&
           displayedTagList.map((place) => (

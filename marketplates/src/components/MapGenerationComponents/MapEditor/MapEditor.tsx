@@ -26,7 +26,10 @@ import {
   IMapValues,
   PrivacyStatus,
 } from "../../../common/types/mapTypes/mapTypes.js";
-import { IGPSCoordinates } from "../../../common/types/commonTypes.ts/commonTypes.js";
+import {
+  IGPSCoordinates,
+  IMessageValues,
+} from "../../../common/types/commonTypes.ts/commonTypes.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
@@ -34,7 +37,10 @@ import { Helmet } from "react-helmet";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-function MapEditor(props: { editedMap: string | undefined }) {
+function MapEditor(props: {
+  editedMap: string | undefined;
+  messageSetter: React.Dispatch<IMessageValues>;
+}) {
   // Setting states
   // Contains the data needed to create a map
   const [formData, setFormData] = useState<IMapValues>({

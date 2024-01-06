@@ -9,13 +9,15 @@ const LayoutForms = () => {
   return (
     <>
       <div id={styles.formsContainer}>
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          id={styles.formsButton}
-        >
-          <FontAwesomeIcon icon={solid("rotate-left")} />
-        </button>
+        <header>
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            id={styles.formsButton}
+          >
+            <FontAwesomeIcon icon={solid("rotate-left")} />
+          </button>
+        </header>
         <div id={styles.formsBackground}></div>
 
         <div id={styles.formsContentContainer}>

@@ -10,8 +10,9 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { Helmet } from "react-helmet";
+import { IMessageValues } from "../../../common/types/commonTypes.ts/commonTypes.js";
 
-function Register() {
+function Register(props: { messageSetter: React.Dispatch<IMessageValues> }) {
   // Setting states
   // Contains the data needed for a user to log in
   const [formData, setFormData] = useState<IRegisterValues>({

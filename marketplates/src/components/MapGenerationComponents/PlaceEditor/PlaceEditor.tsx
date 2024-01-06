@@ -16,13 +16,19 @@ import {
   IPlace,
   IPlaceRegisterValues,
 } from "../../../common/types/placeTypes/placeTypes.js";
-import { IGPSCoordinates } from "../../../common/types/commonTypes.ts/commonTypes.js";
+import {
+  IGPSCoordinates,
+  IMessageValues,
+} from "../../../common/types/commonTypes.ts/commonTypes.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import { Helmet } from "react-helmet";
 
-function PlaceEditor(props: { editPlaceId: string | undefined }) {
+function PlaceEditor(props: {
+  editPlaceId: string | undefined;
+  messageSetter: React.Dispatch<IMessageValues>;
+}) {
   // Setting states
   // Contains the data needed to create a place
   const [formData, setFormData] = useState<IPlaceRegisterValues>({

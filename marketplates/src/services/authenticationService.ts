@@ -52,5 +52,5 @@ export async function getSessionData() {
    * 
 */
 export async function generateAccessToken() {
-    await authenticationInstance.post("/auth/accessToken/", { refreshToken: localStorage.getItem("refreshToken") });
+    return await authenticationInstance.post("/auth/accessToken/", { refreshToken: localStorage.getItem("refreshToken") });
 }

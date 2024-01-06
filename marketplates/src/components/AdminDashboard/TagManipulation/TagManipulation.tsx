@@ -16,8 +16,11 @@ import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import { Helmet } from "react-helmet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { IMessageValues } from "../../../common/types/commonTypes.ts/commonTypes.js";
 
-function TagManipulation() {
+function TagManipulation(props: {
+  messageSetter: React.Dispatch<IMessageValues>;
+}) {
   // Setting states
   // Error message display
   const [error, setError] = useState(null);

@@ -12,8 +12,12 @@ import createTemporaryMessage from "../../../common/functions/createTemporaryMes
 import * as jose from "jose";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { Helmet } from "react-helmet";
+import { IMessageValues } from "../../../common/types/commonTypes.ts/commonTypes.js";
 
-function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
+function Login(props: {
+  contextSetter: React.Dispatch<ISessionValues>;
+  messageSetter: React.Dispatch<IMessageValues>;
+}) {
   // Setting states
   // Contains the data needed for a user to log in
   const [loginData, setLoginData] = useState<ILoginValues>({
@@ -89,6 +93,10 @@ function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
           props.contextSetter(refreshTokenData);
           createTemporaryMessage(response.message, 1500, setResponseMessage);
           navigate("/");
+          props.messageSetter({
+            message: "Logged in successfully!",
+            successStatus: true,
+          });
         } catch (err) {
           createTemporaryMessage(err.message, 1500, setError);
           setCanRetry(false);
@@ -96,20 +104,18 @@ function Login(props: { contextSetter: React.Dispatch<ISessionValues> }) {
           window.grecaptcha.reset();
         }
       } else {
-        createTemporaryMessage(
-          "The captcha was not checked, try again.",
-          1500,
-          setResponseMessage
-        );
+        props.messageSetter({
+          message: "The captcha was not checked, try again.",
+          successStatus: false,
+        });
         setCanRetry(false);
         putLoginToSleep(500);
       }
     } else {
-      createTemporaryMessage(
-        "Please wait for a moment before trying again.",
-        1500,
-        setResponseMessage
-      );
+      props.messageSetter({
+        message: "Please wait for a moment before trying again.",
+        successStatus: false,
+      });
       window.grecaptcha.reset();
     }
   }

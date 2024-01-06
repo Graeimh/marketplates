@@ -1,3 +1,42 @@
+#homeContainer {
+  border: 1px solid #e4e4e4;
+  border-radius: 20px;
+  box-shadow: 2px 2px 2px 2px #e4e4e4;
+}
+
+#homeContainer h1 {
+  text-align: center;
+  color: #eb6700;
+}
+
+.homeSections a {
+  color: #a32e00;
+  text-decoration: underline;
+}
+
+.homeSections a:hover {
+  color: #eb6700;
+}
+
+.homeSections a:active {
+  color: #1e1e1e;
+}
+
+#homeDisposition {
+  margin: 0 5%;
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
+#homeDisposition section {
+  margin: 0 5%;
+}
+
+#homeContainer h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
 #spoon,
 #spoonWrapper {
   position: absolute;
@@ -6,7 +45,6 @@
   left: 0;
   right: 0;
   text-align: center;
-  z-index: 1;
 }
 
 #spoon {

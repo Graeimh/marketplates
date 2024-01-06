@@ -46,7 +46,7 @@
   cursor: pointer;
   transition: border-color 0.25s;
   display: block;
-  font-size: 2rem;
+  font-size: 1.5rem;
   height: 4rem;
   width: 4rem;
   line-height: 4rem;
@@ -71,6 +71,16 @@
   background-size: cover;
   width: 3.1rem;
   height: 3.1rem;
+}
+
+#tablet li a:hover {
+  color: #eb6700;
+}
+
+#tablet li a:active {
+  color: #eb6700;
+  border: 1px solid #eb6700;
+  background-color: #ffffff;
 }
 
 /* For tablets: */
@@ -100,7 +110,6 @@
     align-items: center;
   }
 
-  #tablet button,
   #tablet button li {
     padding: 3rem 1.2rem;
     width: 90%;
@@ -114,20 +123,11 @@
     cursor: pointer;
     transition: border-color 0.25s;
     display: block;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     text-decoration: none;
     text-align: center;
     width: 8rem;
-  }
-
-  #tablet li a:hover {
-    color: #eb6700;
-  }
-
-  #tablet li a:active {
-    color: #eb6700;
-    border: 1px solid #eb6700;
-    background-color: #ffffff;
+    margin-left: 1.5rem;
   }
 
   #tablet #homeButton {
@@ -135,6 +135,7 @@
     width: 4rem;
     height: 4rem;
     border-radius: 50%;
+    margin-right: 2rem;
   }
 }
 
@@ -165,15 +166,12 @@
     flex-direction: row;
   }
 
-  #tablet button,
   #tablet button li {
     padding: 1.5rem 4.5rem;
     width: 90%;
   }
 
   #tablet #homeButton {
-    position: absolute;
-    top: 0.8rem;
-    left: 5%;
+    margin-bottom: 2rem;
   }
 }

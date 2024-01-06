@@ -11,7 +11,10 @@ import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { Helmet } from "react-helmet";
 
-function EditProfile(props: { userId: string }) {
+function EditProfile(props: {
+  userId: string;
+  messageSetter: React.Dispatch<IMessageValues>;
+}) {
   // Setting states
   // Contains the data needed to update a user's profile
   const [formData, setFormData] = useState<IUserData>({

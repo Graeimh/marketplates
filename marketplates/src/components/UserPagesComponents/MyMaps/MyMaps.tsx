@@ -12,8 +12,9 @@ import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { Helmet } from "react-helmet";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IMessageValues } from "../../../common/types/commonTypes.ts/commonTypes.js";
 
-function MyPlaces() {
+function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
   // Setting states
   // Array of user owned maps meant to be edited or deleted
   const [userMapsList, setUserMapsList] = useState<IMaps[]>([]);

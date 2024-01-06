@@ -26,3 +26,17 @@ export interface IImageData {
     imageURL: string;
     imageCaption: string;
 }
+
+/**
+ * Serves to contain the data of messages after site operations 
+ *
+ * @interface I
+ * @member {string} message is used to contain the message displayed
+ * @member {boolean} successStatus is used to signal to the user whether the operation was successful or not
+ *
+ */
+
+export interface IMessageValues {
+    message: string;
+    successStatus: boolean;
+}

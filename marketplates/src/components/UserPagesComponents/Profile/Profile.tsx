@@ -8,7 +8,11 @@ import { Helmet } from "react-helmet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { ISessionValues } from "../../../common/types/userTypes/userTypes.js";
-function Profile(props: { contextSetter: React.Dispatch<ISessionValues> }) {
+import { IMessageValues } from "../../../common/types/commonTypes.ts/commonTypes.js";
+function Profile(props: {
+  contextSetter: React.Dispatch<ISessionValues>;
+  messageSetter: React.Dispatch<IMessageValues>;
+}) {
   async function deleteUser() {
     if (confirm("Are you sure you want to delete your account?")) {
       try {

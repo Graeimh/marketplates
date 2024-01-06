@@ -3,8 +3,7 @@ import * as authenticationService from "../src/services/authenticationService.js
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layouts/Layout/index.js";
-import AboutUs from "./components/VisitorPagesComponents/AboutUs/index.js";
-import Explore from "./components/UserPagesComponents/Explore/index.js";
+import Home from "./components/VisitorPagesComponents/Home/index.js";
 import Register from "./components/VisitorPagesComponents/Register/index.js";
 import Login from "./components/VisitorPagesComponents/Login/index.js";
 import Profile from "./components/UserPagesComponents/Profile/index.js";
@@ -28,12 +27,12 @@ import { ISessionValues } from "./common/types/userTypes/userTypes.js";
 import LayoutDashboard from "./components/Layouts/LayoutDashboard/LayoutDashboard.js";
 import { Helmet } from "react-helmet";
 import NonLoggedPathResolver from "./components/PathResolvers/NonLoggedPathResolver/index.js";
+import Contact from "./components/VisitorPagesComponents/Contact/Contact.js";
+import MessageContext from "./components/Contexts/MessageContext/MessageContext.js";
+import { IMessageValues } from "./common/types/commonTypes.ts/commonTypes.js";
 
 function App() {
   // Setting states
-  // Messages meant to give users feedback on the state of their actions
-  const [message, setMessage] = useState(null);
-
   // Session values tied to the user, logged or not
   const [sessionValue, setSessionValue] = useState<ISessionValues>({
     email: "",
@@ -44,6 +43,22 @@ function App() {
     exp: 0,
   });
 
+  // Messages meant to give users feedback on the state of their actions
+  const [messageValue, setMessageValue] = useState<IMessageValues>({
+    message: "",
+    successStatus: true,
+  });
+
+  // Upon setting a new message
+  useEffect(() => {
+    setTimeout(() => {
+      setMessageValue({
+        message: "",
+        successStatus: true,
+      });
+    }, 5000);
+  }, [messageValue]);
+
   // Upon rendering
   useEffect(() => {
     async function getResponse() {
@@ -52,7 +67,7 @@ function App() {
         const loadedSessionData = await authenticationService.getSessionData();
         setSessionValue(jose.decodeJwt(loadedSessionData.cookie));
       } catch (err) {
-        setMessage(err.message);
+        setMessageValue(err.message);
       }
     }
 
@@ -79,150 +94,160 @@ function App() {
         <title>Marketplates</title>
         <link rel="canonical" href="http://localhost:5173/" />
       </Helmet>
+      {messageValue.message !== undefined &&
+        messageValue.message.length > 0 && <div>{messageValue.message}</div>}
+      <MessageContext.Provider value={messageValue}>
+        <UserContext.Provider value={sessionValue}>
+          <BrowserRouter>
+            <Routes>
+              {/* setSessionData is given to the layout for the logout button, it's aim is to set the session data back to its base value*/}
+              <Route element={<Layout contextSetter={setSessionValue} />}>
+                <Route path="" element={<Home />} />
+                <Route path="contact" element={<Contact />} />
+                <>
+                  <Route
+                    path="profile"
+                    element={
+                      // A path resolver redirects non-logged users that could have had access to the login page
+                      <UserPathResolver>
+                        <Profile
+                          contextSetter={setSessionValue}
+                          messageSetter={setMessageValue}
+                        />
+                      </UserPathResolver>
+                    }
+                  />
+                  <Route
+                    path="createplace"
+                    element={
+                      <UserPathResolver>
+                        <PlaceEditor
+                          editPlaceId={undefined}
+                          messageSetter={setMessageValue}
+                        />
+                      </UserPathResolver>
+                    }
+                  />
+                  <Route
+                    path="createmap"
+                    element={
+                      <UserPathResolver>
+                        <MapEditor
+                          editedMap={undefined}
+                          messageSetter={setMessageValue}
+                        />
+                      </UserPathResolver>
+                    }
+                  />
+                  <Route
+                    path="editmap/:id"
+                    element={
+                      <UserPathResolver>
+                        <EditMapWrapper messageSetter={setMessageValue} />
+                      </UserPathResolver>
+                    }
+                  />
+                  <Route
+                    path="editplace/:id"
+                    element={
+                      <UserPathResolver>
+                        <EditPlaceWrapper messageSetter={setMessageValue} />
+                      </UserPathResolver>
+                    }
+                  />
+                  <Route
+                    path="myplaces"
+                    element={
+                      <UserPathResolver>
+                        <MyPlaces messageSetter={setMessageValue} />
+                      </UserPathResolver>
+                    }
+                  />
+                  <Route
+                    path="mymaps"
+                    element={
+                      <UserPathResolver>
+                        <MyMaps messageSetter={setMessageValue} />
+                      </UserPathResolver>
+                    }
+                  />
+                  <Route
+                    path="editprofile"
+                    element={
+                      <UserPathResolver>
+                        <EditProfile
+                          userId={sessionValue.userId}
+                          messageSetter={setMessageValue}
+                        />
+                      </UserPathResolver>
+                    }
+                  />
+                </>
+              </Route>
 
-      <UserContext.Provider value={sessionValue}>
-        <BrowserRouter>
-          <Routes>
-            {/* setSessionData is given to the layout for the logout button, it's aim is to set the session data back to its base value*/}
-            <Route element={<Layout contextSetter={setSessionValue} />}>
-              <Route path="" element={<AboutUs />} />
-              <>
-                <Route
-                  path="explore"
-                  element={
-                    <UserPathResolver>
-                      <Explore />
-                    </UserPathResolver>
-                  }
-                />
+              <Route element={<LayoutForms />}>
+                <>
+                  <Route
+                    path="register"
+                    element={
+                      <NonLoggedPathResolver>
+                        <Register messageSetter={setMessageValue} />
+                      </NonLoggedPathResolver>
+                    }
+                  />
+                  <Route
+                    path="login"
+                    element={
+                      <NonLoggedPathResolver>
+                        <Login
+                          contextSetter={setSessionValue}
+                          messageSetter={setMessageValue}
+                        />
+                      </NonLoggedPathResolver>
+                    }
+                  />
+                </>
+              </Route>
 
+              <Route element={<LayoutDashboard />}>
                 <Route
-                  path="profile"
+                  path="dashboard"
                   element={
-                    // A path resolver redirects non-logged users that could have had access to the login page
-                    <UserPathResolver>
-                      <Profile contextSetter={setSessionValue} />
-                    </UserPathResolver>
+                    // A path resolver redirects non-admin or logged users that could have had access to the front page
+                    <AdminPathResolver>
+                      <Dashboard />
+                    </AdminPathResolver>
                   }
                 />
                 <Route
-                  path="createplace"
+                  path="/dashboard/users"
                   element={
-                    <UserPathResolver>
-                      <PlaceEditor editPlaceId={undefined} />
-                    </UserPathResolver>
+                    <AdminPathResolver>
+                      <UserManipulation messageSetter={setMessageValue} />
+                    </AdminPathResolver>
                   }
                 />
                 <Route
-                  path="createmap"
+                  path="/dashboard/tags"
                   element={
-                    <UserPathResolver>
-                      <MapEditor editedMap={undefined} />
-                    </UserPathResolver>
+                    <AdminPathResolver>
+                      <TagManipulation messageSetter={setMessageValue} />
+                    </AdminPathResolver>
                   }
                 />
                 <Route
-                  path="editmap/:id"
+                  path="/dashboard/places"
                   element={
-                    <UserPathResolver>
-                      <EditMapWrapper />
-                    </UserPathResolver>
+                    <AdminPathResolver>
+                      <PlaceManipulation messageSetter={setMessageValue} />
+                    </AdminPathResolver>
                   }
                 />
-                <Route
-                  path="editplace/:id"
-                  element={
-                    <UserPathResolver>
-                      <EditPlaceWrapper />
-                    </UserPathResolver>
-                  }
-                />
-                <Route
-                  path="myplaces"
-                  element={
-                    <UserPathResolver>
-                      <MyPlaces />
-                    </UserPathResolver>
-                  }
-                />
-                <Route
-                  path="mymaps"
-                  element={
-                    <UserPathResolver>
-                      <MyMaps />
-                    </UserPathResolver>
-                  }
-                />
-                <Route
-                  path="editprofile"
-                  element={
-                    <UserPathResolver>
-                      <EditProfile userId={sessionValue.userId} />
-                    </UserPathResolver>
-                  }
-                />
-              </>
-            </Route>
-
-            <Route element={<LayoutForms />}>
-              <>
-                <Route
-                  path="register"
-                  element={
-                    <NonLoggedPathResolver>
-                      <Register />
-                    </NonLoggedPathResolver>
-                  }
-                />
-                <Route
-                  path="login"
-                  element={
-                    <NonLoggedPathResolver>
-                      <Login contextSetter={setSessionValue} />
-                    </NonLoggedPathResolver>
-                  }
-                />
-              </>
-            </Route>
-
-            <Route element={<LayoutDashboard />}>
-              <Route
-                path="dashboard"
-                element={
-                  // A path resolver redirects non-admin or logged users that could have had access to the front page
-                  <AdminPathResolver>
-                    <Dashboard />
-                  </AdminPathResolver>
-                }
-              />
-              <Route
-                path="/dashboard/users"
-                element={
-                  <AdminPathResolver>
-                    <UserManipulation />
-                  </AdminPathResolver>
-                }
-              />
-              <Route
-                path="/dashboard/tags"
-                element={
-                  <AdminPathResolver>
-                    <TagManipulation />
-                  </AdminPathResolver>
-                }
-              />
-              <Route
-                path="/dashboard/places"
-                element={
-                  <AdminPathResolver>
-                    <PlaceManipulation />
-                  </AdminPathResolver>
-                }
-              />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </UserContext.Provider>
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </UserContext.Provider>
+      </MessageContext.Provider>
     </>
   );
 }
