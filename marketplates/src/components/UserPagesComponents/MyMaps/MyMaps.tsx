@@ -19,8 +19,6 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
   // Array of user owned maps meant to be edited or deleted
   const [userMapsList, setUserMapsList] = useState<IMaps[]>([]);
 
-  // Error message display
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const value = useContext(UserContext);
@@ -32,7 +30,10 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
         setUserMapsList(userMaps.data);
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "An error has occured and we not could retrieve your maps.",
+        successStatus: false,
+      });
     }
   }
 
@@ -42,10 +43,17 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
         if (checkPermission(value.status, UserType.User)) {
           await mapsService.deleteMapById(placeId);
           getUserMaps();
+          props.messageSetter({
+            message: "Map successfully deleted.",
+            successStatus: true,
+          });
         }
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "An error has occured and we could not delete the map.",
+        successStatus: false,
+      });
     }
   }
 
@@ -105,7 +113,10 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
                       onClick={() => {
                         map._id
                           ? handleUserMapDeleted(map._id)
-                          : setError("The map has been deleted already");
+                          : props.messageSetter({
+                              message: "The map was already deleted",
+                              successStatus: false,
+                            });
                       }}
                     >
                       <FontAwesomeIcon icon={solid("trash-can")} />

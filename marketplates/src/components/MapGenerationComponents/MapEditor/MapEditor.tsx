@@ -51,9 +51,6 @@ function MapEditor(props: {
     placeIterations: [],
   });
 
-  // Response message display
-  const [responseMessage, setResponseMessage] = useState("");
-
   // Contains all the tags available for the user pulled from the database
   const [tagList, setTagList] = useState<ITag[]>([]);
 
@@ -66,9 +63,6 @@ function MapEditor(props: {
     longitude: 3.066667,
     latitude: 50.633333,
   });
-
-  // Error message display
-  const [error, setError] = useState(null);
 
   // Contains all the places available for all maps
   const [placeList, setPlaceList] = useState<IPlace[]>([]);
@@ -208,7 +202,11 @@ function MapEditor(props: {
         }
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message:
+          "An error has occured and we could not retrieve the data for our maps.",
+        successStatus: false,
+      });
     }
   }
   useEffect(() => {
@@ -345,9 +343,18 @@ function MapEditor(props: {
           await mapService.updateMapById(props.editedMap, formData);
         }
         navigate("/mymaps");
+        props.messageSetter({
+          message: `Map ${
+            props.editedMap ? "edited" : "created"
+          } successfully.`,
+          successStatus: true,
+        });
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "An error has occured and we could not create this map.",
+        successStatus: false,
+      });
     }
   }
 
@@ -559,6 +566,7 @@ function MapEditor(props: {
                       <h3>Privacy</h3>
                       <section id={styles.privacyRadioContainer}>
                         <div>
+                          <label>Choose your privacy setting:</label>
                           <input
                             type="radio"
                             id="privacyStatus1"
@@ -1011,11 +1019,6 @@ function MapEditor(props: {
               </>
             )}
           </section>
-
-          {responseMessage && (
-            <div className={styles.success}>{responseMessage}</div>
-          )}
-          {error && <div className={styles.error}>{error}</div>}
           <section
             id={styles.finalMapButtonContainer}
             className={formStyles.finalButtonContainer}

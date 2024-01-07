@@ -22,12 +22,6 @@ function TagManipulation(props: {
   messageSetter: React.Dispatch<IMessageValues>;
 }) {
   // Setting states
-  // Error message display
-  const [error, setError] = useState(null);
-
-  // Response message display
-  const [responseMessage, setResponseMessage] = useState("");
-
   // Array of tags meant to be displayed, edited or deleted
   const [tagList, setTagList] = useState<ITag[]>([]);
 
@@ -44,7 +38,6 @@ function TagManipulation(props: {
   });
   const [validForUpdating, setValidForUpdating] = useState(false);
   const [isAllSelected, setIsAllSelected] = useState(false);
-  const [isStateLoading, setIsStateLoading] = useState(true);
   const [tagQuery, setTagQuery] = useState("");
 
   const value = useContext(UserContext);
@@ -56,7 +49,10 @@ function TagManipulation(props: {
         setTagList(allTags.data);
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "An error has occured and we could not fetch tags",
+        successStatus: false,
+      });
     }
   }
 
@@ -135,11 +131,17 @@ function TagManipulation(props: {
     if (checkPermission(value.status, UserType.Admin)) {
       if (formData.tagName.length > 2) {
         try {
-          const response = await tagService.generateTag(formData, value.userId);
-          setResponseMessage(response.message);
+          await tagService.generateTag(formData, value.userId);
+          props.messageSetter({
+            message: "Tag successfully created",
+            successStatus: true,
+          });
           getAllTags();
         } catch (err) {
-          setError(err.message);
+          props.messageSetter({
+            message: "An error has occured and we could not create the tag",
+            successStatus: false,
+          });
         }
         setFormData({
           isOfficial: true,
@@ -149,40 +151,50 @@ function TagManipulation(props: {
         });
       }
     } else {
-      setResponseMessage("The tag's name cannot be under 3 characters!");
+      props.messageSetter({
+        message: "The tag could not be created due to incorrect values.",
+        successStatus: false,
+      });
     }
   }
 
   async function deletePrimedForDeletion() {
     try {
       if (checkPermission(value.status, UserType.Admin)) {
-        const responseForDelete = tagService.deleteTagsByIds(
-          primedForDeletionList
-        );
-        const responseforDataRenewal = tagService.fetchAllTags();
+        await tagService.deleteTagsByIds(primedForDeletionList);
+        await tagService.fetchAllTags();
 
-        const combinedResponse = await Promise.all([
-          responseForDelete,
-          responseforDataRenewal,
-        ]).then((values) => values.join(" "));
-        setResponseMessage(combinedResponse);
+        props.messageSetter({
+          message: "Successfully deleted the selected tags",
+          successStatus: true,
+        });
         setPrimedForDeletionList([]);
         getAllTags();
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message:
+          "An error has occured and we could not delete the selected tags",
+        successStatus: false,
+      });
     }
   }
 
   async function sendDeleteTagCall(id: string) {
     try {
       if (checkPermission(value.status, UserType.Admin)) {
-        const response = await tagService.deleteTagById(id);
+        await tagService.deleteTagById(id);
         getAllTags();
-        setResponseMessage(response.message);
+        props.messageSetter({
+          message: "The tags have been successfully deleted",
+          successStatus: true,
+        });
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "An error has occured and we could not delete this tag",
+        successStatus: false,
+      });
     }
   }
 
@@ -279,7 +291,7 @@ function TagManipulation(props: {
         <section id={manipulationStyles.searchBar}>
           <label>
             <FontAwesomeIcon icon={solid("magnifying-glass")} />
-            Search for a tag :{" "}
+            Search for a tag :
           </label>
           <input
             type="text"
@@ -318,11 +330,6 @@ function TagManipulation(props: {
               </button>
             )}
           </>
-
-          {error && <div className={tagStyles.error}>{error}</div>}
-          {responseMessage && (
-            <div className={tagStyles.success}>{responseMessage}</div>
-          )}
         </section>
       </article>
       <ul id={manipulationStyles.manipulationItemContainer}>

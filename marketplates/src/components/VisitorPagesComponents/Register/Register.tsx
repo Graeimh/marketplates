@@ -50,11 +50,6 @@ function Register(props: { messageSetter: React.Dispatch<IMessageValues> }) {
   // Serves to check if all values have the correct number of characters
   const [validForSending, setValidForSending] = useState(false);
 
-  // Response message display
-  const [responseMessage, setResponseMessage] = useState("");
-
-  // Error message display
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   function decideRegistration() {
@@ -116,14 +111,24 @@ function Register(props: { messageSetter: React.Dispatch<IMessageValues> }) {
     event.preventDefault();
     if (doesPasswordFitCriteria && arePasswordsMatching) {
       try {
-        const response = await userService.generateUser(formData);
-        setResponseMessage(response.message);
+        await userService.generateUser(formData);
+
+        props.messageSetter({
+          message: "Your account has been successfully created.",
+          successStatus: true,
+        });
         navigate("/login");
       } catch (err) {
-        setError(err.message);
+        props.messageSetter({
+          message: "An error has occured and we could not create your account",
+          successStatus: false,
+        });
       }
     } else {
-      console.log("Poop!");
+      props.messageSetter({
+        message: "The passwords do not match.",
+        successStatus: false,
+      });
     }
   }
 
@@ -376,11 +381,6 @@ function Register(props: { messageSetter: React.Dispatch<IMessageValues> }) {
           </div>
         </form>
       </article>
-
-      {responseMessage && (
-        <div className={styles.success}>{responseMessage}</div>
-      )}
-      {error && <div className={styles.error}>{error}</div>}
     </>
   );
 }

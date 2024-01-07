@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import * as authenticationService from "../src/services/authenticationService.js";
+import styles from "./common/styles/Message.module.scss";
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layouts/Layout/index.js";
@@ -45,7 +46,8 @@ function App() {
 
   // Messages meant to give users feedback on the state of their actions
   const [messageValue, setMessageValue] = useState<IMessageValues>({
-    message: "",
+    message:
+      "Hello my name is quentin guinier and I am very tired of doing this",
     successStatus: true,
   });
 
@@ -56,7 +58,7 @@ function App() {
         message: "",
         successStatus: true,
       });
-    }, 5000);
+    }, 500000);
   }, [messageValue]);
 
   // Upon rendering
@@ -67,7 +69,10 @@ function App() {
         const loadedSessionData = await authenticationService.getSessionData();
         setSessionValue(jose.decodeJwt(loadedSessionData.cookie));
       } catch (err) {
-        setMessageValue(err.message);
+        setMessageValue({
+          message: "We could not reach your session",
+          successStatus: false,
+        });
       }
     }
 
@@ -95,7 +100,17 @@ function App() {
         <link rel="canonical" href="http://localhost:5173/" />
       </Helmet>
       {messageValue.message !== undefined &&
-        messageValue.message.length > 0 && <div>{messageValue.message}</div>}
+        messageValue.message.length > 0 && (
+          <div
+            className={
+              messageValue.successStatus
+                ? `${styles.isSuccess} ${styles.messageContainer} ${styles.top}`
+                : `${styles.isError} ${styles.messageContainer} ${styles.top}`
+            }
+          >
+            <div>{messageValue.message}</div>
+          </div>
+        )}
       <MessageContext.Provider value={messageValue}>
         <UserContext.Provider value={sessionValue}>
           <BrowserRouter>
@@ -248,6 +263,18 @@ function App() {
           </BrowserRouter>
         </UserContext.Provider>
       </MessageContext.Provider>
+      {messageValue.message !== undefined &&
+        messageValue.message.length > 0 && (
+          <div
+            className={
+              messageValue.successStatus
+                ? `${styles.isSuccess} ${styles.messageContainer} ${styles.bottom}`
+                : `${styles.isError} ${styles.messageContainer} ${styles.bottom}`
+            }
+          >
+            <div>{messageValue.message}</div>
+          </div>
+        )}
     </>
   );
 }

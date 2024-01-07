@@ -45,9 +45,6 @@ function PlaceEditor(props: {
   // Serves to check if the values sent have at least a certain number of characters
   const [isValidForSending, setIsValidForSending] = useState(false);
 
-  // Response message display
-  const [responseMessage, setResponseMessage] = useState("");
-
   // Contains the list of tags to pick from to associate to the place
   const [tagList, setTagList] = useState<ITag[]>([]);
 
@@ -63,9 +60,6 @@ function PlaceEditor(props: {
 
   // Contains a string which is used as a regex to filter the list of tags
   const [tagQuery, setTagQuery] = useState("");
-
-  // Error message display
-  const [error, setError] = useState(null);
 
   const value = useContext(UserContext);
 
@@ -126,7 +120,10 @@ function PlaceEditor(props: {
         setTagList(allTags.data);
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "An error has occured and we could not fetch your tags.",
+        successStatus: false,
+      });
     }
   }
 
@@ -155,7 +152,11 @@ function PlaceEditor(props: {
         });
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message:
+          "An error has occured and we could not fetch your place's data.",
+        successStatus: false,
+      });
     }
   }
 
@@ -203,19 +204,27 @@ function PlaceEditor(props: {
     try {
       if (checkPermission(value.status, UserType.User)) {
         if (props.editPlaceId === undefined) {
-          const response = await placeService.generatePlace(formData);
-          setResponseMessage(response.message);
+          await placeService.generatePlace(formData);
+          props.messageSetter({
+            message: "Your place has been successfully created.",
+            successStatus: true,
+          });
         } else {
-          const response = await placeService.updatePlaceById(
-            formData,
-            props.editPlaceId
-          );
-          setResponseMessage(response.message);
+          await placeService.updatePlaceById(formData, props.editPlaceId);
+          props.messageSetter({
+            message: "Your place has been successfully edited.",
+            successStatus: true,
+          });
         }
         navigate("/myplaces");
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: `An error has occured and your place could not be ${
+          props.editPlaceId === undefined ? "created" : "edited"
+        }.`,
+        successStatus: false,
+      });
     }
   }
 
@@ -550,10 +559,6 @@ function PlaceEditor(props: {
           </MapContainer>
         </section>
       </article>
-      {responseMessage && (
-        <div className={styles.success}>{responseMessage}</div>
-      )}
-      {error && <div className={styles.error}>{error}</div>}
     </>
   );
 }

@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { Helmet } from "react-helmet";
+import { IMessageValues } from "../../../common/types/commonTypes.ts/commonTypes.js";
 
 function EditProfile(props: {
   userId: string;
@@ -53,7 +54,10 @@ function EditProfile(props: {
         });
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "An error has occured and we could not retrieve your data.",
+        successStatus: false,
+      });
     }
   }
 
@@ -83,10 +87,17 @@ function EditProfile(props: {
     try {
       if (checkPermission(value.status, UserType.User)) {
         await userService.updateUserById(props.userId, formData);
+        props.messageSetter({
+          message: "Your profile has been successfully updated.",
+          successStatus: true,
+        });
         navigate("/profile");
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "An error has occured and we could not update your profile.",
+        successStatus: false,
+      });
     }
   }
 

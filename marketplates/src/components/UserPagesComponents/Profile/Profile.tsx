@@ -19,11 +19,12 @@ function Profile(props: {
         const userData = localStorage.getItem("refreshToken");
         if (userData !== null) {
           const userDataDecrypted: ISessionValues = jose.decodeJwt(userData);
-          const statusDelete = await userService.deleteUserById(
-            userDataDecrypted.userId
-          );
-          const statusLogout = await authenticationService.logout(userData);
-
+          await userService.deleteUserById(userDataDecrypted.userId);
+          await authenticationService.logout(userData);
+          props.messageSetter({
+            message: "Goodbye! We hope you had a good time using Marketplates!",
+            successStatus: true,
+          });
           props.contextSetter({
             email: "",
             displayName: "",
@@ -33,7 +34,12 @@ function Profile(props: {
             exp: 0,
           });
         }
-      } catch (err) {}
+      } catch (err) {
+        props.messageSetter({
+          message: "An error has occured and we could not delete your profile.",
+          successStatus: false,
+        });
+      }
     }
   }
 

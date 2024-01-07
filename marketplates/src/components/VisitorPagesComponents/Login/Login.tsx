@@ -8,7 +8,6 @@ import * as authenticationService from "../../../services/authenticationService.
 import styles from "./Login.module.scss";
 import formStyles from "../../../common/styles/Forms.module.scss";
 import ReCAPTCHA from "react-google-recaptcha";
-import createTemporaryMessage from "../../../common/functions/createTemporaryMessage.js";
 import * as jose from "jose";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { Helmet } from "react-helmet";
@@ -24,12 +23,6 @@ function Login(props: {
     email: "",
     password: "",
   });
-
-  // Response message display
-  const [responseMessage, setResponseMessage] = useState("");
-
-  // Error message display
-  const [error, setError] = useState("");
 
   // Sets whether or not the user can try to login again
   const [canRetry, setCanRetry] = useState(true);
@@ -91,14 +84,16 @@ function Login(props: {
             response.refreshToken
           );
           props.contextSetter(refreshTokenData);
-          createTemporaryMessage(response.message, 1500, setResponseMessage);
-          navigate("/");
           props.messageSetter({
-            message: "Logged in successfully!",
+            message: "Welcome!",
             successStatus: true,
           });
+          navigate("/");
         } catch (err) {
-          createTemporaryMessage(err.message, 1500, setError);
+          props.messageSetter({
+            message: "Invalid credentials",
+            successStatus: false,
+          });
           setCanRetry(false);
           putLoginToSleep(1500);
           window.grecaptcha.reset();
@@ -177,15 +172,6 @@ function Login(props: {
           </div>
         </form>
       </article>
-
-      <div
-        className={responseMessage.length > 0 ? styles.shown : styles.hidden}
-      >
-        {responseMessage}
-      </div>
-      <div className={error.length > 0 ? styles.shown : styles.hidden}>
-        {error}
-      </div>
     </>
   );
 }

@@ -120,7 +120,7 @@ function PlaceManipulation(props: {
       }
     } catch (err) {
       props.messageSetter({
-        message: "An error has occured and we could not delete this places",
+        message: "An error has occured and we could not delete this place",
         successStatus: false,
       });
     }

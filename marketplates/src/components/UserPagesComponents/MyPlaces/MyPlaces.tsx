@@ -18,9 +18,6 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
   // Array of user owned places meant to be displayed, edited or deleted
   const [userPlacesList, setUserPlacesList] = useState<IPlace[]>([]);
 
-  // Error message display
-  const [error, setError] = useState("");
-
   const value = useContext(UserContext);
 
   const navigate = useNavigate();
@@ -32,7 +29,10 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
         setUserPlacesList(userPlaces.data);
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "An error has occured and we could get your places.",
+        successStatus: false,
+      });
     }
   }
 
@@ -42,10 +42,17 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
         if (checkPermission(value.status, UserType.User)) {
           await placeService.deletePlaceById(placeId);
           getUserPlaces();
+          props.messageSetter({
+            message: "The place has been successfully deleted",
+            successStatus: true,
+          });
         }
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "An error has occured and we could not delete the place",
+        successStatus: false,
+      });
     }
   }
 
@@ -110,7 +117,10 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
                       onClick={() => {
                         place._id
                           ? handleUserPlaceDeleted(place._id)
-                          : setError("The place has been deleted already");
+                          : props.messageSetter({
+                              message: "This place was already deleted",
+                              successStatus: false,
+                            });
                       }}
                     >
                       <FontAwesomeIcon icon={solid("trash-can")} />

@@ -15,12 +15,6 @@ function UserManipulation(props: {
   messageSetter: React.Dispatch<IMessageValues>;
 }) {
   // Setting states
-  // Error message display
-  const [error, setError] = useState(null);
-
-  // Response message display
-  const [responseMessage, setResponseMessage] = useState("");
-
   // Array of users meant to be displayed, edited or deleted
   const [userList, setUserList] = useState<IUser[]>([]);
 
@@ -44,7 +38,10 @@ function UserManipulation(props: {
         setUserList(allUsers.data);
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "An error has occured and we could not fetch users.",
+        successStatus: false,
+      });
     }
   }
 
@@ -86,29 +83,39 @@ function UserManipulation(props: {
   async function deletePrimedForDeletion() {
     try {
       if (checkPermission(value.status, UserType.Admin)) {
-        // Delete all the places whose ids are within the primed for deletion list
-        const responseForDelete = userService.deleteUsersByIds(
-          primedForDeletionList
-        );
-        const response = await responseForDelete;
-        setResponseMessage(response);
+        // Delete all the users whose ids are within the primed for deletion list
+        await userService.deleteUsersByIds(primedForDeletionList);
+        props.messageSetter({
+          message: "Successfully deleted the selected users",
+          successStatus: true,
+        });
         setPrimedForDeletionList([]);
         getAllUsers();
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message:
+          "An error has occured and we could not delete the selected users",
+        successStatus: false,
+      });
     }
   }
 
   async function sendDeleteUserCall(id: string) {
     try {
       if (checkPermission(value.status, UserType.Admin)) {
-        const response = await userService.deleteUserById(id);
+        await userService.deleteUserById(id);
         getAllUsers();
-        setResponseMessage(response.message);
+        props.messageSetter({
+          message: "User successfully deleted",
+          successStatus: true,
+        });
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "An error has occured and we could not delete this user",
+        successStatus: false,
+      });
     }
   }
 
@@ -162,10 +169,6 @@ function UserManipulation(props: {
         </section>
       </article>
 
-      {error && <div className={styles.error}>{error}</div>}
-      {responseMessage && (
-        <div className={styles.success}>{responseMessage}</div>
-      )}
       <ul id={styles.manipulationItemContainer}>
         {displayedUserList.length > 0 &&
           displayedUserList.map((user) => (
