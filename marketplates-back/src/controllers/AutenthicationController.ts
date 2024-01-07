@@ -57,6 +57,8 @@ export async function login(req, res) {
                 "token", accessToken, {
                 httpOnly: true,
                 maxAge: 10 * 60 * 1000,
+                sameSite: 'None',
+                secure: true
             }
             );
 
@@ -153,6 +155,8 @@ export async function produceNewAccessToken(req, res) {
                 "token", newAccessToken, {
                 httpOnly: true,
                 maxAge: 10 * 60 * 1000,
+                sameSite: 'None',
+                secure: true
             }).json({
                 message: '(201 No content)-Access token successfully regenerated.',
                 newAccessToken,
