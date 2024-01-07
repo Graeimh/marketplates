@@ -149,7 +149,7 @@ function TagManipulationItem(props: {
           <section>
             <ul className={styles.tagEditor}>
               <li>
-                <label>Tag name : </label>
+                <label htmlFor="tagName">Tag name : </label>
                 <br />
                 <input
                   type="text"
@@ -171,7 +171,9 @@ function TagManipulationItem(props: {
                       style={{ margin: "auto" }}
                     />
                   </div>
-                  <label>Background Color : </label>
+                  <label htmlFor="tagBackgroundColor">
+                    Background Color :{" "}
+                  </label>
                   <br />
                   <input
                     type="text"
@@ -188,7 +190,7 @@ function TagManipulationItem(props: {
                     }
                     style={{ margin: "auto" }}
                   />
-                  <label>Name Color : </label>
+                  <label htmlFor="tagNameColor">Name Color : </label>
                   <input
                     type="text"
                     name="tagNameColor"

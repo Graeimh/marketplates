@@ -134,7 +134,7 @@ function UserManipulation(props: {
       <article id={styles.manipulationContainer}>
         <h2>Manage users</h2>
         <section id={styles.searchBar}>
-          <label>
+          <label htmlFor="userQuery">
             <FontAwesomeIcon icon={solid("magnifying-glass")} />
             Search for a user via their display name :{" "}
           </label>

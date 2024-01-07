@@ -130,7 +130,7 @@ function UserManipulationItem(props: {
             <h5>Personnal information</h5>
             <ul>
               <li>
-                <label>First name : </label>
+                <label htmlFor="firstName">First name : </label>
                 <input
                   type="text"
                   name="firstName"
@@ -139,7 +139,7 @@ function UserManipulationItem(props: {
                 />
               </li>
               <li>
-                <label>Last name : </label>
+                <label htmlFor="lastName">Last name : </label>
                 <input
                   type="text"
                   name="lastName"
@@ -149,7 +149,7 @@ function UserManipulationItem(props: {
               </li>
             </ul>
             <div>
-              <label>Street address : </label>
+              <label htmlFor="streetAddress">Street address : </label>
               <input
                 type="text"
                 name="streetAddress"
@@ -159,7 +159,7 @@ function UserManipulationItem(props: {
             </div>
             <ul>
               <li>
-                <label>County : </label>
+                <label htmlFor="county">County : </label>
                 <input
                   type="text"
                   name="county"
@@ -168,7 +168,7 @@ function UserManipulationItem(props: {
                 />
               </li>
               <li>
-                <label>City : </label>
+                <label htmlFor="city">City : </label>
                 <input
                   type="text"
                   name="city"
@@ -177,7 +177,7 @@ function UserManipulationItem(props: {
                 />
               </li>
               <li>
-                <label>Country : </label>
+                <label htmlFor="country">Country : </label>
                 <input
                   type="text"
                   name="country"
@@ -191,7 +191,7 @@ function UserManipulationItem(props: {
             <h5>Credentials</h5>
             <ul>
               <li>
-                <label>Nickname : </label>
+                <label htmlFor="displayName">Nickname : </label>
                 <br />
                 <input
                   type="text"
@@ -201,7 +201,7 @@ function UserManipulationItem(props: {
                 />
               </li>
               <li>
-                <label>Email : </label>
+                <label htmlFor="email">Email : </label>
                 <br />
                 <input
                   type="email"

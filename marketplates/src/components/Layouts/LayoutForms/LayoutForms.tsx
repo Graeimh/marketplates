@@ -9,11 +9,12 @@ const LayoutForms = () => {
   return (
     <>
       <div id={styles.formsContainer}>
-        <header>
+        <header aria-label="Login and register header">
           <button
             type="button"
             onClick={() => navigate(-1)}
             id={styles.formsButton}
+            aria-label="Return"
           >
             <FontAwesomeIcon icon={solid("rotate-left")} />
           </button>

@@ -8,7 +8,7 @@ import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { Helmet } from "react-helmet";
-import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IMessageValues } from "../../../common/types/commonTypes.ts/commonTypes.js";
 
@@ -142,13 +142,14 @@ function PlaceManipulation(props: {
       <article id={styles.manipulationContainer}>
         <h2>Manage places</h2>
         <section id={styles.searchBar}>
-          <label>
+          <label htmlFor="placeQuery">
             <FontAwesomeIcon icon={solid("magnifying-glass")} />
             Search for a place :{" "}
           </label>
           <input
             type="text"
             name="placeQuery"
+            id="placeQuery"
             onChange={(e) => {
               setPlaceQuery(e.target.value);
             }}
@@ -157,18 +158,21 @@ function PlaceManipulation(props: {
         <section id={styles.manipulationButtonsContainer}>
           <span className={stylesUserDashboard.deleteButton}>
             <button type="button" onClick={() => deletePrimedForDeletion()}>
+              <FontAwesomeIcon icon={regular("trash-can")} />
               Delete {primedForDeletionList.length} place(s)
             </button>
           </span>
+          <button type="button" onClick={() => cancelSelection()}>
+            <FontAwesomeIcon icon={regular("rectangle-xmark")} />
+            Cancel selection
+          </button>
           <button
             type="button"
             onClick={() => selectAllPlaces()}
             disabled={primedForDeletionList.length === placeList.length}
           >
+            <FontAwesomeIcon icon={solid("reply-all")} />
             Select all ({placeList.length}) places
-          </button>
-          <button type="button" onClick={() => cancelSelection()}>
-            Cancel selection
           </button>
         </section>
       </article>

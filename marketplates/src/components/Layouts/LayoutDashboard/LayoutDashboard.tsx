@@ -7,58 +7,78 @@ const LayoutDashboard = () => {
   return (
     <>
       <div id={styles.dashboardContainer}>
-        <header>
+        <header aria-label="Admin dashboard header">
           <nav>
             <ul id={styles.small}>
               <li>
-                <Link id={styles.homeButton} to="/">
+                <Link
+                  id={styles.homeButton}
+                  to="/"
+                  aria-label="Navigate to Home"
+                >
                   &#8205;
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard/users">
+                <Link
+                  to="/dashboard/users"
+                  aria-label="Navigate to Manage Users"
+                >
                   <FontAwesomeIcon icon={solid("users")} />
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard/tags">
+                <Link to="/dashboard/tags" aria-label="Navigate to Manage Tags">
                   <FontAwesomeIcon icon={solid("tags")} />
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard/places">
+                <Link
+                  to="/dashboard/places"
+                  aria-label="Navigate to Manage Places"
+                >
                   <FontAwesomeIcon icon={solid("shop")} />
                 </Link>
               </li>
             </ul>
             <ul id={styles.tablet}>
               <li>
-                <Link id={styles.homeButton} to="/">
+                <Link
+                  id={styles.homeButton}
+                  to="/"
+                  aria-label="Navigate to Home"
+                >
                   &#8205;
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard">
+                <Link to="/dashboard" aria-label="Navigate to Dashboard Index">
                   <FontAwesomeIcon icon={solid("house")} /> <br />
                   Index
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard/users">
+                <Link
+                  to="/dashboard/users"
+                  aria-label="Navigate to Manage Users"
+                >
                   <FontAwesomeIcon icon={solid("users")} />
                   <br />
                   Users
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard/tags">
+                <Link to="/dashboard/tags" aria-label="Navigate to Manage Tags">
                   <FontAwesomeIcon icon={solid("tags")} />
                   <br />
                   Tags
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard/places">
+                <Link
+                  to="/dashboard/places"
+                  aria-label="Navigate to Manage Places"
+                >
                   <FontAwesomeIcon icon={solid("shop")} />
                   <br />
                   Places

@@ -271,7 +271,7 @@ function PlaceEditor(props: {
             <ul>
               <h1>Register a business</h1>
               <li>
-                <label>Name : </label>
+                <label htmlFor="name">Name : </label>
                 <br />
                 <input
                   type="text"
@@ -282,7 +282,7 @@ function PlaceEditor(props: {
                 />
               </li>
               <li>
-                <label>Description : </label>
+                <label htmlFor="description">Description : </label>
                 <br />
                 <input
                   type="text"
@@ -347,7 +347,7 @@ function PlaceEditor(props: {
                 </MapContainer>
               </li>
               <li>
-                <label>Address : </label>
+                <label htmlFor="address">Address : </label>
                 <br />
                 <input
                   type="text"
@@ -391,7 +391,7 @@ function PlaceEditor(props: {
               )}
               <li>Off the grid? Write the coordinates here!</li>
               <li>
-                <label>Latitude : </label>
+                <label htmlFor="latitude">Latitude : </label>
                 <br />
                 <input
                   type="number"
@@ -408,7 +408,7 @@ function PlaceEditor(props: {
                 />
               </li>
               <li>
-                <label>Longitude : </label>
+                <label htmlFor="longitude">Longitude : </label>
                 <br />
                 <input
                   type="number"
@@ -431,7 +431,7 @@ function PlaceEditor(props: {
               </li>
 
               <li>
-                <label>Search for a tag : </label>
+                <label htmlFor="tagQuery">Search for a tag : </label>
                 <input
                   type="text"
                   name="tagQuery"

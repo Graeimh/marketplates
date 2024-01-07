@@ -52,7 +52,7 @@ function Profile(props: {
       <div id={stylesUserDashboard.dashboardContentContainer}>
         <ul id={stylesUserDashboard.dashboardPanel}>
           <li>
-            <Link to="/editprofile">
+            <Link to="/editprofile" aria-label="Navigate to Edit Profile">
               <span className={stylesUserDashboard.dashboardOptionChevron}>
                 <FontAwesomeIcon icon={solid("chevron-right")} />
               </span>
@@ -65,7 +65,7 @@ function Profile(props: {
             </Link>
           </li>
           <li>
-            <Link to="/mymaps">
+            <Link to="/mymaps" aria-label="Navigate to My Maps">
               <span className={stylesUserDashboard.dashboardOptionChevron}>
                 <FontAwesomeIcon icon={solid("chevron-right")} />
               </span>
@@ -78,7 +78,7 @@ function Profile(props: {
             </Link>
           </li>
           <li>
-            <Link to="/myplaces">
+            <Link to="/myplaces" aria-label="Navigate to My Places">
               <span className={stylesUserDashboard.dashboardOptionChevron}>
                 <FontAwesomeIcon icon={solid("chevron-right")} />
               </span>
@@ -92,7 +92,7 @@ function Profile(props: {
           </li>
           <li className={stylesUserDashboard.deleteButton}>
             <div>
-              <Link to="/" onClick={deleteUser}>
+              <Link to="/" onClick={deleteUser} aria-label="Delete my account">
                 <span className={stylesUserDashboard.dashboardOptionChevron}>
                   <FontAwesomeIcon icon={solid("chevron-right")} />
                 </span>

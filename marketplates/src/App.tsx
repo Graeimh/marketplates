@@ -53,12 +53,18 @@ function App() {
 
   // Upon setting a new message
   useEffect(() => {
-    setTimeout(() => {
-      setMessageValue({
-        message: "",
-        successStatus: true,
-      });
-    }, 500000);
+    if (messageValue.message.length > 0) {
+      const messageTimer = setTimeout(() => {
+        setMessageValue({
+          message: "",
+          successStatus: true,
+        });
+      }, 1500);
+
+      return () => {
+        clearTimeout(messageTimer);
+      };
+    }
   }, [messageValue]);
 
   // Upon rendering

@@ -15,7 +15,7 @@ import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import { Helmet } from "react-helmet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { IMessageValues } from "../../../common/types/commonTypes.ts/commonTypes.js";
 
 function TagManipulation(props: {
@@ -218,11 +218,12 @@ function TagManipulation(props: {
             <section>
               <ul className={tagStyles.tagEditor}>
                 <li>
-                  <label>Tag name : </label>
+                  <label htmlFor="tagName">Tag name : </label>
                   <br />
                   <input
                     type="text"
                     name="tagName"
+                    id="tagName"
                     onInput={updateField}
                     value={formData.tagName}
                   />
@@ -239,7 +240,9 @@ function TagManipulation(props: {
                     }
                     style={{ margin: "auto" }}
                   />
-                  <label>Background Color : </label>
+                  <label htmlFor="tagBackgroundColor">
+                    Background Color :{" "}
+                  </label>
                   <br />
                   <input
                     type="text"
@@ -256,7 +259,7 @@ function TagManipulation(props: {
                     }
                     style={{ margin: "auto" }}
                   />
-                  <label>Name Color : </label>
+                  <label htmlFor="tagNameColor">Name Color : </label>
                   <input
                     type="text"
                     name="tagNameColor"
@@ -289,7 +292,7 @@ function TagManipulation(props: {
           </form>
         </section>
         <section id={manipulationStyles.searchBar}>
-          <label>
+          <label htmlFor="tagQuery">
             <FontAwesomeIcon icon={solid("magnifying-glass")} />
             Search for a tag :
           </label>
@@ -304,11 +307,13 @@ function TagManipulation(props: {
         <section id={manipulationStyles.manipulationButtonsContainer}>
           <span className={stylesUserDashboard.deleteButton}>
             <button type="button" onClick={() => deletePrimedForDeletion()}>
+              <FontAwesomeIcon icon={regular("trash-can")} />
               Delete {primedForDeletionList.length} tags
             </button>
           </span>
 
           <button type="button" onClick={() => cancelSelection()}>
+            <FontAwesomeIcon icon={regular("rectangle-xmark")} />
             Cancel selection
           </button>
 
@@ -318,6 +323,7 @@ function TagManipulation(props: {
               onClick={() => selectAllTags()}
               disabled={primedForDeletionList.length === tagList.length}
             >
+              <FontAwesomeIcon icon={solid("reply-all")} />
               Select all ({tagList.length}) tags
             </button>
 

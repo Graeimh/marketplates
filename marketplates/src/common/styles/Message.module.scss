@@ -1,27 +1,46 @@
-#appContainer {
-}
-
 .messageContainer div {
-  background-color: blue;
+  color: #ffffff;
   text-align: center;
   z-index: 1;
-  position: -webkit-sticky; /* for Safari users */
-  position: sticky;
+  position: fixed;
   width: 40%;
-  bottom: 12rem;
   margin: 0 auto;
   left: 0;
   right: 0;
-  top: 0;
+  top: -3rem;
   display: flex;
+  border-radius: 20px;
+  padding: 0.5rem;
+  display: block;
+  animation: slideFromTop 1.5s;
+  animation-iteration-count: 1;
+  opacity: 0%;
+}
+
+@keyframes slideFromTop {
+  50% {
+    transform: translateY(3.5rem);
+    opacity: 100%;
+  }
+}
+
+@keyframes slideFromBottom {
+  50% {
+    transform: translateY(-6.5rem);
+    opacity: 100%;
+  }
 }
 
 .isSuccess div {
-  color: green;
+  background-color: #eb6700;
+  -webkit-box-shadow: 0 0 1rem #eb6700;
+  box-shadow: 0 0 1rem #eb6700;
 }
 
 .isError div {
-  color: rgb(128, 0, 43);
+  background-color: #920000;
+  -webkit-box-shadow: 0 0 1rem #920000;
+  box-shadow: 0 0 1rem #920000;
 }
 
 .bottom {
@@ -30,8 +49,8 @@
 
 /* For tablets */
 @media only screen and (min-width: 768px) {
-  .messageContainer {
-    padding-left: 6rem;
+  .messageContainer div {
+    margin: 0 35%;
   }
 }
 
@@ -42,27 +61,29 @@
   }
 
   .bottom {
-    display: flex;
+    display: block;
   }
 
   .messageContainer {
     padding-left: 0rem;
   }
   .messageContainer div {
-    position: sticky;
-    bottom: 6.5rem;
-    margin-left: auto;
-    margin-right: 40%;
+    color: #ffffff;
+    text-align: center;
+    z-index: 1;
+    position: fixed;
+    width: 40%;
+    margin: 0 auto;
     left: 0;
     right: 0;
-    text-align: center;
-    border: 2px solid #eb6700;
-    width: 50%;
-    list-style-type: none;
-    border-radius: 1rem;
+    bottom: -5.5rem;
+    top: 105%;
     display: flex;
-    flex-direction: column;
-    background-color: #ffffff;
-    z-index: 1;
+    border-radius: 20px;
+    padding: 0.5rem;
+    display: block;
+    opacity: 100%;
+    animation: slideFromBottom 1.5s;
+    animation-iteration-count: 1;
   }
 }

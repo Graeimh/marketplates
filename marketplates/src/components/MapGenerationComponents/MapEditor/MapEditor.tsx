@@ -506,6 +506,9 @@ function MapEditor(props: {
           <section className={styles.mapForms}>
             <form className={formStyles.formContainer}>
               <button
+                aria-label={`${
+                  mapDataCollapseVisible ? "Close" : "Open"
+                } the Map data & privacy collapse`}
                 type="button"
                 onClick={() =>
                   setMapDataCollapseVisible(!mapDataCollapseVisible)
@@ -566,7 +569,9 @@ function MapEditor(props: {
                       <h3>Privacy</h3>
                       <section id={styles.privacyRadioContainer}>
                         <div>
-                          <label>Choose your privacy setting:</label>
+                          <label htmlFor="privacyStatus">
+                            Choose your privacy setting:
+                          </label>
                           <input
                             type="radio"
                             id="privacyStatus1"
@@ -629,6 +634,9 @@ function MapEditor(props: {
                 </section>
 
                 <button
+                  aria-label={`${
+                    addressCollapseVisible ? "Close" : "Open"
+                  } the Find an address collapse`}
                   type="button"
                   onClick={() =>
                     setAddressCollapseVisible(!addressCollapseVisible)
@@ -706,19 +714,22 @@ function MapEditor(props: {
                   )}
                 </section>
                 <button
+                  aria-label={`${
+                    iterationCollapseVisible ? "Close" : "Open"
+                  } the Filters collapse`}
                   type="button"
                   onClick={() =>
-                    setIterationCollapseVisible(!iterationCollapseVisible)
+                    setFiltersCollapseVisible(!filtersCollapseVisible)
                   }
                   className={
-                    iterationCollapseVisible
+                    filtersCollapseVisible
                       ? styles.collapseButtonActive
                       : styles.collapseButtonInactive
                   }
                 >
                   Filters
                   <span>
-                    {iterationCollapseVisible ? (
+                    {filtersCollapseVisible ? (
                       <FontAwesomeIcon icon={solid("chevron-down")} />
                     ) : (
                       <FontAwesomeIcon icon={solid("chevron-up")} />
@@ -727,13 +738,13 @@ function MapEditor(props: {
                 </button>
                 <section
                   className={
-                    iterationCollapseVisible
+                    filtersCollapseVisible
                       ? styles.addressVisible
                       : styles.addressCollapsed
                   }
                   id={styles.scrollableContainer}
                   style={{
-                    height: iterationCollapseVisible
+                    height: filtersCollapseVisible
                       ? `${
                           28 + Math.floor(placeFilterQuery.tags.length / 5) * 2
                         }rem`
@@ -850,19 +861,22 @@ function MapEditor(props: {
             {iterationValues.address.length > 0 && (
               <>
                 <button
+                  aria-label={`${
+                    addressCollapseVisible ? "Close" : "Open"
+                  } the Create / Edit iteration collapse`}
                   type="button"
                   onClick={() =>
-                    setFiltersCollapseVisible(!filtersCollapseVisible)
+                    setIterationCollapseVisible(!iterationCollapseVisible)
                   }
                   className={
-                    filtersCollapseVisible
+                    iterationCollapseVisible
                       ? styles.collapseButtonActive
                       : styles.collapseButtonInactive
                   }
                 >
                   Create / Edit iteration
                   <span>
-                    {filtersCollapseVisible ? (
+                    {iterationCollapseVisible ? (
                       <FontAwesomeIcon icon={solid("chevron-down")} />
                     ) : (
                       <FontAwesomeIcon icon={solid("chevron-up")} />
@@ -871,13 +885,13 @@ function MapEditor(props: {
                 </button>
                 <section
                   className={
-                    filtersCollapseVisible
+                    iterationCollapseVisible
                       ? styles.addressVisible
                       : styles.addressCollapsed
                   }
                   id={styles.scrollableContainer}
                   style={{
-                    height: filtersCollapseVisible
+                    height: iterationCollapseVisible
                       ? `${
                           38 +
                           Math.floor(iterationValues.tagsList.length / 5) * 2

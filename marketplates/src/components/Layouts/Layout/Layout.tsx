@@ -41,16 +41,21 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
     <>
       <div id={stylesUserDashboard.dashboardContainer}>
         {value.userId.length > 0 ? (
-          <header>
+          <header aria-label="Website header">
             <nav>
               <ul id={stylesUserDashboard.small}>
                 <li>
-                  <Link id={stylesAdminDashboard.homeButton} to="/">
+                  <Link
+                    id={stylesAdminDashboard.homeButton}
+                    aria-label="Navigate to Home"
+                    to="/"
+                  >
                     &#8205;
                   </Link>
                 </li>
                 <li>
                   <button
+                    aria-label="Open or close burger menu"
                     onClick={() => {
                       setIsBurgerOpen(!isBurgerOpen);
                     }}
@@ -61,18 +66,23 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
                 </li>
                 {value.status.split("&").indexOf("Admin") !== -1 && (
                   <li className={stylesUserDashboard.navigationOption}>
-                    <Link to="/dashboard">
+                    <Link to="/dashboard" aria-label="Navigate to Dashboard">
                       <FontAwesomeIcon icon={solid("gauge")} />
                     </Link>
                   </li>
                 )}
                 <li>
-                  <Link to="/contact">
+                  <Link to="/contact" aria-label="Navigate to Contact">
                     <FontAwesomeIcon icon={solid("square-envelope")} />
                   </Link>
                 </li>
                 <li>
-                  <button type="button" onClick={logoutUser} id={styles.logout}>
+                  <button
+                    type="button"
+                    onClick={logoutUser}
+                    id={styles.logout}
+                    aria-label="Log out"
+                  >
                     <FontAwesomeIcon icon={solid("right-from-bracket")} />
                   </button>
                 </li>
@@ -85,14 +95,14 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
                 </li>
 
                 <li>
-                  <Link to="/mymaps">
+                  <Link to="/mymaps" aria-label="Navigate to My Maps">
                     <FontAwesomeIcon icon={solid("map")} />
                     <br />
                     My Maps
                   </Link>
                 </li>
                 <li>
-                  <Link to="/myplaces">
+                  <Link to="/myplaces" aria-label="Navigate to My Places">
                     <FontAwesomeIcon icon={solid("shop")} />
                     <br />
                     My Places
@@ -100,14 +110,14 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
                 </li>
 
                 <li>
-                  <Link to="/profile">
+                  <Link to="/profile" aria-label="Navigate to Profile">
                     <FontAwesomeIcon icon={regular("user")} />
                     <br />
                     Profile
                   </Link>
                 </li>
                 <li>
-                  <Link to="/contact">
+                  <Link to="/contact" aria-label="Navigate to Contact">
                     <FontAwesomeIcon icon={solid("square-envelope")} />
                     <br />
                     Contact
@@ -116,7 +126,7 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
 
                 {value.status.split("&").indexOf("Admin") !== -1 && (
                   <li className={stylesUserDashboard.navigationOption}>
-                    <Link to="/dashboard">
+                    <Link to="/dashboard" aria-label="Navigate to Dashboard">
                       <FontAwesomeIcon icon={solid("gauge")} />
                       <br />
                       Dashboard
@@ -138,29 +148,37 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
             <nav>
               <ul id={stylesUserDashboard.small}>
                 <li>
-                  <Link id={stylesAdminDashboard.homeButton} to="/">
+                  <Link
+                    id={stylesAdminDashboard.homeButton}
+                    to="/"
+                    aria-label="Navigate to Home"
+                  >
                     &#8205;
                   </Link>
                 </li>
                 <li>
-                  <Link to="/register">
+                  <Link to="/register" aria-label="Navigate to Register">
                     <FontAwesomeIcon icon={solid("user-plus")} />
                   </Link>
                 </li>
                 <li>
-                  <Link to="/login">
+                  <Link to="/login" aria-label="Navigate to Login">
                     <FontAwesomeIcon icon={solid("right-to-bracket")} />
                   </Link>
                 </li>
                 <li>
-                  <Link to="/contact">
+                  <Link to="/contact" aria-label="Navigate to Contact">
                     <FontAwesomeIcon icon={solid("square-envelope")} />
                   </Link>
                 </li>
               </ul>
               <ul id={stylesAdminDashboard.tablet}>
                 <li>
-                  <Link id={stylesAdminDashboard.homeButton} to="/">
+                  <Link
+                    id={stylesAdminDashboard.homeButton}
+                    to="/"
+                    aria-label="Navigate to Home"
+                  >
                     &#8205;
                   </Link>
                 </li>
@@ -172,14 +190,14 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/login">
+                  <Link to="/login" aria-label="Navigate to Login">
                     <FontAwesomeIcon icon={solid("right-to-bracket")} />
                     <br />
                     Login
                   </Link>
                 </li>
                 <li>
-                  <Link to="/contact">
+                  <Link to="/contact" aria-label="Navigate to Contact">
                     <FontAwesomeIcon icon={solid("square-envelope")} />
                     <br />
                     Contact
@@ -195,16 +213,28 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
         </div>
       </div>
       <div id={isBurgerOpen ? styles.burgerOpen : styles.burgerClosed}>
-        <Link to="/profile" onClick={() => setIsBurgerOpen(!isBurgerOpen)}>
+        <Link
+          to="/profile"
+          onClick={() => setIsBurgerOpen(!isBurgerOpen)}
+          aria-label="Navigate to Profile"
+        >
           <FontAwesomeIcon icon={regular("user")} />
           Profile
         </Link>
-        <Link to="/mymaps" onClick={() => setIsBurgerOpen(!isBurgerOpen)}>
+        <Link
+          to="/mymaps"
+          onClick={() => setIsBurgerOpen(!isBurgerOpen)}
+          aria-label="Navigate to My Maps"
+        >
           <FontAwesomeIcon icon={solid("map")} />
           My Maps
         </Link>
 
-        <Link to="/myplaces" onClick={() => setIsBurgerOpen(!isBurgerOpen)}>
+        <Link
+          to="/myplaces"
+          onClick={() => setIsBurgerOpen(!isBurgerOpen)}
+          aria-label="Navigate to My Places"
+        >
           <FontAwesomeIcon icon={solid("shop")} />
           My Businesses
         </Link>
