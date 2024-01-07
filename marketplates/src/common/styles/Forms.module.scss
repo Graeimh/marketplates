@@ -1,3 +1,5 @@
+/* || Form design*/
+/* container */
 .formContainer {
   color: #1e1e1e;
   clear: both;
@@ -11,6 +13,7 @@
   box-shadow: 2px 2px 2px 2px #e4e4e4;
 }
 
+/* titles */
 .formContainer h1 {
   text-align: center;
   color: #eb6700;
@@ -25,6 +28,18 @@
   margin-left: 0.5rem;
 }
 
+.formContainer .itemTitle {
+  text-align: center;
+}
+
+section h3,
+section h5 {
+  color: #a32e00;
+  margin-left: 2rem;
+}
+
+/* list of inputs */
+
 .formContainer ul {
   color: #a32e00;
   font-size: 0.8rem;
@@ -35,6 +50,7 @@
   margin-top: 1rem;
 }
 
+/* inputs */
 .formContainer input {
   width: 90%;
   border-radius: 2px;
@@ -56,6 +72,7 @@
   border: 2px solid #eb6700;
 }
 
+/* sending button */
 .finalButtonContainer {
   text-align: center;
   margin: 1rem 0;
@@ -84,12 +101,7 @@
   cursor: default;
 }
 
-section h3,
-section h5 {
-  color: #a32e00;
-  margin-left: 2rem;
-}
-
+/* layout for color pickers */
 .specificData ul {
   display: grid;
   grid-template-columns: 45% 45%;
@@ -109,6 +121,7 @@ section h5 {
   font-weight: 600;
 }
 
+/* if the form contains addresses to be clicked */
 .addressClickables {
   margin-bottom: 0.5rem;
 }
@@ -126,8 +139,4 @@ section h5 {
 
 .addressClickables li:hover {
   background-color: #e4e4e4;
-}
-
-.formContainer .itemTitle {
-  text-align: center;
 }
