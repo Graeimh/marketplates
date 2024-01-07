@@ -13,25 +13,25 @@ import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import { checkPermission } from "../../../common/functions/checkPermission.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { IMessageValues } from "../../../common/types/commonTypes.ts/commonTypes.js";
 
 function PlaceManipulationItem(props: {
   place: IPlace;
   uponDeletion: (placeId: string) => void;
   primeForDeletion: (placeId: string) => void;
   IsSelected: boolean;
+  messageSetter: React.Dispatch<IMessageValues>;
 }) {
   // Setting states
-  // Error message display
-  const [error, setError] = useState(null);
-  // Response message display
-  const [responseMessage, setResponseMessage] = useState("");
+
   // Gives the informaton whether or not the place belongs to the primed for deletion list
   const [isPrimed, setIsPrimed] = useState(false);
   // Contains the tags associated with the place
   const [placeTagsList, setSpecificPlaceTags] = useState<ITag[]>([]);
   const navigate = useNavigate();
 
-  const value = useContext(UserContext);
+  // Fetching the user's current data
+  const userContextValue = useContext(UserContext);
 
   function handleDeletePrimer() {
     props.primeForDeletion(props.place._id ? props.place._id : "");
@@ -44,12 +44,15 @@ function PlaceManipulationItem(props: {
 
   async function getSpecificPlaceTags() {
     try {
-      if (checkPermission(value.status, UserType.Admin)) {
+      if (checkPermission(userContextValue.status, UserType.Admin)) {
         const placeTags = await tagService.fetchTagsByIds(props.place.tagsList);
         setSpecificPlaceTags(placeTags.data);
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "We could not get the specific tags for this place",
+        successStatus: false,
+      });
     }
   }
 
@@ -70,7 +73,7 @@ function PlaceManipulationItem(props: {
             `}
       >
         <section>
-          <h4>{props.place.name}</h4>
+          <h2 className={formStyles.itemTitle}>{props.place.name}</h2>
           <button
             type="button"
             className={props.IsSelected ? itemStyles.primedButton : ""}
@@ -127,12 +130,7 @@ function PlaceManipulationItem(props: {
             Edit place
           </button>
         </div>
-
-        {error && <div className={styles.error}>{error}</div>}
       </article>
-      {responseMessage && (
-        <div className={styles.success}>{responseMessage}</div>
-      )}
     </>
   );
 }

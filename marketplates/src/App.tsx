@@ -108,6 +108,7 @@ function App() {
       {messageValue.message !== undefined &&
         messageValue.message.length > 0 && (
           <div
+            aria-label={`User message : ${messageValue.message}`}
             className={
               messageValue.successStatus
                 ? `${styles.isSuccess} ${styles.messageContainer} ${styles.top}`

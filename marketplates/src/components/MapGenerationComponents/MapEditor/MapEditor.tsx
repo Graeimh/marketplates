@@ -113,7 +113,8 @@ function MapEditor(props: {
   const [iterationCollapseVisible, setIterationCollapseVisible] =
     useState(false);
 
-  const value = useContext(UserContext);
+  // Fetching the user's current data
+  const userContextValue = useContext(UserContext);
   const navigate = useNavigate();
 
   // Allows to interact with a map address search api
@@ -131,7 +132,7 @@ function MapEditor(props: {
 
   async function getMapEditorTools() {
     try {
-      if (checkPermission(value.status, UserType.User)) {
+      if (checkPermission(userContextValue.status, UserType.User)) {
         // Getting all the tags available for the user
         const allTags = await tagService.fetchTagsForUser();
         const allTagsData: ITag[] = allTags.data;
@@ -212,7 +213,7 @@ function MapEditor(props: {
   useEffect(() => {
     getMapEditorTools();
     decideMapValidity();
-  }, [value]);
+  }, [userContextValue]);
 
   useEffect(() => {
     decideMapValidity();
@@ -336,7 +337,7 @@ function MapEditor(props: {
   async function sendRegistrationForm(event) {
     event.preventDefault();
     try {
-      if (checkPermission(value.status, UserType.User)) {
+      if (checkPermission(userContextValue.status, UserType.User)) {
         if (!props.editedMap) {
           await mapService.generateMap(formData);
         } else {
@@ -432,7 +433,7 @@ function MapEditor(props: {
           : `Creating ${formData.name}`}
       </h1>
       <article id={styles.mapEditorContainer}>
-        <section id={styles.mapContainer}>
+        <section id={styles.mapContainer} aria-label="Map">
           <MapContainer
             style={{ height: "100%", width: "100%" }}
             center={{ lat: 50.633333, lng: 3.066667 }}

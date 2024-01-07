@@ -32,7 +32,8 @@ function Login(props: {
   // Sets up the captcha value to be changed upon clicking
   const captcha = useRef(null);
 
-  const value = useContext(UserContext);
+  // Fetching the user's current data
+  const userContextValue = useContext(UserContext);
 
   function putLoginToSleep(time: number) {
     // Upon failing logging in, a set of time is given until the next login attempt
@@ -64,7 +65,7 @@ function Login(props: {
   async function sendLoginForm(event) {
     event.preventDefault();
     // Check if an user is already logged in, if so, redirect them without going through the log in process
-    if (value.userId.length > 0) {
+    if (userContextValue.userId.length > 0) {
       navigate("/");
     }
     if (canRetry) {
@@ -124,7 +125,7 @@ function Login(props: {
 
       <article className={formStyles.formContainer}>
         <form onSubmit={sendLoginForm}>
-          <h2>Sign in</h2>
+          <h1>Sign in</h1>
           <ul>
             <li>
               <label htmlFor="email">Email</label>

@@ -18,13 +18,14 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
   // Array of user owned places meant to be displayed, edited or deleted
   const [userPlacesList, setUserPlacesList] = useState<IPlace[]>([]);
 
-  const value = useContext(UserContext);
+  // Fetching the user's current data
+  const userContextValue = useContext(UserContext);
 
   const navigate = useNavigate();
 
   async function getUserPlaces() {
     try {
-      if (checkPermission(value.status, UserType.User)) {
+      if (checkPermission(userContextValue.status, UserType.User)) {
         const userPlaces = await placeService.fetchUserPlaces();
         setUserPlacesList(userPlaces.data);
       }
@@ -38,8 +39,8 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
 
   async function handleUserPlaceDeleted(placeId: string) {
     try {
-      if (confirm("Are you sure you want to delete this business?")) {
-        if (checkPermission(value.status, UserType.User)) {
+      if (confirm("Are you sure you want to delete this places?")) {
+        if (checkPermission(userContextValue.status, UserType.User)) {
           await placeService.deletePlaceById(placeId);
           getUserPlaces();
           props.messageSetter({
@@ -58,7 +59,7 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
 
   useEffect(() => {
     getUserPlaces();
-  }, [value]);
+  }, [userContextValue]);
   return (
     <>
       <Helmet>
@@ -66,7 +67,7 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
         <link rel="canonical" href="http://localhost:5173/myplaces" />
       </Helmet>
       <article id={styles.itemContainer}>
-        <h1>Manage your businesses</h1>
+        <h1>Manage your places</h1>
         <section className={formStyles.finalButtonContainer}>
           {userPlacesList.length > 0 ? (
             <button
@@ -74,17 +75,17 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
                 navigate("/createplace");
               }}
             >
-              Register a business
+              Register a place
             </button>
           ) : (
             <>
-              <h2>No businesses here yet?</h2>
+              <h2>No place here yet?</h2>
               <button
                 onClick={() => {
                   navigate("/createplace");
                 }}
               >
-                Register your first business
+                Register your first place
               </button>
             </>
           )}
@@ -109,7 +110,7 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
                     onClick={() => navigate(`/editplace/${place._id}`)}
                   >
                     <FontAwesomeIcon icon={solid("pen-to-square")} />
-                    Edit business
+                    Edit place
                   </button>
                   <span className={stylesUserDashboard.deleteButton}>
                     <button
@@ -124,7 +125,7 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
                       }}
                     >
                       <FontAwesomeIcon icon={solid("trash-can")} />
-                      Delete business
+                      Delete place
                     </button>
                   </span>
                 </section>

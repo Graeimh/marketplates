@@ -28,11 +28,12 @@ function UserManipulation(props: {
 
   const [userQuery, setUserQuery] = useState("");
 
-  const value = useContext(UserContext);
+  // Fetching the user's current data
+  const userContextValue = useContext(UserContext);
 
   async function getAllUsers() {
     try {
-      if (checkPermission(value.status, UserType.Admin)) {
+      if (checkPermission(userContextValue.status, UserType.Admin)) {
         // Fetching all existing users
         const allUsers = await userService.fetchAllUsers();
         setUserList(allUsers.data);
@@ -47,7 +48,7 @@ function UserManipulation(props: {
 
   useEffect(() => {
     getAllUsers();
-  }, [value]);
+  }, [userContextValue]);
 
   function manageDeletionList(id: string) {
     // Upon clicking on the button to select, we check if the id was already part of the primed for deletion list
@@ -82,7 +83,7 @@ function UserManipulation(props: {
 
   async function deletePrimedForDeletion() {
     try {
-      if (checkPermission(value.status, UserType.Admin)) {
+      if (checkPermission(userContextValue.status, UserType.Admin)) {
         // Delete all the users whose ids are within the primed for deletion list
         await userService.deleteUsersByIds(primedForDeletionList);
         props.messageSetter({
@@ -103,7 +104,7 @@ function UserManipulation(props: {
 
   async function sendDeleteUserCall(id: string) {
     try {
-      if (checkPermission(value.status, UserType.Admin)) {
+      if (checkPermission(userContextValue.status, UserType.Admin)) {
         await userService.deleteUserById(id);
         getAllUsers();
         props.messageSetter({
@@ -132,7 +133,7 @@ function UserManipulation(props: {
       </Helmet>
 
       <article id={styles.manipulationContainer}>
-        <h2>Manage users</h2>
+        <h1>Manage users</h1>
         <section id={styles.searchBar}>
           <label htmlFor="userQuery">
             <FontAwesomeIcon icon={solid("magnifying-glass")} />
@@ -180,6 +181,7 @@ function UserManipulation(props: {
                 refetch={getAllUsers}
                 key={user._id}
                 IsSelected={primedForDeletionList.indexOf(user._id) !== -1}
+                messageSetter={props.messageSetter}
               />
             </li>
           ))}

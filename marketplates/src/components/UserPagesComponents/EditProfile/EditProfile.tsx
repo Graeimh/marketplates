@@ -28,19 +28,16 @@ function EditProfile(props: {
     county: "",
     city: "",
   });
-
-  // Error message display
-  const [error, setError] = useState(null);
-
   const [validForSending, setValidForSending] = useState(false);
 
-  const value = useContext(UserContext);
+  // Fetching the user's current data
+  const userContextValue = useContext(UserContext);
 
   const navigate = useNavigate();
 
   async function getUserData() {
     try {
-      if (checkPermission(value.status, UserType.User)) {
+      if (checkPermission(userContextValue.status, UserType.User)) {
         const userData = await userService.fetchUsersByIds([props.userId]);
         setFormData({
           displayName: userData.data[0].displayName,
@@ -63,7 +60,7 @@ function EditProfile(props: {
 
   useEffect(() => {
     getUserData();
-  }, [value]);
+  }, [userContextValue]);
 
   function decideRegistration() {
     setValidForSending(
@@ -85,7 +82,7 @@ function EditProfile(props: {
   async function sendEditUserForm(event) {
     event.preventDefault();
     try {
-      if (checkPermission(value.status, UserType.User)) {
+      if (checkPermission(userContextValue.status, UserType.User)) {
         await userService.updateUserById(props.userId, formData);
         props.messageSetter({
           message: "Your profile has been successfully updated.",
@@ -230,7 +227,6 @@ function EditProfile(props: {
           </div>
         </form>
       </article>
-      {error && <div className={styles.error}>{error}</div>}
     </>
   );
 }

@@ -5,7 +5,8 @@ import UserContext from "../../Contexts/UserContext";
 import { Link } from "react-router-dom";
 
 function Home() {
-  const value = useContext(UserContext);
+  // Fetching the user's current data
+  const userContextValue = useContext(UserContext);
 
   return (
     <>
@@ -23,7 +24,7 @@ function Home() {
               now!
             </p>
           </section>
-          {value.userId.length > 0 ? (
+          {userContextValue.userId.length > 0 ? (
             <section className={styles.homeSections}>
               <h2>Since you are already here, try our new features out!</h2>
             </section>

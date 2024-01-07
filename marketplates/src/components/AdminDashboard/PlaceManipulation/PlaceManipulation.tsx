@@ -16,7 +16,6 @@ function PlaceManipulation(props: {
   messageSetter: React.Dispatch<IMessageValues>;
 }) {
   // Setting states
-
   // Array of places meant to be displayed, edited or deleted
   const [placeList, setPlaceList] = useState<IPlace[]>([]);
 
@@ -31,11 +30,17 @@ function PlaceManipulation(props: {
   // Holds the value used to filter the name of places when an admin searches for a particular place
   const [placeQuery, setPlaceQuery] = useState("");
 
-  const value = useContext(UserContext);
+  // Fetching the user's current data
+  const userContextValue = useContext(UserContext);
+
+  useEffect(() => {
+    getAllPlaces();
+  }, [userContextValue]);
+
   async function getAllPlaces() {
     try {
       // Fetching all existing places
-      if (checkPermission(value.status, UserType.Admin)) {
+      if (checkPermission(userContextValue.status, UserType.Admin)) {
         const allPlaces = await placeService.fetchAllPlaces();
         setPlaceList(allPlaces.data);
       }
@@ -46,10 +51,6 @@ function PlaceManipulation(props: {
       });
     }
   }
-
-  useEffect(() => {
-    getAllPlaces();
-  }, [value]);
 
   function manageDeletionList(id: string) {
     // Upon clicking on the button to select, we check if the id was already part of the primed for deletion list
@@ -85,7 +86,7 @@ function PlaceManipulation(props: {
 
   async function deletePrimedForDeletion() {
     try {
-      if (checkPermission(value.status, UserType.Admin)) {
+      if (checkPermission(userContextValue.status, UserType.Admin)) {
         // Delete all the places whose ids are within the primed for deletion list
         await placeService.deletePlacesByIds(primedForDeletionList);
         setPrimedForDeletionList([]);
@@ -107,7 +108,7 @@ function PlaceManipulation(props: {
 
   async function sendDeletePlaceCall(id: string) {
     try {
-      if (checkPermission(value.status, UserType.Admin)) {
+      if (checkPermission(userContextValue.status, UserType.Admin)) {
         // Delete a singular place
         await placeService.deletePlaceById(id);
         // Once the deletion is made, pull the remaining places from the database
@@ -140,7 +141,7 @@ function PlaceManipulation(props: {
       </Helmet>
 
       <article id={styles.manipulationContainer}>
-        <h2>Manage places</h2>
+        <h1>Manage places</h1>
         <section id={styles.searchBar}>
           <label htmlFor="placeQuery">
             <FontAwesomeIcon icon={solid("magnifying-glass")} />
@@ -186,6 +187,7 @@ function PlaceManipulation(props: {
                 uponDeletion={sendDeletePlaceCall}
                 key={place._id}
                 IsSelected={primedForDeletionList.indexOf(place._id) !== -1}
+                messageSetter={props.messageSetter}
               />
             </li>
           ))}

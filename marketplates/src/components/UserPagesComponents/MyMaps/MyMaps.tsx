@@ -21,11 +21,12 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
 
   const navigate = useNavigate();
 
-  const value = useContext(UserContext);
+  // Fetching the user's current data
+  const userContextValue = useContext(UserContext);
 
   async function getUserMaps() {
     try {
-      if (checkPermission(value.status, UserType.User)) {
+      if (checkPermission(userContextValue.status, UserType.User)) {
         const userMaps = await mapsService.fetchUserMaps();
         setUserMapsList(userMaps.data);
       }
@@ -40,7 +41,7 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
   async function handleUserMapDeleted(placeId: string) {
     try {
       if (confirm("Are you sure you want to delete this map?")) {
-        if (checkPermission(value.status, UserType.User)) {
+        if (checkPermission(userContextValue.status, UserType.User)) {
           await mapsService.deleteMapById(placeId);
           getUserMaps();
           props.messageSetter({
@@ -59,7 +60,7 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
 
   useEffect(() => {
     getUserMaps();
-  }, [value]);
+  }, [userContextValue]);
   return (
     <>
       <Helmet>

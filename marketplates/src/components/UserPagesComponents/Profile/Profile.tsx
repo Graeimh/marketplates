@@ -83,7 +83,7 @@ function Profile(props: {
                 <FontAwesomeIcon icon={solid("chevron-right")} />
               </span>
               <span className={stylesUserDashboard.dashboardOptionText}>
-                My Businesses
+                My Places
               </span>
               <span className={stylesUserDashboard.dashboardOptionDecorator}>
                 <FontAwesomeIcon icon={solid("map-location-dot")} />

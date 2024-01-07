@@ -11,16 +11,18 @@
   box-shadow: 2px 2px 2px 2px #e4e4e4;
 }
 
-.formContainer h2 {
+.formContainer h1 {
   text-align: center;
   color: #eb6700;
-  margin: 0;
+  margin: 1rem 0;
 }
 
-.formContainer h3 {
+.formContainer h2 {
   font-weight: 900;
-  text-align: center;
   margin: 0;
+  font-size: 1rem;
+  text-align: left;
+  margin-left: 0.5rem;
 }
 
 .formContainer ul {
@@ -124,4 +126,8 @@ section h5 {
 
 .addressClickables li:hover {
   background-color: #e4e4e4;
+}
+
+.formContainer .itemTitle {
+  text-align: center;
 }

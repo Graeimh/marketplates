@@ -12,6 +12,7 @@ import { checkPermission } from "../../../common/functions/checkPermission.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { IMessageValues } from "../../../common/types/commonTypes.ts/commonTypes.js";
 
 function UserManipulationItem(props: {
   user: IUser;
@@ -19,6 +20,7 @@ function UserManipulationItem(props: {
   primeForDeletion: (userId: string) => void;
   IsSelected: boolean;
   refetch: () => Promise<void>;
+  messageSetter: React.Dispatch<IMessageValues>;
 }) {
   const [formData, setFormData] = useState<IUserData>({
     displayName: props.user.displayName,
@@ -30,12 +32,16 @@ function UserManipulationItem(props: {
     county: props.user.location.county,
     streetAddress: props.user.location.streetAddress,
   });
-  const [error, setError] = useState(null);
-  const [responseMessage, setResponseMessage] = useState(null);
+
   const [isPrimed, setIsPrimed] = useState(false);
   const [validForUpdating, setValidForUpdating] = useState(false);
 
-  const value = useContext(UserContext);
+  // Fetching the user's current data
+  const userContextValue = useContext(UserContext);
+
+  useEffect(() => {
+    decideUpdatability();
+  }, [formData]);
 
   function decideUpdatability() {
     setValidForUpdating(
@@ -65,10 +71,6 @@ function UserManipulationItem(props: {
     });
   }
 
-  useEffect(() => {
-    decideUpdatability();
-  }, [formData]);
-
   function handleDeletePrimer() {
     props.primeForDeletion(props.user._id);
     setIsPrimed(!isPrimed);
@@ -78,17 +80,20 @@ function UserManipulationItem(props: {
     event.preventDefault();
 
     try {
-      if (checkPermission(value.status, UserType.Admin)) {
-        const response = await userService.updateUserById(
-          props.user._id,
-          formData
-        );
-        setResponseMessage(response.message);
+      if (checkPermission(userContextValue.status, UserType.Admin)) {
+        await userService.updateUserById(props.user._id, formData);
+        props.messageSetter({
+          message: "User updated successfully",
+          successStatus: true,
+        });
         props.refetch();
         setValidForUpdating(false);
       }
     } catch (err) {
-      setError(err.message);
+      props.messageSetter({
+        message: "We could not update the user's information",
+        successStatus: false,
+      });
     }
   }
 
@@ -106,7 +111,9 @@ function UserManipulationItem(props: {
             `}
       >
         <section>
-          <h4>User : {props.user.displayName}</h4>
+          <h2 className={formStyles.itemTitle}>
+            User : {props.user.displayName}
+          </h2>
           <button
             type="button"
             className={props.IsSelected ? styles.primedButton : ""}
@@ -215,18 +222,15 @@ function UserManipulationItem(props: {
           <div className={formStyles.finalButtonContainer}>
             <button
               type="submit"
-              disabled={!validForUpdating || value.email === props.user.email}
+              disabled={
+                !validForUpdating || userContextValue.email === props.user.email
+              }
             >
               Update User
             </button>
           </div>
         </form>
       </article>
-
-      {error && <div className={styles.error}>{error}</div>}
-      {responseMessage && (
-        <div className={styles.success}>{responseMessage}</div>
-      )}
     </>
   );
 }

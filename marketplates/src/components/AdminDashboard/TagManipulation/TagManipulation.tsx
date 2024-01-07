@@ -40,11 +40,12 @@ function TagManipulation(props: {
   const [isAllSelected, setIsAllSelected] = useState(false);
   const [tagQuery, setTagQuery] = useState("");
 
-  const value = useContext(UserContext);
+  // Fetching the user's current data
+  const userContextValue = useContext(UserContext);
 
   async function getAllTags() {
     try {
-      if (checkPermission(value.status, UserType.Admin)) {
+      if (checkPermission(userContextValue.status, UserType.Admin)) {
         const allTags = await tagService.fetchAllTags();
         setTagList(allTags.data);
       }
@@ -58,20 +59,22 @@ function TagManipulation(props: {
 
   useEffect(() => {
     getAllTags();
-  }, [value]);
+  }, [userContextValue]);
 
   function updateField(event) {
     switch (event.target.name) {
       case "tagNameColor":
         setFormData({
           ...formData,
-          tagNameColor: hexifyColors(event.target.value.toString()),
+          tagNameColor: hexifyColors(event.target.userContextValue.toString()),
         });
         break;
       case "tagBackgroundColor":
         setFormData({
           ...formData,
-          tagBackgroundColor: hexifyColors(event.target.value.toString()),
+          tagBackgroundColor: hexifyColors(
+            event.target.userContextValue.toString()
+          ),
         });
         break;
       default:
@@ -128,10 +131,10 @@ function TagManipulation(props: {
 
   async function sendForm(event) {
     event.preventDefault();
-    if (checkPermission(value.status, UserType.Admin)) {
+    if (checkPermission(userContextValue.status, UserType.Admin)) {
       if (formData.tagName.length > 2) {
         try {
-          await tagService.generateTag(formData, value.userId);
+          await tagService.generateTag(formData, userContextValue.userId);
           props.messageSetter({
             message: "Tag successfully created",
             successStatus: true,
@@ -160,7 +163,7 @@ function TagManipulation(props: {
 
   async function deletePrimedForDeletion() {
     try {
-      if (checkPermission(value.status, UserType.Admin)) {
+      if (checkPermission(userContextValue.status, UserType.Admin)) {
         await tagService.deleteTagsByIds(primedForDeletionList);
         await tagService.fetchAllTags();
 
@@ -182,7 +185,7 @@ function TagManipulation(props: {
 
   async function sendDeleteTagCall(id: string) {
     try {
-      if (checkPermission(value.status, UserType.Admin)) {
+      if (checkPermission(userContextValue.status, UserType.Admin)) {
         await tagService.deleteTagById(id);
         getAllTags();
         props.messageSetter({
@@ -211,7 +214,7 @@ function TagManipulation(props: {
       </Helmet>
 
       <article id={manipulationStyles.manipulationContainer}>
-        <h2>Manage tags</h2>
+        <h1>Manage tags</h1>
         <section className={formStyles.formContainer}>
           <form onSubmit={sendForm} id={styles.formCreateTag}>
             <h3>Create a tag</h3>
@@ -349,6 +352,7 @@ function TagManipulation(props: {
                 refetch={getAllTags}
                 key={tag._id}
                 IsSelected={primedForDeletionList.indexOf(tag._id) !== -1}
+                messageSetter={props.messageSetter}
               />
             </li>
           ))}

@@ -15,7 +15,8 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
   sessionStorage.getItem("refreshToken");
   const navigate = useNavigate();
 
-  const value = useContext(UserContext);
+  // Fetching the user's current data
+  const userContextValue = useContext(UserContext);
 
   async function logoutUser() {
     try {
@@ -40,7 +41,7 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
   return (
     <>
       <div id={stylesUserDashboard.dashboardContainer}>
-        {value.userId.length > 0 ? (
+        {userContextValue.userId.length > 0 ? (
           <header aria-label="Website header">
             <nav>
               <ul id={stylesUserDashboard.small}>
@@ -64,7 +65,7 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
                     <FontAwesomeIcon icon={solid("bars")} />
                   </button>
                 </li>
-                {value.status.split("&").indexOf("Admin") !== -1 && (
+                {userContextValue.status.split("&").indexOf("Admin") !== -1 && (
                   <li className={stylesUserDashboard.navigationOption}>
                     <Link to="/dashboard" aria-label="Navigate to Dashboard">
                       <FontAwesomeIcon icon={solid("gauge")} />
@@ -124,7 +125,7 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
                   </Link>
                 </li>
 
-                {value.status.split("&").indexOf("Admin") !== -1 && (
+                {userContextValue.status.split("&").indexOf("Admin") !== -1 && (
                   <li className={stylesUserDashboard.navigationOption}>
                     <Link to="/dashboard" aria-label="Navigate to Dashboard">
                       <FontAwesomeIcon icon={solid("gauge")} />
@@ -236,7 +237,7 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
           aria-label="Navigate to My Places"
         >
           <FontAwesomeIcon icon={solid("shop")} />
-          My Businesses
+          My Places
         </Link>
       </div>
     </>

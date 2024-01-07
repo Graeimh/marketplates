@@ -61,7 +61,8 @@ function PlaceEditor(props: {
   // Contains a string which is used as a regex to filter the list of tags
   const [tagQuery, setTagQuery] = useState("");
 
-  const value = useContext(UserContext);
+  // Fetching the user's current data
+  const userContextValue = useContext(UserContext);
 
   const navigate = useNavigate();
 
@@ -115,7 +116,7 @@ function PlaceEditor(props: {
 
   async function getUserTags() {
     try {
-      if (checkPermission(value.status, UserType.User)) {
+      if (checkPermission(userContextValue.status, UserType.User)) {
         const allTags = await tagService.fetchTagsForUser();
         setTagList(allTags.data);
       }
@@ -129,7 +130,7 @@ function PlaceEditor(props: {
 
   async function getPlaceEditValue(id: string) {
     try {
-      if (checkPermission(value.status, UserType.User)) {
+      if (checkPermission(userContextValue.status, UserType.User)) {
         const currentPlace = await placeService.fetchPlacesByIds([id]);
         const currentPlaceData: IPlace = currentPlace.data[0];
         const currentPlaceTagIds = currentPlaceData.tagsList;
@@ -165,7 +166,7 @@ function PlaceEditor(props: {
     if (props.editPlaceId !== undefined) {
       getPlaceEditValue(props.editPlaceId);
     }
-  }, [value]);
+  }, [userContextValue]);
 
   function decideRegistration() {
     setIsValidForSending(
@@ -202,7 +203,7 @@ function PlaceEditor(props: {
   async function sendRegistrationForm(event) {
     event.preventDefault();
     try {
-      if (checkPermission(value.status, UserType.User)) {
+      if (checkPermission(userContextValue.status, UserType.User)) {
         if (props.editPlaceId === undefined) {
           await placeService.generatePlace(formData);
           props.messageSetter({
@@ -269,7 +270,7 @@ function PlaceEditor(props: {
         <section>
           <form>
             <ul>
-              <h1>Register a business</h1>
+              <h1>Register a place</h1>
               <li>
                 <label htmlFor="name">Name : </label>
                 <br />
@@ -292,8 +293,8 @@ function PlaceEditor(props: {
                   value={formData.description}
                 />
               </li>
-              <li>Locate your business</li>
-              <li id={styles.phoneMapContainer}>
+              <li>Locate your place</li>
+              <li id={styles.phoneMapContainer} aria-label="Map">
                 <MapContainer
                   style={{ height: "30rem", width: "100%" }}
                   center={{ lat: 50.633333, lng: 3.066667 }}
@@ -466,7 +467,7 @@ function PlaceEditor(props: {
                     key={tag.name}
                   />
                 ))}
-              <p>Selected tags :</p>
+              {formData.tagList.length > 0 && <li>Selected tags :</li>}
               {formData.tagList.length > 0 &&
                 formData.tagList.map((tag) => (
                   <Tag
@@ -499,13 +500,13 @@ function PlaceEditor(props: {
                 onClick={sendRegistrationForm}
               >
                 {props.editPlaceId === undefined
-                  ? "Register business"
-                  : "Edit business"}
+                  ? "Register place"
+                  : "Edit place"}
               </button>
             </div>
           </form>
         </section>
-        <section id={styles.mapDesktopContainer}>
+        <section id={styles.mapDesktopContainer} aria-label="Map">
           <MapContainer
             style={{ height: "100%", width: "100%" }}
             center={{ lat: 50.633333, lng: 3.066667 }}

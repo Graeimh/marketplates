@@ -141,9 +141,9 @@ function Register(props: { messageSetter: React.Dispatch<IMessageValues> }) {
 
       <article className={formStyles.formContainer}>
         <form onSubmit={sendRegistrationForm}>
-          <h2>Register</h2>
+          <h1>Register</h1>
           <section className={formStyles.specificData}>
-            <h3>Personnal information</h3>
+            <h2>Personnal information</h2>
             <ul>
               <li>
                 <label htmlFor="firstName">First name</label>
@@ -216,7 +216,7 @@ function Register(props: { messageSetter: React.Dispatch<IMessageValues> }) {
             </ul>
           </section>
           <section>
-            <h3>Credentials</h3>
+            <h2>Credentials</h2>
             <ul>
               <li>
                 <label htmlFor="displayName">Nickname</label>
@@ -275,7 +275,10 @@ function Register(props: { messageSetter: React.Dispatch<IMessageValues> }) {
                       setPasswordVisibility("password");
                     }}
                   />
-                  <div className={styles.toolTipValues}>
+                  <div
+                    className={styles.toolTipValues}
+                    aria-label="Password tooltip"
+                  >
                     Your password :
                     <ul>
                       <li

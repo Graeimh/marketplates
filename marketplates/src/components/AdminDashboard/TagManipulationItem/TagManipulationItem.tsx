@@ -13,6 +13,7 @@ import { UserType } from "../../../common/types/userTypes/userTypes.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { IMessageValues } from "../../../common/types/commonTypes.ts/commonTypes.js";
 
 function TagManipulationItem(props: {
   tag: ITag;
@@ -20,6 +21,7 @@ function TagManipulationItem(props: {
   primeForDeletion: (tagId: string) => void;
   IsSelected: boolean;
   refetch: () => Promise<void>;
+  messageSetter: React.Dispatch<IMessageValues>;
 }) {
   const [formData, setFormData] = useState<ITagValues>({
     tagBackgroundColor: props.tag.backgroundColor,
@@ -27,12 +29,21 @@ function TagManipulationItem(props: {
     tagNameColor: props.tag.nameColor,
   });
 
-  const [error, setError] = useState(null);
-  const [responseMessage, setResponseMessage] = useState("");
   const [isPrimed, setIsPrimed] = useState(false);
   const [validForUpdating, setValidForUpdating] = useState(false);
 
-  const value = useContext(UserContext);
+  // Fetching the user's current data
+  const userContextValue = useContext(UserContext);
+
+  const style = {
+    color: props.tag.nameColor,
+    backgroundColor: props.tag.backgroundColor,
+  };
+
+  const updatedStyle = {
+    color: formData.tagNameColor,
+    backgroundColor: formData.tagBackgroundColor,
+  };
 
   function handleDeletePrimer() {
     props.primeForDeletion(props.tag._id);
@@ -44,13 +55,15 @@ function TagManipulationItem(props: {
       case "tagNameColor":
         setFormData({
           ...formData,
-          tagNameColor: hexifyColors(event.target.value.toString()),
+          tagNameColor: hexifyColors(event.target.userContextValue.toString()),
         });
         break;
       case "tagBackgroundColor":
         setFormData({
           ...formData,
-          tagBackgroundColor: hexifyColors(event.target.value.toString()),
+          tagBackgroundColor: hexifyColors(
+            event.target.userContextValue.toString()
+          ),
         });
         break;
       default:
@@ -83,32 +96,29 @@ function TagManipulationItem(props: {
     event.preventDefault();
     if (validForUpdating) {
       try {
-        if (checkPermission(value.status, UserType.Admin)) {
-          const response = await tagService.updateTagById(
-            props.tag._id,
-            formData
-          );
-          setResponseMessage(response.message);
+        if (checkPermission(userContextValue.status, UserType.Admin)) {
+          await tagService.updateTagById(props.tag._id, formData);
+
           setValidForUpdating(false);
+          props.messageSetter({
+            message: "Tag updated successfully.",
+            successStatus: true,
+          });
           props.refetch();
         }
       } catch (err) {
-        setError(err.message);
+        props.messageSetter({
+          message: "We could not update the tag.",
+          successStatus: false,
+        });
       }
     } else {
-      setResponseMessage("The tag's name cannot be under 3 characters!");
+      props.messageSetter({
+        message: "The tag's name cannot be under 3 characters!",
+        successStatus: false,
+      });
     }
   }
-
-  const style = {
-    color: props.tag.nameColor,
-    backgroundColor: props.tag.backgroundColor,
-  };
-
-  const updatedStyle = {
-    color: formData.tagNameColor,
-    backgroundColor: formData.tagBackgroundColor,
-  };
 
   return (
     <>
@@ -122,10 +132,10 @@ function TagManipulationItem(props: {
             `}
       >
         <section>
-          <h4>
+          <h2 className={formStyles.itemTitle}>
             Tag :
             <Tag customStyle={style} tagName={props.tag.name} isTiny={false} />
-          </h4>
+          </h2>
           <button
             type="button"
             className={props.IsSelected ? itemStyles.primedButton : ""}
@@ -234,11 +244,6 @@ function TagManipulationItem(props: {
           </div>
         </form>
       </article>
-
-      {error && <div className={styles.error}>{error}</div>}
-      {responseMessage && (
-        <div className={styles.success}>{responseMessage}</div>
-      )}
     </>
   );
 }
