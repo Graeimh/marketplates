@@ -1,12 +1,31 @@
 /* || SITEWIDE */
 
-@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Source+Sans+3:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+/* || Font */
+@import url("https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Source+Sans+3:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
-h1, h2, h3,
-h4, h5, h6 {
-    font-family: "Libre Franklin";
+/* || Titles */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Libre Franklin";
 }
 
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: 2.8em;
+  line-height: 1.1;
+  text-align: center;
+  color: #a32e00;
+}
+
+/* || App container */
 :root {
   font-family: "Source Sans 3";
   line-height: 1.5;
@@ -20,6 +39,14 @@ h4, h5, h6 {
   -webkit-text-size-adjust: 100%;
 }
 
+body {
+  margin: 0;
+  display: flex;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* || Links */
 a {
   font-weight: 500;
   color: #242424;
@@ -29,25 +56,7 @@ a:hover {
   color: #ff8717;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-h2{
-  font-size: 2.8em;
-  line-height: 1.1;
-  text-align: center;
-  color: #A32E00;
-}
-
+/* || Buttons */
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -56,12 +65,24 @@ button {
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
+  color: #ffffff;
   cursor: pointer;
 }
 
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+button:disabled {
+  opacity: 0.2;
+  cursor: default;
+}
+
+/* || Lists */
+ul {
+  list-style-type: none;
+  padding: 0 0 0 0.5rem;
 }
 
 @media (prefers-color-scheme: light) {
@@ -76,17 +97,3 @@ button:focus-visible {
     background-color: #242424;
   }
 }
-
-ul {
-  list-style-type: none;
-  padding: 0 0 0 0.5rem;
-}
-
-button {
-color: #ffffff;
-}
-
-button:disabled {
-  opacity: 0.2;
-  cursor: default;
-  }

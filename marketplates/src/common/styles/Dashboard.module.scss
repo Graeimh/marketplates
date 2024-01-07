@@ -1,5 +1,6 @@
-/* || ADMIN DASHBOARD PAGES */
+/* || Admin dashboard pages*/
 
+/* lists of links*/
 #dashboardPanel li {
   margin: 2rem 0;
 }
@@ -26,6 +27,7 @@
   background-color: #1a1a1a;
 }
 
+/* Buttons made for deleting content*/
 #dashboardPanel .deleteButton div a {
   background-color: #920000;
   border: 2px solid #920000;
@@ -62,6 +64,7 @@
   color: #d60000;
 }
 
+/* Dashboard inex links */
 .dashboardOptionText {
   width: 60%;
   margin-right: 0.5rem;
@@ -85,12 +88,19 @@
   border-radius: 50%;
 }
 
+/* Containers */
 #dashboardContainer {
   height: 100%;
   background-color: #ffffff;
   width: 100%;
 }
 
+#dashboardContentContainer {
+  margin-bottom: 12rem;
+  margin-left: 5%;
+}
+
+/* Navbar */
 #dashboardContainer nav {
   position: fixed;
   bottom: 0;
@@ -99,11 +109,7 @@
   z-index: 2;
 }
 
-#dashboardContentContainer {
-  margin-bottom: 12rem;
-  margin-left: 5%;
-}
-
+/* For mobile */
 #small {
   padding: 0;
   text-align: center;
@@ -130,24 +136,6 @@
   line-height: 4rem;
 }
 
-#small button {
-  border-radius: 50%;
-  width: 4rem;
-  height: 4rem;
-  text-align: center;
-}
-
-#tablet {
-  display: none;
-}
-
-#homeButton {
-  background-image: url("../../../assets/logo.png");
-  background-size: cover;
-  width: 4rem;
-  height: 4rem;
-}
-
 #small li a:hover {
   color: #eb6700;
 }
@@ -156,6 +144,26 @@
   color: #eb6700;
   border: 1px solid #eb6700;
   background-color: #ffffff;
+}
+
+#small button {
+  border-radius: 50%;
+  width: 4rem;
+  height: 4rem;
+  text-align: center;
+}
+
+/* For tablets and desktops */
+#tablet {
+  display: none;
+}
+
+/* Brand logo and redirects to home */
+#homeButton {
+  background-image: url("../../../assets/logo.png");
+  background-size: cover;
+  width: 4rem;
+  height: 4rem;
 }
 
 /* For tablets: */

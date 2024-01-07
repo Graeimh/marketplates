@@ -30,7 +30,7 @@ function Tag(props: {
             <button
               type="button"
               aria-label={`Remove the ${props.tagName} tag`}
-              id={styles.tagCloseButton}
+              className={styles.tagCloseButton}
               onClick={props.onClose}
               onMouseDown={() => setButtonStyle(props.customStyle)}
               onMouseLeave={() => setButtonStyle(reversedStyle)}
@@ -42,7 +42,7 @@ function Tag(props: {
             <button
               type="button"
               aria-label={`Add the ${props.tagName} tag`}
-              id={styles.tagCloseButton}
+              className={styles.tagCloseButton}
               onClick={props.onClick}
               onMouseDown={() => setButtonStyle(props.customStyle)}
               onMouseLeave={() => setButtonStyle(reversedStyle)}

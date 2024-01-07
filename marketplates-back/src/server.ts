@@ -23,8 +23,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 // CORS authorization, JSON data formatting for API communication
-app.use(cookieParser());
 app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
+app.use(cookieParser());
 app.use(express.json());
 
 // Correctly indents code

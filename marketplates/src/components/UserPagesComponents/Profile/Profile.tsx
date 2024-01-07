@@ -12,6 +12,7 @@ function Profile(props: {
   contextSetter: React.Dispatch<ISessionValues>;
   messageSetter: React.Dispatch<IMessageValues>;
 }) {
+  // If a user deletes their profile in the back end, they must also be logged out, requires user confirmation
   async function deleteUser() {
     if (confirm("Are you sure you want to delete your account?")) {
       try {

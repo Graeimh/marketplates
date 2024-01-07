@@ -52,10 +52,12 @@ function Register(props: { messageSetter: React.Dispatch<IMessageValues> }) {
 
   const navigate = useNavigate();
 
+  // Each time an input is modified we check if the form is valid for sending
   useEffect(() => {
     decideRegistration();
   }, [formData]);
 
+  // Data validation made to match the back end specifications
   function decideRegistration() {
     setValidForSending(
       formData.firstName.length > 1 &&
@@ -71,6 +73,7 @@ function Register(props: { messageSetter: React.Dispatch<IMessageValues> }) {
     );
   }
 
+  // We check if the password does contain 1 of each, upper case, lower case, digit and special characters as well as the proper length
   function passwordChecker(passwordValue: string): void {
     setPasswordFitnessCriteria({
       isLengthCorrect: passwordValue.length >= 12,
@@ -87,13 +90,13 @@ function Register(props: { messageSetter: React.Dispatch<IMessageValues> }) {
         /[^A-Za-z0-9]/.test(passwordValue)
     );
   }
-
+  // Modifying the form's data according to the modifications in a specific input
   function updateField(event) {
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
     });
-
+    // Additional verifications upon modifying passwords, specifically if they match
     switch (event.target.name) {
       case "password":
         passwordChecker(event.target.value);
@@ -107,6 +110,7 @@ function Register(props: { messageSetter: React.Dispatch<IMessageValues> }) {
     }
   }
 
+  // Sending data to the back end
   async function sendRegistrationForm(event) {
     event.preventDefault();
     if (doesPasswordFitCriteria && arePasswordsMatching) {

@@ -33,12 +33,14 @@ function PlaceManipulation(props: {
   // Fetching the user's current data
   const userContextValue = useContext(UserContext);
 
+  // Filtering the displayed content to match the filter
   const filteredPlaceList = placeList.filter((place) =>
     new RegExp(placeQuery, "i").test(place.name)
   );
   const displayedTagList =
     placeQuery.length > 0 ? filteredPlaceList : placeList;
 
+  // When the user's access token is reset, pull the values anew if possible
   useEffect(() => {
     getAllPlaces();
   }, [userContextValue]);
@@ -86,6 +88,7 @@ function PlaceManipulation(props: {
     setIsAllSelected(!isAllSelected);
   }
 
+  // Empties the list of places to be deleted
   function cancelSelection() {
     setPrimedForDeletionList([]);
   }

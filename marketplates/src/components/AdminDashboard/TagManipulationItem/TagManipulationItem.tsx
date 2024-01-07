@@ -29,32 +29,52 @@ function TagManipulationItem(props: {
     tagNameColor: props.tag.nameColor,
   });
 
+  // Tracks whether or not this tag is selected for group deletion
   const [isPrimed, setIsPrimed] = useState(false);
+
+  // Tracks the data sent to be back end is correct or not
   const [validForUpdating, setValidForUpdating] = useState(false);
 
   // Fetching the user's current data
   const userContextValue = useContext(UserContext);
 
+  // Contains the current values of the tag's color
   const style = {
     color: props.tag.nameColor,
     backgroundColor: props.tag.backgroundColor,
   };
 
+  // Contains the updated values of the tag's color
   const updatedStyle = {
     color: formData.tagNameColor,
     backgroundColor: formData.tagBackgroundColor,
   };
 
+  // Each time an input is modified we check if the form is valid for sending
   useEffect(() => {
     decideUpdatability();
   }, [formData]);
 
+  // Data validation made to match the back end specifications
+  function decideUpdatability() {
+    setValidForUpdating(
+      formData.tagName.length > 3 &&
+        formData.tagNameColor.length === 7 &&
+        formData.tagBackgroundColor.length === 7 &&
+        (formData.tagName !== props.tag.name ||
+          formData.tagNameColor !== props.tag.nameColor ||
+          formData.tagBackgroundColor !== props.tag.backgroundColor)
+    );
+  }
+
+  // When the button is clicked, the tag is either added or removed from the list of tags to be group-deleted
   function handleDeletePrimer() {
     props.primeForDeletion(props.tag._id);
     setIsPrimed(!isPrimed);
   }
 
   function updateField(event) {
+    //hexifyColors ensures the colors keep a "#aaaaaa" format
     switch (event.target.name) {
       case "tagNameColor":
         setFormData({
@@ -78,21 +98,12 @@ function TagManipulationItem(props: {
     }
   }
 
+  // The admin can also manually delete the tag from a button
   function handleDelete() {
     props.uponDeletion(props.tag._id);
   }
 
-  function decideUpdatability() {
-    setValidForUpdating(
-      formData.tagName.length > 3 &&
-        formData.tagNameColor.length === 7 &&
-        formData.tagBackgroundColor.length === 7 &&
-        (formData.tagName !== props.tag.name ||
-          formData.tagNameColor !== props.tag.nameColor ||
-          formData.tagBackgroundColor !== props.tag.backgroundColor)
-    );
-  }
-
+  // Sending data to the back end
   async function sendUpdateForm(event) {
     event.preventDefault();
     if (validForUpdating) {

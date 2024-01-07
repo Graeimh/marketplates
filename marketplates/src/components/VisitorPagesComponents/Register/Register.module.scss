@@ -1,12 +1,4 @@
-.toolTip:hover .toolTipValues {
-  visibility: visible;
-}
-
-.toolTip input:focus .toolTipValues {
-  position: absolute;
-  visibility: visible;
-}
-
+/* || Tooltip for password validity display */
 .toolTip {
   position: relative;
   display: inline-block;
@@ -26,6 +18,16 @@
   margin-left: -60px;
 }
 
+.toolTip:hover .toolTipValues {
+  visibility: visible;
+}
+
+.toolTip input:focus .toolTipValues {
+  position: absolute;
+  visibility: visible;
+}
+
+/* || Button to reaveal or hide password */
 div #passwordReveal {
   cursor: pointer;
   color: #1e1e1e;
@@ -43,6 +45,7 @@ div #passwordRevealHidden {
   margin-left: 43%;
 }
 
+/* || Colors for password correctness criteria */
 .correctFieldValues {
   color: green;
 }

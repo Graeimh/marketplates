@@ -1,7 +1,10 @@
+/* || Base styling for the layout */
+/* Container */
 #siteContentContainer {
   height: 100%;
 }
 
+/* Burger menu */
 #burgerOpen {
   position: sticky;
   bottom: 6.5rem;
@@ -48,6 +51,7 @@
   transition: 0.5s;
 }
 
+/* Log out button */
 .logout button {
   background-color: #920000;
   border: 2px solid #920000;

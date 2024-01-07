@@ -23,19 +23,22 @@ function UserManipulation(props: {
     []
   );
 
-  // Gives the information whether or not the user belongs to the primed for deletion list
+  // Gives the information whether or not all the users belongs to the primed for deletion list
   const [isAllSelected, setIsAllSelected] = useState(false);
 
+  // Tracks the filter values used to sort the users
   const [userQuery, setUserQuery] = useState("");
 
   // Fetching the user's current data
   const userContextValue = useContext(UserContext);
 
+  // Filtering the displayed content to match the filter
   const filteredUserList = userList.filter((user) =>
     new RegExp(userQuery, "i").test(user.displayName)
   );
   const displayedUserList = userQuery.length > 0 ? filteredUserList : userList;
 
+  // When the user's access token is reset, pull the values anew if possible
   useEffect(() => {
     getAllUsers();
   }, [userContextValue]);
@@ -82,6 +85,7 @@ function UserManipulation(props: {
     setIsAllSelected(!isAllSelected);
   }
 
+  // Empties the list of users to be deleted
   function cancelSelection() {
     setPrimedForDeletionList([]);
   }

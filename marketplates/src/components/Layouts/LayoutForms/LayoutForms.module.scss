@@ -1,9 +1,12 @@
+/* || Base styling for login and register forms */
+/* Container */
 #formsContainer {
   width: 100%;
   height: 100%;
   background-color: #ffffff;
 }
 
+/* Button */
 #formsButton {
   position: absolute;
   top: 0.8rem;
@@ -27,11 +30,7 @@
   border: 1px solid #eb6700;
 }
 
-#formsImage {
-  width: 100%;
-  height: 100%;
-}
-
+/* Styling for the form */
 #formsContentContainer {
   position: absolute;
   top: 30%;
@@ -53,6 +52,7 @@
   width: 90%;
 }
 
+/* Background image for the forms */
 #formsBackground {
   background-image: url("../../../assets/repeatFormsBackground.png");
   width: 100%;

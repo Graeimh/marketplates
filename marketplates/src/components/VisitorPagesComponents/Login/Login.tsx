@@ -38,10 +38,12 @@ function Login(props: {
   // Serves to check if all values have the correct number of characters
   const [validForSending, setValidForSending] = useState(false);
 
+  // Each time an input is modified we check if the form is valid for sending
   useEffect(() => {
     decideLoginValidity();
   }, [loginData]);
 
+  // Modifying the form's data according to the modifications in a specific input
   function updateField(event) {
     setLoginData({
       ...loginData,
@@ -49,12 +51,14 @@ function Login(props: {
     });
   }
 
+  // Data validation made to match the back end specifications
   function decideLoginValidity() {
     setValidForSending(
       loginData.email.length > 3 && loginData.password.length >= 12
     );
   }
 
+  // Sending data to the back end
   async function sendLoginForm(event) {
     event.preventDefault();
     // Check if an user is already logged in, if so, redirect them without going through the log in process
@@ -109,8 +113,8 @@ function Login(props: {
     }
   }
 
+  // Upon failing logging in, a set of time is given until the next login attempt
   function putLoginToSleep(time: number) {
-    // Upon failing logging in, a set of time is given until the next login attempt
     setTimeout(() => {
       setCanRetry(true);
     }, time);

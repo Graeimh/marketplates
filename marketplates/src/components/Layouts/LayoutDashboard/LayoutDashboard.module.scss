@@ -1,3 +1,5 @@
+/* || Base styling for the dashboard layout */
+/* Container */
 #dashboardContainer {
   height: 100%;
   background-color: #ffffff;
@@ -17,6 +19,7 @@
   margin-left: 5%;
 }
 
+/* For mobile content */
 #small {
   padding: 0;
   text-align: center;
@@ -62,15 +65,9 @@
   background-color: #ffffff;
 }
 
+/* For tablet and desktop content display is changed upon screen size change */
 #tablet {
   display: none;
-}
-
-.homeButton {
-  background-image: url("../../../assets/logo.png");
-  background-size: cover;
-  width: 3.1rem;
-  height: 3.1rem;
 }
 
 #tablet li a:hover {
@@ -81,6 +78,14 @@
   color: #eb6700;
   border: 1px solid #eb6700;
   background-color: #ffffff;
+}
+
+/* Website logo that sends the user to the home page */
+.homeButton {
+  background-image: url("../../../assets/logo.png");
+  background-size: cover;
+  width: 3.1rem;
+  height: 3.1rem;
 }
 
 /* For tablets: */

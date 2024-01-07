@@ -116,7 +116,7 @@ export interface IPlaceIteration {
     customTagIds: string[];
     gpsCoordinates: IGPSCoordinates;
     placeId: string;
-};
+}
 
 /**
  * Contains the value for a filter for tag display, will be given more values to filter with in the future

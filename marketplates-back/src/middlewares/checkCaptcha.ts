@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken'
 import axios from 'axios'
 
 // Allows to fetch values from the .env file

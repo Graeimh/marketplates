@@ -14,6 +14,7 @@ const Layout = (props: {
   contextSetter: React.Dispatch<ISessionValues>;
   messageSetter: React.Dispatch<IMessageValues>;
 }) => {
+  // Control whether or not the mobile's hamburger menu is displayed or not
   const [isBurgerOpen, setIsBurgerOpen] = useState(false);
 
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ const Layout = (props: {
   // Fetching the user's current data
   const userContextValue = useContext(UserContext);
 
+  // Reset the user's context and remove the user's current refresh token from the database
   async function logoutUser() {
     try {
       await authenticationService.logout(

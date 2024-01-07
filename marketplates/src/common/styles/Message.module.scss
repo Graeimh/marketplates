@@ -1,3 +1,6 @@
+/* || Message snackbar */
+
+/* Message container */
 .messageContainer div {
   color: #ffffff;
   text-align: center;
@@ -17,13 +20,14 @@
   opacity: 0%;
 }
 
+/* Causes the message to slide down and become visible before sliding back and vanishing*/
 @keyframes slideFromTop {
   50% {
     transform: translateY(3.5rem);
     opacity: 100%;
   }
 }
-
+/* Causes the message to slide up and become visible before sliding back and vanishing*/
 @keyframes slideFromBottom {
   50% {
     transform: translateY(-6.5rem);
@@ -31,18 +35,21 @@
   }
 }
 
+/* If the message indicates a task accomplished */
 .isSuccess div {
   background-color: #eb6700;
   -webkit-box-shadow: 0 0 1rem #eb6700;
   box-shadow: 0 0 1rem #eb6700;
 }
 
+/* If the message indicates a failed task */
 .isError div {
   background-color: #920000;
   -webkit-box-shadow: 0 0 1rem #920000;
   box-shadow: 0 0 1rem #920000;
 }
 
+/* Makes the message container vanish when using tablets and desktops*/
 .bottom {
   display: none;
 }

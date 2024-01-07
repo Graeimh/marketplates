@@ -35,13 +35,22 @@ function EditProfile(props: {
 
   const navigate = useNavigate();
 
+  // When the user's access token is reset, pull the values anew if possible
   useEffect(() => {
     getUserData();
   }, [userContextValue]);
 
+  // Each time an input is modified we check if the form is valid for sending
   useEffect(() => {
     decideRegistration();
   }, [formData]);
+
+  function updateField(event) {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
+  }
 
   async function getUserData() {
     try {
@@ -66,6 +75,7 @@ function EditProfile(props: {
     }
   }
 
+  // Data validation made to match the back end specifications
   function decideRegistration() {
     setValidForSending(
       formData.firstName.length > 1 &&
@@ -78,6 +88,7 @@ function EditProfile(props: {
         formData.streetAddress.length > 1
     );
   }
+  // Passwords aren't modified yet because this time of modification isn't considered secure yet.
 
   async function sendEditUserForm(event) {
     event.preventDefault();
@@ -96,13 +107,6 @@ function EditProfile(props: {
         successStatus: false,
       });
     }
-  }
-
-  function updateField(event) {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
-    });
   }
 
   return (

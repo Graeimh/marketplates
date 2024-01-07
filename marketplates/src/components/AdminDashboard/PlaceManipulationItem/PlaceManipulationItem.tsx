@@ -33,15 +33,19 @@ function PlaceManipulationItem(props: {
   // Fetching the user's current data
   const userContextValue = useContext(UserContext);
 
+  // Fetches the tags associated with the place in the back end
   useEffect(() => {
     getSpecificPlaceTags();
   }, []);
+
+  // When the button is clicked, the place is either added or removed from the list of users to be group-deleted
 
   function handleDeletePrimer() {
     props.primeForDeletion(props.place._id ? props.place._id : "");
     setIsPrimed(!isPrimed);
   }
 
+  // The admin can also manually delete the place from a button
   function handleDelete() {
     props.uponDeletion(props.place._id ? props.place._id : "");
   }

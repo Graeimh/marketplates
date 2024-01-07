@@ -44,10 +44,9 @@ function App() {
     exp: 0,
   });
 
-  // Messages meant to give users feedback on the state of their actions
+  // Messages meant to give users feedback on the state of their actions, passed down to nearly all components
   const [messageValue, setMessageValue] = useState<IMessageValues>({
-    message:
-      "Hello my name is quentin guinier and I am very tired of doing this",
+    message: "",
     successStatus: true,
   });
 
@@ -76,19 +75,19 @@ function App() {
         setSessionValue(jose.decodeJwt(loadedSessionData.cookie));
       } catch (err) {
         setMessageValue({
-          message: "We could not reach your session",
+          message: "We could not reach your session yet, please log in",
           successStatus: false,
         });
       }
     }
 
+    // Setting the access token anew every 9 minute and 50 seconds whenever the user is logged in to avoid having windows where the user does not have an access token
     const refreshValue = localStorage.getItem("refreshToken");
 
     if (refreshValue && refreshValue !== null) {
       const userSessionData: ISessionValues = jose.decodeJwt(refreshValue);
       setSessionValue(userSessionData);
 
-      // Setting the access token anew every 9 minute and 50 seconds whenever the user is logged in to avoid having windows where the user does not have an access token
       const refreshAccessTokenInterval = setInterval(async () => {
         await authenticationService.generateAccessToken();
       }, 590000);
@@ -122,7 +121,7 @@ function App() {
         <UserContext.Provider value={sessionValue}>
           <BrowserRouter>
             <Routes>
-              {/* setSessionData is given to the layout for the logout button, it's aim is to set the session data back to its base value*/}
+              {/* setSessionValue is given to the layout for the logout button, it's aim is to set the session data back to its base value*/}
               <Route
                 element={
                   <Layout

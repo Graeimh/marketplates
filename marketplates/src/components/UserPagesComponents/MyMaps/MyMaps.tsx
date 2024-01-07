@@ -24,6 +24,7 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
   // Fetching the user's current data
   const userContextValue = useContext(UserContext);
 
+  // When the user's access token is reset, pull the values anew if possible
   useEffect(() => {
     getUserMaps();
   }, [userContextValue]);
@@ -42,6 +43,7 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
     }
   }
 
+  // Requires user confirmation upon deleting one of their places
   async function handleUserMapDeleted(placeId: string) {
     try {
       if (confirm("Are you sure you want to delete this map?")) {

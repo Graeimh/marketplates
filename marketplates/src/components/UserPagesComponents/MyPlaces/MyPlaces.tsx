@@ -23,6 +23,7 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
 
   const navigate = useNavigate();
 
+  // When the user's access token is reset, pull the values anew if possible
   useEffect(() => {
     getUserPlaces();
   }, [userContextValue]);
@@ -41,6 +42,7 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
     }
   }
 
+  // Requires user confirmation upon deleting one of their places
   async function handleUserPlaceDeleted(placeId: string) {
     try {
       if (confirm("Are you sure you want to delete this places?")) {

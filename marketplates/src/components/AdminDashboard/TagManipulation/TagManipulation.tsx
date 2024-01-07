@@ -30,28 +30,38 @@ function TagManipulation(props: {
     []
   );
 
+  // Data to be sent to back end
   const [formData, setFormData] = useState<ITagValues>({
     isOfficial: true,
     tagBackgroundColor: "#FFFFFF",
     tagName: "Tag name",
     tagNameColor: "#000000",
   });
+
+  // Tracks the data sent to be back end is correct or not
   const [validForUpdating, setValidForUpdating] = useState(false);
+
+  // Gives the information whether or not all the tags belongs to the primed for deletion list
   const [isAllSelected, setIsAllSelected] = useState(false);
+
+  // Tracks the filter values used to sort the tags
   const [tagQuery, setTagQuery] = useState("");
 
   // Fetching the user's current data
   const userContextValue = useContext(UserContext);
 
+  // Filtering the displayed content to match the filter
   const filteredTagList = tagList.filter((tag) =>
     new RegExp(tagQuery, "i").test(tag.name)
   );
   const displayedTagList = tagQuery.length > 0 ? filteredTagList : tagList;
 
+  // When the user's access token is reset, pull the values anew if possible
   useEffect(() => {
     getAllTags();
   }, [userContextValue]);
 
+  // Data validation made to match the back end specifications
   useEffect(() => {
     decideUpdatability();
   }, [formData]);
@@ -70,7 +80,9 @@ function TagManipulation(props: {
     }
   }
 
+  // Modifying the form's data according to the modifications in a specific input
   function updateField(event) {
+    //hexifyColors ensures the colors keep a "#aaaaaa" format
     switch (event.target.name) {
       case "tagNameColor":
         setFormData({
@@ -114,6 +126,8 @@ function TagManipulation(props: {
   }
 
   function selectAllTags() {
+    // We check if some tags were already selected and we add them to the primed for deletion list
+
     if (
       (!isAllSelected && primedForDeletionList.length === 0) ||
       primedForDeletionList.length !== tagList.length
@@ -131,10 +145,12 @@ function TagManipulation(props: {
     );
   }
 
+  // Empties the list of tags to be deleted
   function cancelSelection() {
     setPrimedForDeletionList([]);
   }
 
+  // Sending data to the back end
   async function sendForm(event) {
     event.preventDefault();
     if (checkPermission(userContextValue.status, UserType.Admin)) {

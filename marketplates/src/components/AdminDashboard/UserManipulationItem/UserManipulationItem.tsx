@@ -22,6 +22,8 @@ function UserManipulationItem(props: {
   refetch: () => Promise<void>;
   messageSetter: React.Dispatch<IMessageValues>;
 }) {
+  // Setting states
+  // Data to be sent to back end
   const [formData, setFormData] = useState<IUserData>({
     displayName: props.user.displayName,
     email: props.user.email,
@@ -33,12 +35,16 @@ function UserManipulationItem(props: {
     streetAddress: props.user.location.streetAddress,
   });
 
+  // Tracks whether or not this user is selected for group deletion
   const [isPrimed, setIsPrimed] = useState(false);
+
+  // Tracks the data sent to be back end is correct or not
   const [validForUpdating, setValidForUpdating] = useState(false);
 
   // Fetching the user's current data
   const userContextValue = useContext(UserContext);
 
+  // Each time an input is modified we check if the form is valid for sending
   useEffect(() => {
     decideUpdatability();
   }, [formData]);
@@ -70,12 +76,13 @@ function UserManipulationItem(props: {
       [event.target.name]: event.target.value,
     });
   }
-
+  // When the button is clicked, the user is either added or removed from the list of users to be group-deleted
   function handleDeletePrimer() {
     props.primeForDeletion(props.user._id);
     setIsPrimed(!isPrimed);
   }
 
+  // Sending data to the back end
   async function sendUpdateForm(event) {
     event.preventDefault();
 
@@ -97,6 +104,7 @@ function UserManipulationItem(props: {
     }
   }
 
+  // The admin can also manually delete the user from a button
   function handleDelete() {
     props.uponDeletion(props.user._id);
   }
