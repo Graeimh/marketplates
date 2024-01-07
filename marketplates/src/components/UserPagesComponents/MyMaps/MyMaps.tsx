@@ -24,6 +24,10 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
   // Fetching the user's current data
   const userContextValue = useContext(UserContext);
 
+  useEffect(() => {
+    getUserMaps();
+  }, [userContextValue]);
+
   async function getUserMaps() {
     try {
       if (checkPermission(userContextValue.status, UserType.User)) {
@@ -58,9 +62,6 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
     }
   }
 
-  useEffect(() => {
-    getUserMaps();
-  }, [userContextValue]);
   return (
     <>
       <Helmet>

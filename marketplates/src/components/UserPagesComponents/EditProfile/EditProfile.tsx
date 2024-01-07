@@ -35,6 +35,14 @@ function EditProfile(props: {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    getUserData();
+  }, [userContextValue]);
+
+  useEffect(() => {
+    decideRegistration();
+  }, [formData]);
+
   async function getUserData() {
     try {
       if (checkPermission(userContextValue.status, UserType.User)) {
@@ -58,10 +66,6 @@ function EditProfile(props: {
     }
   }
 
-  useEffect(() => {
-    getUserData();
-  }, [userContextValue]);
-
   function decideRegistration() {
     setValidForSending(
       formData.firstName.length > 1 &&
@@ -74,10 +78,6 @@ function EditProfile(props: {
         formData.streetAddress.length > 1
     );
   }
-
-  useEffect(() => {
-    decideRegistration();
-  }, [formData]);
 
   async function sendEditUserForm(event) {
     event.preventDefault();

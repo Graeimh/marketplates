@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import stylesUserDashboard from "../../../common/styles/Dashboard.module.scss";
-import styles from "./Profile.module.scss";
 import * as jose from "jose";
 import * as authenticationService from "../../../services/authenticationService.js";
 import * as userService from "../../../services/userService.js";

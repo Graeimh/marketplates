@@ -120,6 +120,100 @@ function MapEditor(props: {
   // Allows to interact with a map address search api
   const provider = new OpenStreetMapProvider();
 
+  const mapmarkers: IPlaceUpdated[] = [];
+  for (const place of placeList) {
+    const marker: IPlaceUpdated = {
+      ...place,
+      tagsIdList: place.tagsList,
+      tagsList: [...tagList].filter((tag) => place.tagsList.includes(tag._id)),
+    };
+    mapmarkers.push(marker);
+  }
+
+  // Places are replaced with iterations if their ids or place ids match
+  const mapMarkersAndIterations: IMarkersForMap[] = [];
+  for (const marker of mapmarkers) {
+    const iterationToList = iterationsList.find(
+      (iteration) =>
+        iteration._id === marker._id || iteration.place_id === marker._id
+    );
+    if (iterationToList) {
+      const iteration = { ...iterationToList, isIteration: true };
+      mapMarkersAndIterations.push(iteration);
+    } else {
+      const regularMarker = { ...marker, isIteration: false };
+      mapMarkersAndIterations.push(regularMarker);
+    }
+  }
+
+  // A smaller selection of tags to avoid overcrowding the user's page
+  const tagSelection: ITag[] = [...tagFilterList].slice(0, 10);
+
+  // Once a tag is bound to an iteration it is no longer within the available tags
+  const tagListWithoutSelected: ITag[] = [
+    ...new Set(
+      tagFilterList.filter(
+        (tag) =>
+          !placeFilterQuery.tags
+            .map((formDataTag) => formDataTag._id)
+            .includes(tag._id)
+      )
+    ),
+  ];
+
+  const tagListForIterationWithoutSelected: ITag[] = [
+    ...new Set(
+      tagFilterList.filter(
+        (tag) => !iterationValues.tagsIdList.includes(tag._id)
+      )
+    ),
+  ];
+
+  // Tags are also filtered through user input if they are looking for specific tags
+  const tagListWithoutSelectedAndFiltered: ITag[] = [
+    ...tagListWithoutSelected,
+  ].filter((tag) =>
+    new RegExp(placeFilterQuery.filterTagQuery, "i").test(tag.name)
+  );
+
+  const tagListToDisplay: ITag[] =
+    placeFilterQuery.filterTagQuery.length > 0
+      ? tagListWithoutSelectedAndFiltered
+      : tagSelection;
+
+  // The same process goes for the tags list involved when creating or editing an iteration
+  const tagListForIterationWithoutSelectedAndFiltered: ITag[] = [
+    ...tagListForIterationWithoutSelected,
+  ].filter((tag) =>
+    new RegExp(iterationTagFilterQuery.tagName, "i").test(tag.name)
+  );
+
+  const tagListForIterationToDisplay: ITag[] =
+    iterationTagFilterQuery.tagName.length > 0
+      ? tagListForIterationWithoutSelectedAndFiltered
+      : tagListForIterationWithoutSelected;
+
+  const mapMarkersAfterFilter: IMarkersForMap[] = [...mapMarkersAndIterations]
+    .filter((marker) =>
+      new RegExp(placeFilterQuery.filterNameQuery, "i").test(marker.name)
+    )
+    .filter((marker) =>
+      placeFilterQuery.tags.every((tag) => marker.tagsList.includes(tag))
+    );
+
+  useEffect(() => {
+    getMapEditorTools();
+    decideMapValidity();
+  }, [userContextValue]);
+
+  useEffect(() => {
+    decideMapValidity();
+  }, [formData]);
+
+  useEffect(() => {
+    decidePlaceIterationValidity();
+  }, [iterationValues]);
+
   async function handleAdressButton(): Promise<void> {
     const results = await provider.search({ query: addressQuery });
     setNewResults(results);
@@ -210,18 +304,6 @@ function MapEditor(props: {
       });
     }
   }
-  useEffect(() => {
-    getMapEditorTools();
-    decideMapValidity();
-  }, [userContextValue]);
-
-  useEffect(() => {
-    decideMapValidity();
-  }, [formData]);
-
-  useEffect(() => {
-    decidePlaceIterationValidity();
-  }, [iterationValues]);
 
   function decideMapValidity() {
     setIsValidForSending(
@@ -266,32 +348,6 @@ function MapEditor(props: {
       longitude: lon,
       latitude: lat,
     });
-  }
-
-  const mapmarkers: IPlaceUpdated[] = [];
-  for (const place of placeList) {
-    const marker: IPlaceUpdated = {
-      ...place,
-      tagsIdList: place.tagsList,
-      tagsList: [...tagList].filter((tag) => place.tagsList.includes(tag._id)),
-    };
-    mapmarkers.push(marker);
-  }
-
-  // Places are replaced with iterations if their ids or place ids match
-  const mapMarkersAndIterations: IMarkersForMap[] = [];
-  for (const marker of mapmarkers) {
-    const iterationToList = iterationsList.find(
-      (iteration) =>
-        iteration._id === marker._id || iteration.place_id === marker._id
-    );
-    if (iterationToList) {
-      const iteration = { ...iterationToList, isIteration: true };
-      mapMarkersAndIterations.push(iteration);
-    } else {
-      const regularMarker = { ...marker, isIteration: false };
-      mapMarkersAndIterations.push(regularMarker);
-    }
   }
 
   async function createIteration(event) {
@@ -358,61 +414,6 @@ function MapEditor(props: {
       });
     }
   }
-
-  // A smaller selection of tags to avoid overcrowding the user's page
-  const tagSelection: ITag[] = [...tagFilterList].slice(0, 10);
-
-  // Once a tag is bound to an iteration it is no longer within the available tags
-  const tagListWithoutSelected: ITag[] = [
-    ...new Set(
-      tagFilterList.filter(
-        (tag) =>
-          !placeFilterQuery.tags
-            .map((formDataTag) => formDataTag._id)
-            .includes(tag._id)
-      )
-    ),
-  ];
-
-  const tagListForIterationWithoutSelected: ITag[] = [
-    ...new Set(
-      tagFilterList.filter(
-        (tag) => !iterationValues.tagsIdList.includes(tag._id)
-      )
-    ),
-  ];
-
-  // Tags are also filtered through user input if they are looking for specific tags
-  const tagListWithoutSelectedAndFiltered: ITag[] = [
-    ...tagListWithoutSelected,
-  ].filter((tag) =>
-    new RegExp(placeFilterQuery.filterTagQuery, "i").test(tag.name)
-  );
-
-  const tagListToDisplay: ITag[] =
-    placeFilterQuery.filterTagQuery.length > 0
-      ? tagListWithoutSelectedAndFiltered
-      : tagSelection;
-
-  // The same process goes for the tags list involved when creating or editing an iteration
-  const tagListForIterationWithoutSelectedAndFiltered: ITag[] = [
-    ...tagListForIterationWithoutSelected,
-  ].filter((tag) =>
-    new RegExp(iterationTagFilterQuery.tagName, "i").test(tag.name)
-  );
-
-  const tagListForIterationToDisplay: ITag[] =
-    iterationTagFilterQuery.tagName.length > 0
-      ? tagListForIterationWithoutSelectedAndFiltered
-      : tagListForIterationWithoutSelected;
-
-  const mapMarkersAfterFilter: IMarkersForMap[] = [...mapMarkersAndIterations]
-    .filter((marker) =>
-      new RegExp(placeFilterQuery.filterNameQuery, "i").test(marker.name)
-    )
-    .filter((marker) =>
-      placeFilterQuery.tags.every((tag) => marker.tagsList.includes(tag))
-    );
 
   return (
     <>

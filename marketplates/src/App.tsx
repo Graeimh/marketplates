@@ -123,7 +123,14 @@ function App() {
           <BrowserRouter>
             <Routes>
               {/* setSessionData is given to the layout for the logout button, it's aim is to set the session data back to its base value*/}
-              <Route element={<Layout contextSetter={setSessionValue} />}>
+              <Route
+                element={
+                  <Layout
+                    contextSetter={setSessionValue}
+                    messageSetter={setMessageValue}
+                  />
+                }
+              >
                 <Route path="" element={<Home />} />
                 <Route path="contact" element={<Contact />} />
                 <>

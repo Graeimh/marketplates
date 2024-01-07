@@ -48,16 +48,16 @@
   transition: 0.5s;
 }
 
-#logout {
+.logout button {
   background-color: #920000;
   border: 2px solid #920000;
 }
 
-#logout:active {
+.logout button:active {
   background-color: #1e1e1e;
 }
 
-#logout:active span {
+.logout button:active span {
   color: #d60000;
 }
 

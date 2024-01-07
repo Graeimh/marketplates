@@ -23,6 +23,10 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    getUserPlaces();
+  }, [userContextValue]);
+
   async function getUserPlaces() {
     try {
       if (checkPermission(userContextValue.status, UserType.User)) {
@@ -57,9 +61,6 @@ function MyPlaces(props: { messageSetter: React.Dispatch<IMessageValues> }) {
     }
   }
 
-  useEffect(() => {
-    getUserPlaces();
-  }, [userContextValue]);
   return (
     <>
       <Helmet>

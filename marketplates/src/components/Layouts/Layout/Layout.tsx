@@ -8,11 +8,14 @@ import { ISessionValues } from "../../../common/types/userTypes/userTypes.js";
 import UserContext from "../../Contexts/UserContext/UserContext.js";
 import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IMessageValues } from "../../../common/types/commonTypes.ts/commonTypes.js";
 
-const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
-  const [message, setMessage] = useState("");
+const Layout = (props: {
+  contextSetter: React.Dispatch<ISessionValues>;
+  messageSetter: React.Dispatch<IMessageValues>;
+}) => {
   const [isBurgerOpen, setIsBurgerOpen] = useState(false);
-  sessionStorage.getItem("refreshToken");
+
   const navigate = useNavigate();
 
   // Fetching the user's current data
@@ -20,7 +23,7 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
 
   async function logoutUser() {
     try {
-      const status = await authenticationService.logout(
+      await authenticationService.logout(
         sessionStorage.getItem("refreshToken")
       );
       props.contextSetter({
@@ -31,10 +34,16 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
         iat: 0,
         exp: 0,
       });
-      setMessage(status);
+      props.messageSetter({
+        message: "Successfully logged out",
+        successStatus: true,
+      });
       navigate("/");
     } catch (err) {
-      setMessage(err.message);
+      props.messageSetter({
+        message: "We could not log you out, please contact an admin.",
+        successStatus: false,
+      });
     }
   }
 
@@ -47,7 +56,7 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
               <ul id={stylesUserDashboard.small}>
                 <li>
                   <Link
-                    id={stylesAdminDashboard.homeButton}
+                    className={stylesAdminDashboard.homeButton}
                     aria-label="Navigate to Home"
                     to="/"
                   >
@@ -78,19 +87,20 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
                   </Link>
                 </li>
                 <li>
-                  <button
-                    type="button"
-                    onClick={logoutUser}
-                    id={styles.logout}
-                    aria-label="Log out"
-                  >
-                    <FontAwesomeIcon icon={solid("right-from-bracket")} />
-                  </button>
+                  <div className={styles.logout}>
+                    <button
+                      type="button"
+                      onClick={logoutUser}
+                      aria-label="Log out"
+                    >
+                      <FontAwesomeIcon icon={solid("right-from-bracket")} />
+                    </button>
+                  </div>
                 </li>
               </ul>
               <ul id={stylesAdminDashboard.tablet}>
                 <li>
-                  <Link id={stylesAdminDashboard.homeButton} to="/">
+                  <Link className={stylesAdminDashboard.homeButton} to="/">
                     &#8205;
                   </Link>
                 </li>
@@ -135,11 +145,17 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
                   </li>
                 )}
                 <li>
-                  <button type="button" onClick={logoutUser} id={styles.logout}>
-                    <FontAwesomeIcon icon={solid("right-from-bracket")} />
-                    <br />
-                    Log out
-                  </button>
+                  <div className={styles.logout}>
+                    <button
+                      type="button"
+                      onClick={logoutUser}
+                      aria-label="Log out"
+                    >
+                      <FontAwesomeIcon icon={solid("right-from-bracket")} />
+                      <br />
+                      Log out
+                    </button>
+                  </div>
                 </li>
               </ul>
             </nav>
@@ -150,7 +166,7 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
               <ul id={stylesUserDashboard.small}>
                 <li>
                   <Link
-                    id={stylesAdminDashboard.homeButton}
+                    className={stylesAdminDashboard.homeButton}
                     to="/"
                     aria-label="Navigate to Home"
                   >
@@ -176,7 +192,7 @@ const Layout = (props: { contextSetter: React.Dispatch<ISessionValues> }) => {
               <ul id={stylesAdminDashboard.tablet}>
                 <li>
                   <Link
-                    id={stylesAdminDashboard.homeButton}
+                    className={stylesAdminDashboard.homeButton}
                     to="/"
                     aria-label="Navigate to Home"
                   >

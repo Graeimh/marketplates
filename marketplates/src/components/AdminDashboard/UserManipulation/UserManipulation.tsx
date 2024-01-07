@@ -31,6 +31,15 @@ function UserManipulation(props: {
   // Fetching the user's current data
   const userContextValue = useContext(UserContext);
 
+  const filteredUserList = userList.filter((user) =>
+    new RegExp(userQuery, "i").test(user.displayName)
+  );
+  const displayedUserList = userQuery.length > 0 ? filteredUserList : userList;
+
+  useEffect(() => {
+    getAllUsers();
+  }, [userContextValue]);
+
   async function getAllUsers() {
     try {
       if (checkPermission(userContextValue.status, UserType.Admin)) {
@@ -45,10 +54,6 @@ function UserManipulation(props: {
       });
     }
   }
-
-  useEffect(() => {
-    getAllUsers();
-  }, [userContextValue]);
 
   function manageDeletionList(id: string) {
     // Upon clicking on the button to select, we check if the id was already part of the primed for deletion list
@@ -119,11 +124,6 @@ function UserManipulation(props: {
       });
     }
   }
-
-  const filteredUserList = userList.filter((user) =>
-    new RegExp(userQuery, "i").test(user.displayName)
-  );
-  const displayedUserList = userQuery.length > 0 ? filteredUserList : userList;
 
   return (
     <>

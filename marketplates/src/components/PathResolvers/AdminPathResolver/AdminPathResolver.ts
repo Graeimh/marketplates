@@ -8,7 +8,6 @@ const AdminPathResolver = (props: { children: React.ReactNode }) => {
     const navigate = useNavigate();
 
     //Check if the user is logged in and an admin
-
     useEffect(() => {
         const refreshValue = localStorage.getItem("refreshToken");
         if (refreshValue && refreshValue !== null) {

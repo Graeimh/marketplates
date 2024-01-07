@@ -141,6 +141,7 @@ function UserManipulationItem(props: {
                 <input
                   type="text"
                   name="firstName"
+                  id="firstName"
                   onInput={updateField}
                   value={formData.firstName}
                 />
@@ -150,6 +151,7 @@ function UserManipulationItem(props: {
                 <input
                   type="text"
                   name="lastName"
+                  id="lastName"
                   onInput={updateField}
                   value={formData.lastName}
                 />
@@ -160,6 +162,7 @@ function UserManipulationItem(props: {
               <input
                 type="text"
                 name="streetAddress"
+                id="streetAddress"
                 onInput={updateField}
                 value={formData.streetAddress}
               />
@@ -170,6 +173,7 @@ function UserManipulationItem(props: {
                 <input
                   type="text"
                   name="county"
+                  id="county"
                   onInput={updateField}
                   value={formData.county}
                 />
@@ -179,6 +183,7 @@ function UserManipulationItem(props: {
                 <input
                   type="text"
                   name="city"
+                  id="city"
                   onInput={updateField}
                   value={formData.city}
                 />
@@ -188,6 +193,7 @@ function UserManipulationItem(props: {
                 <input
                   type="text"
                   name="country"
+                  id="country"
                   onInput={updateField}
                   value={formData.country}
                 />
@@ -203,6 +209,7 @@ function UserManipulationItem(props: {
                 <input
                   type="text"
                   name="displayName"
+                  id="displayName"
                   onInput={updateField}
                   value={formData.displayName}
                 />
@@ -213,6 +220,7 @@ function UserManipulationItem(props: {
                 <input
                   type="email"
                   name="email"
+                  id="email"
                   onInput={updateField}
                   value={formData.email}
                 />

@@ -66,7 +66,7 @@
   display: none;
 }
 
-#homeButton {
+.homeButton {
   background-image: url("../../../assets/logo.png");
   background-size: cover;
   width: 3.1rem;
@@ -130,7 +130,7 @@
     margin-left: 1.5rem;
   }
 
-  #tablet #homeButton {
+  #tablet .homeButton {
     padding: 0;
     width: 4rem;
     height: 4rem;
@@ -169,7 +169,7 @@
     width: 90%;
   }
 
-  #tablet #homeButton {
+  #tablet .homeButton {
     margin-bottom: 2rem;
   }
 }

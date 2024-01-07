@@ -43,6 +43,19 @@ function TagManipulation(props: {
   // Fetching the user's current data
   const userContextValue = useContext(UserContext);
 
+  const filteredTagList = tagList.filter((tag) =>
+    new RegExp(tagQuery, "i").test(tag.name)
+  );
+  const displayedTagList = tagQuery.length > 0 ? filteredTagList : tagList;
+
+  useEffect(() => {
+    getAllTags();
+  }, [userContextValue]);
+
+  useEffect(() => {
+    decideUpdatability();
+  }, [formData]);
+
   async function getAllTags() {
     try {
       if (checkPermission(userContextValue.status, UserType.Admin)) {
@@ -56,10 +69,6 @@ function TagManipulation(props: {
       });
     }
   }
-
-  useEffect(() => {
-    getAllTags();
-  }, [userContextValue]);
 
   function updateField(event) {
     switch (event.target.name) {
@@ -92,9 +101,6 @@ function TagManipulation(props: {
         formData.tagBackgroundColor.length === 7
     );
   }
-  useEffect(() => {
-    decideUpdatability();
-  }, [formData]);
 
   function manageDeletionList(id: string) {
     const foundIndex = primedForDeletionList.indexOf(id);
@@ -200,11 +206,6 @@ function TagManipulation(props: {
       });
     }
   }
-
-  const filteredTagList = tagList.filter((tag) =>
-    new RegExp(tagQuery, "i").test(tag.name)
-  );
-  const displayedTagList = tagQuery.length > 0 ? filteredTagList : tagList;
 
   return (
     <>

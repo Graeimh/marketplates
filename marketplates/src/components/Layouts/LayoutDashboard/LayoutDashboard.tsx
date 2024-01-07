@@ -12,7 +12,7 @@ const LayoutDashboard = () => {
             <ul id={styles.small}>
               <li>
                 <Link
-                  id={styles.homeButton}
+                  className={styles.homeButton}
                   to="/"
                   aria-label="Navigate to Home"
                 >
@@ -44,7 +44,7 @@ const LayoutDashboard = () => {
             <ul id={styles.tablet}>
               <li>
                 <Link
-                  id={styles.homeButton}
+                  className={styles.homeButton}
                   to="/"
                   aria-label="Navigate to Home"
                 >

@@ -19,7 +19,7 @@ function Contact() {
               a bug please send a mail to the following email address.
               <br />
               <a
-                href="mailto: marketplatesowner@gmail.com"
+                href="mailto:marketplatesowner@gmail.com"
                 aria-label="Send mail to marketplatesowner@gmail.com"
               >
                 Send us some love!

@@ -33,6 +33,12 @@ function PlaceManipulation(props: {
   // Fetching the user's current data
   const userContextValue = useContext(UserContext);
 
+  const filteredPlaceList = placeList.filter((place) =>
+    new RegExp(placeQuery, "i").test(place.name)
+  );
+  const displayedTagList =
+    placeQuery.length > 0 ? filteredPlaceList : placeList;
+
   useEffect(() => {
     getAllPlaces();
   }, [userContextValue]);
@@ -126,12 +132,6 @@ function PlaceManipulation(props: {
       });
     }
   }
-
-  const filteredPlaceList = placeList.filter((place) =>
-    new RegExp(placeQuery, "i").test(place.name)
-  );
-  const displayedTagList =
-    placeQuery.length > 0 ? filteredPlaceList : placeList;
 
   return (
     <>

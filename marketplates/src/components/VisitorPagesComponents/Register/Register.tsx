@@ -52,6 +52,10 @@ function Register(props: { messageSetter: React.Dispatch<IMessageValues> }) {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    decideRegistration();
+  }, [formData]);
+
   function decideRegistration() {
     setValidForSending(
       formData.firstName.length > 1 &&
@@ -66,10 +70,6 @@ function Register(props: { messageSetter: React.Dispatch<IMessageValues> }) {
         formData.streetAddress.length > 1
     );
   }
-
-  useEffect(() => {
-    decideRegistration();
-  }, [formData]);
 
   function passwordChecker(passwordValue: string): void {
     setPasswordFitnessCriteria({

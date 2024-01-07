@@ -40,9 +40,9 @@ function Home() {
         </div>
       </article>
       <span id={styles.spoonWrapper}>
-        <img src="src\assets\spoon.svg" alt="Pot" id={styles.spoon} />
+        <img src="src/assets/spoon.svg" alt="Pot" id={styles.spoon} />
       </span>
-      <img src="src\assets\pot.svg" alt="Spoon" id={styles.pot} />
+      <img src="src/assets/pot.svg" alt="Spoon" id={styles.pot} />
     </>
   );
 }

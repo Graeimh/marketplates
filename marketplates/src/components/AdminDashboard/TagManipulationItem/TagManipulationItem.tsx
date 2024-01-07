@@ -45,6 +45,10 @@ function TagManipulationItem(props: {
     backgroundColor: formData.tagBackgroundColor,
   };
 
+  useEffect(() => {
+    decideUpdatability();
+  }, [formData]);
+
   function handleDeletePrimer() {
     props.primeForDeletion(props.tag._id);
     setIsPrimed(!isPrimed);
@@ -88,9 +92,6 @@ function TagManipulationItem(props: {
           formData.tagBackgroundColor !== props.tag.backgroundColor)
     );
   }
-  useEffect(() => {
-    decideUpdatability();
-  }, [formData]);
 
   async function sendUpdateForm(event) {
     event.preventDefault();
@@ -164,6 +165,7 @@ function TagManipulationItem(props: {
                 <input
                   type="text"
                   name="tagName"
+                  id="tagName"
                   onInput={updateField}
                   value={formData.tagName}
                 />
@@ -188,6 +190,7 @@ function TagManipulationItem(props: {
                   <input
                     type="text"
                     name="tagBackgroundColor"
+                    id="tagBackgroundColor"
                     onInput={updateField}
                     value={formData.tagBackgroundColor}
                   />
@@ -204,6 +207,7 @@ function TagManipulationItem(props: {
                   <input
                     type="text"
                     name="tagNameColor"
+                    id="tagNameColor"
                     onInput={updateField}
                     value={formData.tagNameColor}
                   />

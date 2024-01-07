@@ -33,6 +33,10 @@ function PlaceManipulationItem(props: {
   // Fetching the user's current data
   const userContextValue = useContext(UserContext);
 
+  useEffect(() => {
+    getSpecificPlaceTags();
+  }, []);
+
   function handleDeletePrimer() {
     props.primeForDeletion(props.place._id ? props.place._id : "");
     setIsPrimed(!isPrimed);
@@ -55,10 +59,6 @@ function PlaceManipulationItem(props: {
       });
     }
   }
-
-  useEffect(() => {
-    getSpecificPlaceTags();
-  }, []);
 
   return (
     <>

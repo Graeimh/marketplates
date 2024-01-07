@@ -35,15 +35,12 @@ function Login(props: {
   // Fetching the user's current data
   const userContextValue = useContext(UserContext);
 
-  function putLoginToSleep(time: number) {
-    // Upon failing logging in, a set of time is given until the next login attempt
-    setTimeout(() => {
-      setCanRetry(true);
-    }, time);
-  }
-
   // Serves to check if all values have the correct number of characters
   const [validForSending, setValidForSending] = useState(false);
+
+  useEffect(() => {
+    decideLoginValidity();
+  }, [loginData]);
 
   function updateField(event) {
     setLoginData({
@@ -57,10 +54,6 @@ function Login(props: {
       loginData.email.length > 3 && loginData.password.length >= 12
     );
   }
-
-  useEffect(() => {
-    decideLoginValidity();
-  }, [loginData]);
 
   async function sendLoginForm(event) {
     event.preventDefault();
@@ -116,6 +109,13 @@ function Login(props: {
     }
   }
 
+  function putLoginToSleep(time: number) {
+    // Upon failing logging in, a set of time is given until the next login attempt
+    setTimeout(() => {
+      setCanRetry(true);
+    }, time);
+  }
+
   return (
     <>
       <Helmet>
@@ -133,6 +133,7 @@ function Login(props: {
               <input
                 type="text"
                 name="email"
+                id="email"
                 required
                 onInput={updateField}
                 placeholder="Email"
@@ -144,6 +145,7 @@ function Login(props: {
               <input
                 type="password"
                 name="password"
+                id="password"
                 required
                 onInput={updateField}
                 placeholder="Password"

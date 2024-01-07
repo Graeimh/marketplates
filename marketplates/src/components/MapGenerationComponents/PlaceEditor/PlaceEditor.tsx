@@ -100,6 +100,17 @@ function PlaceEditor(props: {
       ? tagListWithoutSelectedAndFiltered.slice(0, 10)
       : tagSelection;
 
+  useEffect(() => {
+    getUserTags();
+    if (props.editPlaceId !== undefined) {
+      getPlaceEditValue(props.editPlaceId);
+    }
+  }, [userContextValue]);
+
+  useEffect(() => {
+    decideRegistration();
+  }, [formData]);
+
   async function handleAdressButton(): Promise<void> {
     const results = await provider.search({ query: formData.address });
     setNewResults(results);
@@ -161,13 +172,6 @@ function PlaceEditor(props: {
     }
   }
 
-  useEffect(() => {
-    getUserTags();
-    if (props.editPlaceId !== undefined) {
-      getPlaceEditValue(props.editPlaceId);
-    }
-  }, [userContextValue]);
-
   function decideRegistration() {
     setIsValidForSending(
       formData.name.length > 1 &&
@@ -177,10 +181,6 @@ function PlaceEditor(props: {
         formData.gpsCoordinates.latitude !== null
     );
   }
-
-  useEffect(() => {
-    decideRegistration();
-  }, [formData]);
 
   function updateField(event) {
     setFormData({
