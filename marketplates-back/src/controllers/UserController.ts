@@ -171,7 +171,7 @@ export async function updateUserById(req, res) {
       sanitizeHtml(req.body.formData.city, { allowedTags: [] }).length > 1 &&
       sanitizeHtml(req.body.formData.streetAddress, { allowedTags: [] }).length > 1 &&
       sanitizeHtml(req.body.formData.email, { allowedTags: [] }).length > 3 &&
-      emailPattern.test(sanitizeHtml(req.body.formData, { allowedTags: [] }))) {
+      emailPattern.test(sanitizeHtml(req.body.formData.email, { allowedTags: [] }))) {
 
       // Find the user to update
       const userById: IUser = await UserModel.findOne({ _id: req.body.userId });
