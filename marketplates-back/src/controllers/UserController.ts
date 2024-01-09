@@ -25,13 +25,13 @@ export async function createUser(req, res) {
 
     // Verifying if the data given by the user matches the front end requirements
     if (
-      sanitizeHtml(req.body.formData.firstName.length, { allowedTags: [] }).length > 1 &&
-      sanitizeHtml(req.body.formData.lastName.length, { allowedTags: [] }).length > 1 &&
-      sanitizeHtml(req.body.formData.displayName.length, { allowedTags: [] }).length > 1 &&
-      sanitizeHtml(req.body.formData.country.length, { allowedTags: [] }).length > 1 &&
-      sanitizeHtml(req.body.formData.county.length, { allowedTags: [] }).length > 1 &&
-      sanitizeHtml(req.body.formData.city.length, { allowedTags: [] }).length > 1 &&
-      sanitizeHtml(req.body.formData.streetAddress.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.firstName, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.lastName, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.displayName, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.country, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.county, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.city, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.streetAddress, { allowedTags: [] }).length > 1 &&
       sanitizeHtml(req.body.formData.password, { allowedTags: [] }).length >= 12 &&
       /[A-Z]/.test(req.body.formData.password) &&
       /[a-z]/.test(req.body.formData.password) &&
@@ -170,7 +170,7 @@ export async function updateUserById(req, res) {
       sanitizeHtml(req.body.formData.county, { allowedTags: [] }).length > 1 &&
       sanitizeHtml(req.body.formData.city, { allowedTags: [] }).length > 1 &&
       sanitizeHtml(req.body.formData.streetAddress, { allowedTags: [] }).length > 1 &&
-      sanitizeHtml(req.body.formData, { allowedTags: [] }).length > 3 &&
+      sanitizeHtml(req.body.formData.email, { allowedTags: [] }).length > 3 &&
       emailPattern.test(sanitizeHtml(req.body.formData, { allowedTags: [] }))) {
 
       // Find the user to update
