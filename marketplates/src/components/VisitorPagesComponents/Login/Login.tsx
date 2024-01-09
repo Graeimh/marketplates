@@ -112,7 +112,6 @@ function Login(props: {
       window.grecaptcha.reset();
     }
   }
-
   // Upon failing logging in, a set of time is given until the next login attempt
   function putLoginToSleep(time: number) {
     setTimeout(() => {

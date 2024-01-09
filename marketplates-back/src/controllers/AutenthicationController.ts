@@ -2,6 +2,7 @@ import UserModel from "../models/Users.js";
 import argon2 from 'argon2';
 import jwt from "jsonwebtoken";
 import { IUser } from "../common/types/userTypes.js";
+import sanitizeHtml from "sanitize-html";
 
 /**
    * Allows a user to be authenticated when providing the correct credentials
@@ -16,68 +17,90 @@ import { IUser } from "../common/types/userTypes.js";
 
 export async function login(req, res) {
 
-    // Checking if the user that attempts to log in isn't already logged in
-    const cookieValue = req.cookies.token;
+    // Regex for email validation
+    const emailPattern =
+        /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
-    if (cookieValue !== undefined) {
-        return res.status(403).json({
-            message: '(403 Forbidden)-An user is already logged in',
-            success: false
-        });
-    }
+    // Verifying if the data given by the user matches the front end requirements
+    if (
+        sanitizeHtml(req.body.loginData.password, { allowedTags: [] }).length >= 12 &&
+        /[A-Z]/.test(req.body.loginData.password) &&
+        /[a-z]/.test(req.body.loginData.password) &&
+        /[0-9]/.test(req.body.loginData.password) &&
+        /[^A-Za-z0-9]/.test(req.body.loginData.password) &&
+        sanitizeHtml(req.body.formData.email, { allowedTags: [] }).length > 3 &&
+        emailPattern.test(sanitizeHtml(req.body.loginData.email, { allowedTags: [] }))) {
 
-    // Checking if the user exists in the database
-    const matchingUser = await UserModel.findOne({ email: req.body.loginData.email })
+        // Checking if the user that attempts to log in isn't already logged in
+        const cookieValue = req.cookies.token;
 
-    if (!matchingUser) {
-        return res.status(404).json({
-            message: '(404 Not Found)-The user was not found',
-            success: false
-        });
-
-        // Checking if the credentials are filled in and if the user's password matches its hashed version from the user database
-    } else if (req.body.loginData.email.length === 0 || req.body.loginData.password.length === 0 || !await argon2.verify(matchingUser.password, req.body.loginData.password)) {
-        return res.status(401).json({
-            message: '(401 Unauthorized)-Either the email/password are missing, or they do not match.',
-            success: false,
-        });
-    } else {
-        try {
-            // Fetching the token key for access tokens and the token key to create a refresh token from .env
-            const { LOG_TOKEN_KEY, REFRESH_TOKEN_KEY } = process.env;
-
-            // Creating the access token
-            const accessToken = createToken(matchingUser, LOG_TOKEN_KEY);
-
-            // Creating the refresh token
-            const refreshToken = createToken(matchingUser, REFRESH_TOKEN_KEY, "1y");
-
-            // Setting a cookie in the front end with a validity of 10 minutes
-            res.cookie(
-                "token", accessToken, {
-                httpOnly: true,
-                maxAge: 10 * 60 * 1000,
-                sameSite: 'None',
-                secure: true
-            }
-            );
-
-            // Adding the new refresh token to the database
-            matchingUser.refreshToken = [...matchingUser.refreshToken, refreshToken];
-            await matchingUser.save()
-
-            return res.status(200).json({
-                message: '(200 OK)-Login successful.',
-                refreshToken,
-                success: true,
+        if (cookieValue !== undefined) {
+            return res.status(403).json({
+                message: '(403 Forbidden)-An user is already logged in',
+                success: false
             });
         }
-        catch (err) {
-            return res.status(500).json({
-                message: '(500 Internal Server Error)-A server side error has occured.',
+
+        // Checking if the user exists in the database
+        const matchingUser = await UserModel.findOne({ email: req.body.loginData.email })
+
+        if (!matchingUser) {
+            return res.status(404).json({
+                message: '(404 Not Found)-The user was not found',
+                success: false
+            });
+
+            // Checking if the credentials are filled in and if the user's password matches its hashed version from the user database
+        } else if (req.body.loginData.email.length === 0 || req.body.loginData.password.length === 0 || !await argon2.verify(matchingUser.password, req.body.loginData.password)) {
+            return res.status(401).json({
+                message: '(401 Unauthorized)-Either the email/password are missing, or they do not match.',
                 success: false,
             });
+        } else {
+            try {
+                // Fetching the token key for access tokens and the token key to create a refresh token from .env
+                const { LOG_TOKEN_KEY, REFRESH_TOKEN_KEY } = process.env;
+
+                // Creating the access token
+                const accessToken = createToken(matchingUser, LOG_TOKEN_KEY);
+
+                // Creating the refresh token
+                const refreshToken = createToken(matchingUser, REFRESH_TOKEN_KEY, "1y");
+
+                // Setting a cookie in the front end with a validity of 10 minutes
+                res.cookie(
+                    "token", accessToken, {
+                    httpOnly: true,
+                    maxAge: 10 * 60 * 1000,
+                    sameSite: 'None',
+                    secure: true
+                }
+                );
+
+                // Adding the new refresh token to the database
+                matchingUser.refreshToken = [...matchingUser.refreshToken, refreshToken];
+                await matchingUser.save()
+
+                return res.status(200).json({
+                    message: '(200 OK)-Login successful.',
+                    refreshToken,
+                    success: true,
+                });
+
+            }
+
+            catch (err) {
+                return res.status(500).json({
+                    message: '(500 Internal Server Error)-A server side error has occured.',
+                    success: false,
+                });
+            }
         }
+    } else {
+        return res.status(400).json({
+            message: '(400 Bad Request)-The given credentials are not valid.',
+            success: false
+        })
     }
 };
 

@@ -17,10 +17,14 @@ import checkOwnership from "../common/functions/checkOwnership.js";
 
 export async function createTag(req, res) {
     try {
+        // Regex for hex color validation
+        const hexColorPattern = /^#[A-Fa-f0-9]{6}$/;
+
         // Verifying if the data given by the user matches the front end requirements
-        if (sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }).length === 7 &&
-            sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }).length === 7 &&
-            sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }).length > 3) {
+        if (
+            sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }).length > 3 &&
+            hexColorPattern.test(sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] })) &&
+            hexColorPattern.test(sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }))) {
 
             // Creating the tag according to the ITag interface, sanitizing every text input given using sanitizeHtml
             const tag: ITag = {
@@ -200,10 +204,14 @@ export async function getTagsByIds(req, res) {
 */
 export async function updateTagById(req, res) {
     try {
+        // Regex for hex color validation
+        const hexColorPattern = /^#[A-Fa-f0-9]{6}$/;
+
         // Verifying if the data given by the user matches the front end requirements
-        if (sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] }).length === 7 &&
-            sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }).length === 7 &&
-            sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }).length > 3) {
+        if (
+            sanitizeHtml(req.body.formData.tagName, { allowedTags: [] }).length > 3 &&
+            hexColorPattern.test(sanitizeHtml(req.body.formData.tagBackgroundColor, { allowedTags: [] })) &&
+            hexColorPattern.test(sanitizeHtml(req.body.formData.tagNameColor, { allowedTags: [] }))) {
 
             // Find the tag to update
             const tagById: ITag = await TagsModel.findOne({ _id: { $in: req.body.tagId } });

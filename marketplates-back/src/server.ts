@@ -23,7 +23,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 // CORS authorization, JSON data formatting for API communication
-app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
+app.use(cors({ credentials: true, origin: "https://marketplates.netlify.app" })); //http://localhost:5173 
 app.use(cookieParser());
 app.use(express.json());
 
@@ -49,7 +49,7 @@ app.use("/", routes);
 // ==========
 
 try {
-  await mongoose.connect(`${MONGO_STRING}${MONGO_DB_NAME}`);
+  await mongoose.connect(`${MONGO_STRING}`);
   //Confirm in the terminal that the database is connected
   console.log(`✅ Connecté à la base MongoDB ${MONGO_DB_NAME}`);
   app.listen(APP_PORT, () => {

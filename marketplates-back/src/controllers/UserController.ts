@@ -18,44 +18,73 @@ import checkOwnership from "../common/functions/checkOwnership.js";
 */
 export async function createUser(req, res) {
   try {
-    // Check if a user with the same email doesn't already exist
-    const preExistingUser = await UserModel.find({ email: req.body.formData.email });
 
-    if (preExistingUser.length > 0) {
-      return res.status(403).json({
-        message: '(403 Forbidden)-This email adress is already in use',
-        success: false
-      });
-    } else {
-      // Creating the user according to the IUser interface, sanitizing every text input given using sanitizeHtml
-      const user: IUser = {
-        activeBasketlistIds: [],
-        displayName: sanitizeHtml(req.body.formData.displayName, { allowedTags: [] }),
-        email: sanitizeHtml(req.body.formData.email, { allowedTags: [] }),
-        firstName: sanitizeHtml(req.body.formData.firstName, { allowedTags: [] }),
-        lastName: sanitizeHtml(req.body.formData.lastName, { allowedTags: [] }),
-        location: {
-          streetAddress: req.body.formData.streetAddress ? sanitizeHtml(req.body.formData.streetAddress, { allowedTags: [] }) : "",
-          county: req.body.formData.county ? sanitizeHtml(req.body.formData.county, { allowedTags: [] }) : "",
-          city: req.body.formData.city ? sanitizeHtml(req.body.formData.city, { allowedTags: [] }) : "",
-          country: req.body.formData.country ? sanitizeHtml(req.body.formData.country, { allowedTags: [] }) : "",
-        },
-        password: await argon2.hash(sanitizeHtml(req.body.formData.password, { allowedTags: [] })),
-        profilePicture: { imageURL: "", imageCaption: "", },
-        recipes: { favoriteRecipes: [], customRecipes: [], },
-        type: [UserType.User],
+    // Regex for email validation
+    const emailPattern =
+      /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+
+    // Verifying if the data given by the user matches the front end requirements
+    if (
+      sanitizeHtml(req.body.formData.firstName.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.lastName.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.displayName.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.country.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.county.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.city.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.streetAddress.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.password, { allowedTags: [] }).length >= 12 &&
+      /[A-Z]/.test(req.body.formData.password) &&
+      /[a-z]/.test(req.body.formData.password) &&
+      /[0-9]/.test(req.body.formData.password) &&
+      /[^A-Za-z0-9]/.test(req.body.formData.password) &&
+      sanitizeHtml(req.body.formData.email, { allowedTags: [] }).length > 3 &&
+      emailPattern.test(sanitizeHtml(req.body.formData.email, { allowedTags: [] }))) {
+
+      // Check if a user with the same email doesn't already exist
+      const preExistingUser = await UserModel.find({ email: req.body.formData.email });
+
+      if (preExistingUser.length > 0) {
+        return res.status(403).json({
+          message: '(403 Forbidden)-This email adress is already in use',
+          success: false
+        });
+      } else {
+        // Creating the user according to the IUser interface, sanitizing every text input given using sanitizeHtml
+        const user: IUser = {
+          activeBasketlistIds: [],
+          displayName: sanitizeHtml(req.body.formData.displayName, { allowedTags: [] }),
+          email: sanitizeHtml(req.body.formData.email, { allowedTags: [] }),
+          firstName: sanitizeHtml(req.body.formData.firstName, { allowedTags: [] }),
+          lastName: sanitizeHtml(req.body.formData.lastName, { allowedTags: [] }),
+          location: {
+            streetAddress: req.body.formData.streetAddress ? sanitizeHtml(req.body.formData.streetAddress, { allowedTags: [] }) : "",
+            county: req.body.formData.county ? sanitizeHtml(req.body.formData.county, { allowedTags: [] }) : "",
+            city: req.body.formData.city ? sanitizeHtml(req.body.formData.city, { allowedTags: [] }) : "",
+            country: req.body.formData.country ? sanitizeHtml(req.body.formData.country, { allowedTags: [] }) : "",
+          },
+          password: await argon2.hash(sanitizeHtml(req.body.formData.password, { allowedTags: [] })),
+          profilePicture: { imageURL: "", imageCaption: "", },
+          recipes: { favoriteRecipes: [], customRecipes: [], },
+          type: [UserType.User],
+        }
+
+        await UserModel.create(user);
+
+        return res.status(201).json({
+          message: '(201 Created)-User Created',
+          success: true
+        });
       }
-
-      await UserModel.create(user);
-
-      return res.status(201).json({
-        message: '(201 Created)-User Created',
-        success: true
-      });
+    } else {
+      return res.status(400).json({
+        message: '(400 Bad Request)-The data given does not match what is needed to create a user',
+        success: false
+      })
     }
   } catch (err) {
     return res.status(403).json({
       message: '(403 Forbidden)-The data sent created a user type conflict',
+      data: err,
       success: false
     });
   }
@@ -127,43 +156,65 @@ export async function getUsersById(req, res) {
 export async function updateUserById(req, res) {
 
   try {
-    // Find the user to update
-    const userById: IUser = await UserModel.findOne({ _id: req.body.userId });
 
-    // Get access token from the front end and the key that serves to create and verify them
-    const cookieValue = req.cookies.token;
-    const { LOG_TOKEN_KEY } = process.env;
+    // Regex for email validation
+    const emailPattern =
+      /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
-    // Get the token's contents, verifying its validity in the process
-    const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+    // Verifying if the data given by the user matches the front end requirements
+    if (
+      sanitizeHtml(req.body.formData.firstName.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.lastName.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.displayName.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.country.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.county.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.city.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.streetAddress.length, { allowedTags: [] }).length > 1 &&
+      sanitizeHtml(req.body.formData.email, { allowedTags: [] }).length > 3 &&
+      emailPattern.test(sanitizeHtml(req.body.formData.email, { allowedTags: [] }))) {
 
-    if (checkOwnership(userById._id, decryptedCookie.userId, decryptedCookie.status)) {
-      // Updating the user according to the IUser interface, sanitizing every text input given using sanitizeHtml, keeping the old values if no new one is given
-      await UserModel.updateOne({ _id: req.body.userId }, {
-        displayName: req.body.formData.displayName ? sanitizeHtml(req.body.formData.displayName, { allowedTags: [] }) : userById.displayName,
-        email: req.body.formData.email ? sanitizeHtml(req.body.formData.email, { allowedTags: [] }) : userById.email,
-        firstName: req.body.formData.firstName ? sanitizeHtml(req.body.formData.firstName, { allowedTags: [] }) : userById.firstName,
-        lastName: req.body.formData.lastName ? sanitizeHtml(req.body.formData.lastName, { allowedTags: [] }) : userById.lastName,
-        location: {
-          streetAddress: req.body.formData.streetAddress ? sanitizeHtml(req.body.formData.streetAddress, { allowedTags: [] }) : userById.location.streetAddress,
-          county: req.body.formData.county ? sanitizeHtml(req.body.formData.county, { allowedTags: [] }) : userById.location.county,
-          city: req.body.formData.city ? sanitizeHtml(req.body.formData.city, { allowedTags: [] }) : userById.location.city,
-          country: req.body.formData.country ? sanitizeHtml(req.body.formData.country, { allowedTags: [] }) : userById.location.country,
-        },
+      // Find the user to update
+      const userById: IUser = await UserModel.findOne({ _id: req.body.userId });
+
+      // Get access token from the front end and the key that serves to create and verify them
+      const cookieValue = req.cookies.token;
+      const { LOG_TOKEN_KEY } = process.env;
+
+      // Get the token's contents, verifying its validity in the process
+      const decryptedCookie = jwt.verify(cookieValue, LOG_TOKEN_KEY);
+
+      if (checkOwnership(userById._id, decryptedCookie.userId, decryptedCookie.status)) {
+        // Updating the user according to the IUser interface, sanitizing every text input given using sanitizeHtml, keeping the old values if no new one is given
+        await UserModel.updateOne({ _id: req.body.userId }, {
+          displayName: sanitizeHtml(req.body.formData.displayName, { allowedTags: [] }),
+          email: sanitizeHtml(req.body.formData.email, { allowedTags: [] }),
+          firstName: sanitizeHtml(req.body.formData.firstName, { allowedTags: [] }),
+          lastName: sanitizeHtml(req.body.formData.lastName, { allowedTags: [] }),
+          location: {
+            streetAddress: sanitizeHtml(req.body.formData.streetAddress, { allowedTags: [] }),
+            county: sanitizeHtml(req.body.formData.county, { allowedTags: [] }),
+            city: sanitizeHtml(req.body.formData.city, { allowedTags: [] }),
+            country: sanitizeHtml(req.body.formData.country, { allowedTags: [] }),
+          },
+        }
+        );
+
+        return res.status(204).json({
+          message: '(204 No Content)-User data successfully updated',
+          success: true
+        });
+      } else {
+        return res.status(403).json({
+          message: '(403 Forbidden)-The user is not the owner of the account, or an admin and thus cannot update the data from this user',
+          success: false
+        });
       }
-      );
-
-      return res.status(204).json({
-        message: '(204 No Content)-User data successfully updated',
-        success: true
-      });
     } else {
-      return res.status(403).json({
-        message: '(403 Forbidden)-The user is not the owner of the account, or an admin and thus cannot update the data from this user',
+      return res.status(400).json({
+        message: '(400 Bad Request)-The data given does not match what is needed to update a user',
         success: false
-      });
+      })
     }
-
   } catch (err) {
     return res.status(404).json({
       message: '(404 Not found)-User to be updated was not found',
