@@ -28,7 +28,7 @@ export async function login(req, res) {
         /[a-z]/.test(req.body.loginData.password) &&
         /[0-9]/.test(req.body.loginData.password) &&
         /[^A-Za-z0-9]/.test(req.body.loginData.password) &&
-        sanitizeHtml(req.body.formData.email, { allowedTags: [] }).length > 3 &&
+        sanitizeHtml(req.body.loginData.email, { allowedTags: [] }).length > 3 &&
         emailPattern.test(sanitizeHtml(req.body.loginData.email, { allowedTags: [] }))) {
 
         // Checking if the user that attempts to log in isn't already logged in
