@@ -11,21 +11,21 @@ import { checkAccessToken } from "../middlewares/checkAccessToken.js";
 const appRouter = Router();
 
 // Serves for login, logout, session status checking and access token generation
-appRouter.use("/marketplates/dist/auth", authentication); ///marketplates/dist
+appRouter.use("/auth", authentication);
 
 // Serves for the maps' CRUD
-appRouter.use("/marketplates/dist/maps", checkAccessToken, maps);
+appRouter.use("/maps", checkAccessToken, maps);
 
 // Serves for the place iterations' CRUD
-appRouter.use("/marketplates/dist/placeIterations", checkAccessToken, placeIterations);
+appRouter.use("/placeIterations", checkAccessToken, placeIterations);
 
 // Serves for the places' CRUD
-appRouter.use("/marketplates/dist/places", checkAccessToken, places);
+appRouter.use("/places", checkAccessToken, places);
 
 // Serves for the tags' CRUD
-appRouter.use("/marketplates/dist/tags", checkAccessToken, tags);
+appRouter.use("/tags", checkAccessToken, tags);
 
 // Serves for the maps' CRUD as well as user registration
-appRouter.use("/marketplates/dist/users", users);
+appRouter.use("/users", users);
 
 export default appRouter;
