@@ -13,7 +13,7 @@ import cookieParser from "cookie-parser";
 
 // Setting up for .env file
 dotenv.config();
-const { APP_HOSTNAME, APP_PORT, NODE_ENV, MONGO_STRING, MONGO_DB_NAME } =
+const { APP_HOSTNAME, APP_PORT, NODE_ENV, MONGO_STRING, MONGO_DB_NAME, WEBSITE_URL, ROUTE_PATH } =
   process.env;
 
 // Directory name/pathing aid
@@ -23,11 +23,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 // CORS authorization, JSON data formatting for API communication
-app.use(cors({ credentials: true, origin: "https://marketplates.netlify.app" })); //http://localhost:5173 
+app.use(cors({ credentials: true, origin: WEBSITE_URL }));
 app.use(cookieParser());
 app.use(express.json());
 
-// Correctly indents code
+// Correctly indents code during development
 app.locals.pretty = NODE_ENV !== "production";
 
 // ==========
@@ -42,7 +42,7 @@ app.use(express.urlencoded({ extended: true }));
 // App router
 // ==========
 
-app.use("/", routes);
+app.use(ROUTE_PATH, routes);
 
 // ==========
 // App start
@@ -51,11 +51,11 @@ app.use("/", routes);
 try {
   await mongoose.connect(`${MONGO_STRING}`);
   //Confirm in the terminal that the database is connected
-  console.log(`✅ Connecté à la base MongoDB ${MONGO_DB_NAME}`);
+  console.log(`✅ Connected to MongoDB ${MONGO_DB_NAME}`);
   app.listen(APP_PORT, () => {
     //Confirm in the terminal that the back end is ready to be called upon
     console.log(`API started on http://${APP_HOSTNAME}:${APP_PORT}`);
   });
 } catch (err) {
-  console.error("Erreur de connexion", err.message);
+  console.error("Connection error", err.message);
 }
